@@ -1,0 +1,7 @@
+@import "tailwindcss";
+
+@layer base {
+    * {
+        @apply border-sky-100;
+    }
+}
