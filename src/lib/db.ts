@@ -137,38 +137,52 @@ export async function getTasks(): Promise<TaskWithCategoryAndTags[]> {
 }
 
 export async function createTask(task: Task): Promise<Task> {
-  const database = await getDb();
+  try {
+    console.log('createTask called with:', task);
+    const database = await getDb();
+    console.log('Database initialized');
 
-  // Insert task
-  await database.execute(
-    `INSERT INTO tasks (id, title, description, completed, priority, category, created_at, updated_at, due_date)
-     VALUES ($1, $2, $3, $4, $5, $6, $7, $8, $9)`,
-    [
-      task.id,
-      task.title,
-      task.description,
-      task.completed ? 1 : 0,
-      task.priority,
-      task.category || null,
-      task.createdAt,
-      task.updatedAt,
-      task.dueDate || null,
-    ],
-  );
-
-  // Insert task-tag associations
-  for (const tagName of task.tags) {
-    // Find or create tag
-    const tagId = await findOrCreateTag(tagName);
-
-    // Create task-tag association
+    // Insert task
+    console.log('Inserting task into database...');
     await database.execute(
-      `INSERT INTO task_tags (task_id, tag_id) VALUES ($1, $2)`,
-      [task.id, tagId],
+      `INSERT INTO tasks (id, title, description, completed, priority, category, created_at, updated_at, due_date)
+       VALUES ($1, $2, $3, $4, $5, $6, $7, $8, $9)`,
+      [
+        task.id,
+        task.title,
+        task.description,
+        task.completed ? 1 : 0,
+        task.priority,
+        task.category || null,
+        task.createdAt,
+        task.updatedAt,
+        task.dueDate || null,
+      ],
     );
-  }
+    console.log('Task inserted successfully');
 
-  return task;
+    // Insert task-tag associations
+    console.log('Processing tags:', task.tags);
+    for (const tagName of task.tags) {
+      // Find or create tag
+      const tagId = await findOrCreateTag(tagName);
+      console.log('Tag ID for', tagName, ':', tagId);
+
+      // Create task-tag association
+      await database.execute(
+        `INSERT INTO task_tags (task_id, tag_id) VALUES ($1, $2)`,
+        [task.id, tagId],
+      );
+    }
+    console.log('All tags associated successfully');
+
+    return task;
+  } catch (error) {
+    console.error('Error in createTask:', error);
+    console.error('Error type:', typeof error);
+    console.error('Error details:', JSON.stringify(error, null, 2));
+    throw error;
+  }
 }
 
 export async function updateTask(
