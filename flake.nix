@@ -64,7 +64,7 @@
         gdk-pixbuf
         glib
         dbus
-        openssl_3
+        # openssl_3
         librsvg
       ];
     in {
