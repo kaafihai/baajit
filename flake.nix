@@ -24,9 +24,12 @@
           config.android_sdk.accept_license = true;
         };
 
-        android_sdk = (pkgs.androidenv.composeAndroidPackages {
-          platformVersions = [ "34" ];
-          ndkVersions = [ "26.3.11579264" ];
+      build_tools_version = "35.0.0";
+      android_sdk =
+        (pkgs.androidenv.composeAndroidPackages {
+          platformVersions = ["36"];
+          buildToolsVersions = [build_tools_version];
+          ndkVersions = ["26.3.11579264"];
           includeNDK = true;
           useGoogleAPIs = false;
           useGoogleTVAddOns = false;
