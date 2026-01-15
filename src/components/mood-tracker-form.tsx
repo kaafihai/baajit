@@ -6,14 +6,14 @@ import type { MoodInput } from "@/lib/types";
 import { useCreateMood } from "@/hooks/use-moods";
 import { useNavigate } from "@tanstack/react-router";
 import {
+  type Icon,
   SmileyIcon,
-  SmileySadIcon,
   SmileyMehIcon,
+  SmileySadIcon,
+  SmileyWinkIcon,
   SmileyXEyesIcon,
-  Icon,
 } from "@phosphor-icons/react";
 import { cn } from "@/lib/utils";
-import { SmileyWinkIcon } from "@phosphor-icons/react/dist/ssr";
 
 interface MoodTrackerFormProps {
   onSuccess?: () => void;
@@ -40,14 +40,14 @@ const moodOptions: Array<{
     icon: SmileyMehIcon,
   },
   {
-    value: "great",
-    label: "Great",
-    icon: SmileyWinkIcon,
-  },
-  {
     value: "good",
     label: "Good",
     icon: SmileyIcon,
+  },
+  {
+    value: "great",
+    label: "Great",
+    icon: SmileyWinkIcon,
   },
 ];
 
