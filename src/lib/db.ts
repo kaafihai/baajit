@@ -113,7 +113,7 @@ export async function getTasksByCompletedAt(date: Date, limit: number = 1000): P
   }));
 }
 
-export async function getTask(id: string): Promise<Task | null> {
+export async function getTaskById(id: string): Promise<Task | null> {
   const database = await getDb();
 
   const rows = await database.select<
@@ -164,7 +164,7 @@ export async function updateTask(task: Task): Promise<Task> {
     [task.title, task.description, task.dueDate, task.completedAt, now, task.id]
   );
 
-  const updatedTask = await getTask(task.id);
+  const updatedTask = await getTaskById(task.id);
   if (!updatedTask) {
     throw new Error(`Task with id ${task.id} not found`);
   }
@@ -203,7 +203,7 @@ export async function getMoods(limit: number = 1000): Promise<Mood[]> {
   }));
 }
 
-export async function getMood(id: string): Promise<Mood | null> {
+export async function getMoodById(id: string): Promise<Mood | null> {
   const database = await getDb();
 
   const rows = await database.select<
@@ -269,7 +269,7 @@ export async function updateMood(mood: Mood): Promise<Mood> {
     [mood.mood, mood.note, mood.id]
   );
 
-  const updatedMood = await getMood(mood.id);
+  const updatedMood = await getMoodById(mood.id);
   if (!updatedMood) {
     throw new Error(`Mood with id ${mood.id} not found`);
   }
