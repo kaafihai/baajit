@@ -48,7 +48,7 @@ export async function getTasks(limit: number = 1000): Promise<Task[]> {
       updated_at: string;
       completed_at: string | null;
     }>
-  >(`SELECT * FROM tasks LIMIT $1`, [limit]);
+  >(`SELECT * FROM tasks ORDER BY completed_at IS NOT NULL, created_at DESC LIMIT $1`, [limit]);
 
   return rows.map((row) => ({
     id: row.id,

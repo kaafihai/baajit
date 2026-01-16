@@ -102,7 +102,7 @@
 
     --destructive: oklch(0.577 0.245 27.325);
 
-    --border: var(--primary-6);
+    --border: var(--primary-8);
     --input: var(--border);
     --ring: var(--border);
 

@@ -87,7 +87,7 @@ function NavLink({ item, isActive }: NavLinkProps) {
     <Link
       to={item.to}
       className={cn(
-        "btn btn--ghost",
+        "btn btn--ghost p-4",
         isActive
           ? "text-primary"
           : "text-muted-foreground hover:text-foreground",

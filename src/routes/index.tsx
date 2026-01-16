@@ -4,7 +4,9 @@ import { useTasks, useToggleTask, useDeleteTask } from "@/hooks/use-tasks";
 import { useTodaysMood } from "@/hooks/use-moods";
 import { Button } from "@/components/ui/button";
 import { Spinner } from "@/components/ui/spinner";
-import { CheckIcon, TrashIcon } from "@phosphor-icons/react";
+import { CalendarBlankIcon, CheckIcon, PencilSimpleIcon, TrashIcon } from "@phosphor-icons/react";
+import { Link } from "@tanstack/react-router";
+import { format } from "date-fns";
 import type { Task } from "@/lib/types";
 
 export const Route = createFileRoute("/")({
@@ -21,12 +23,10 @@ function TaskItem({
   onDelete: (task: Task) => void;
 }) {
   return (
-    <div className="flex bg-primary/10 items-center gap-4 p-4 rounded-4xl group">
-  
+    <div data-completed={Boolean(task.completedAt)} className="flex bg-primary/10 data-[completed=true]:bg-foreground/10 items-center gap-4 p-4 rounded-4xl group">
       <Button
-        variant="ghost"
         size="icon"
-        className=""
+        variant={Boolean(task.completedAt) ? 'ghost' : 'default'}
         disabled={Boolean(task.completedAt)}
         onClick={() => onToggle(task)}
       >
@@ -43,7 +43,20 @@ function TaskItem({
             {task.description}
           </p>
         )}
+        {task.dueDate && (
+          <p className="text-sm text-muted-foreground mt-1 flex items-center gap-1">
+            <CalendarBlankIcon className="size-3" />
+            {format(new Date(task.dueDate), "PPP")}
+          </p>
+        )}
       </div>
+      <Button
+        variant="ghost"
+        size="icon"
+        render={<Link to="/tasks/$id/edit" params={{ id: task.id }} />}
+      >
+        <PencilSimpleIcon />
+      </Button>
       <Button
         variant="ghost"
         size="icon"
@@ -60,7 +73,7 @@ function TasksComponent() {
   const navigate = useNavigate();
   const { data: tasks = [], isLoading } = useTasks();
   const { data: todaysMood, isLoading: isMoodLoading } = useTodaysMood();
-  const [filter, setFilter] = useState<"active" | "completed" | "all">("active");
+  const [filter, setFilter] = useState<"active" | "completed" | "all">("all");
   const toggleTask = useToggleTask();
   const deleteTask = useDeleteTask();
   
@@ -92,6 +105,12 @@ function TasksComponent() {
 
       <div className="flex gap-2">
         <Button
+          variant={filter === "all" ? "default" : "ghost"}
+          onClick={() => setFilter("all")}
+        >
+          All ({tasks.length})
+        </Button>
+        <Button
           variant={filter === "active" ? "default" : "ghost"}
           onClick={() => setFilter("active")}
         >
@@ -102,12 +121,6 @@ function TasksComponent() {
           onClick={() => setFilter("completed")}
         >
           Completed ({tasks.filter((t) => Boolean(t.completedAt)).length})
-        </Button>
-        <Button
-          variant={filter === "all" ? "default" : "ghost"}
-          onClick={() => setFilter("all")}
-        >
-          All ({tasks.length})
         </Button>
       </div>
 
