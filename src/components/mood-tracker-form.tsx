@@ -67,7 +67,7 @@ export function MoodTrackerForm({ onSuccess }: MoodTrackerFormProps) {
     try {
       await createMood.mutateAsync(formData);
       onSuccess?.();
-      navigate({ to: "/" });
+      await navigate({ to: "/" });
     } catch (error) {
       console.error("Failed to track mood:", error);
     }
