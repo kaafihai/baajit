@@ -28,7 +28,7 @@ function MoodTrackerComponent() {
         }
       }}
     >
-      <DialogContent>
+      <DialogContent showCloseButton={false}>
         <DialogHeader>
           <DialogTitle>Daily Mood Check-in</DialogTitle>
           <DialogDescription>
