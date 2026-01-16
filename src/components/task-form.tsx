@@ -7,6 +7,7 @@ import type { TaskInput } from "@/lib/types";
 import { useCreateTask } from "@/hooks/use-tasks";
 import { useNavigate } from "@tanstack/react-router";
 import { DialogFooter } from "./ui/dialog";
+import { DatePicker } from "./ui/date-picker";
 
 interface TaskFormProps {
   onSuccess?: () => void;
@@ -40,8 +41,8 @@ export function TaskForm({ onSuccess }: TaskFormProps) {
   };
 
   return (
-    <form onSubmit={handleSubmit} className="space-y-4">
-      <div className="space-y-2">
+    <form onSubmit={handleSubmit} className="flex flex-col gap-4">
+      <div className="flex flex-col gap-2">
         <Label htmlFor="title">Title</Label>
         <Input
           id="title"
@@ -53,7 +54,7 @@ export function TaskForm({ onSuccess }: TaskFormProps) {
         />
       </div>
 
-      <div className="space-y-2">
+      <div className="flex flex-col gap-2">
         <Label htmlFor="description">Description</Label>
         <Textarea
           id="description"
@@ -66,18 +67,11 @@ export function TaskForm({ onSuccess }: TaskFormProps) {
         />
       </div>
 
-      <div className="space-y-2">
+      <div className="flex flex-col gap-2">
         <Label htmlFor="dueDate">Due Date</Label>
-        <Input
-          id="dueDate"
-          type="date"
-          value={formData.dueDate || ""}
-          onChange={(e) =>
-            setFormData({
-              ...formData,
-              dueDate: e.target.value || null,
-            })
-          }
+        <DatePicker
+          value={formData.dueDate}
+          onChange={(date) => setFormData({ ...formData, dueDate: date })}
         />
       </div>
 
