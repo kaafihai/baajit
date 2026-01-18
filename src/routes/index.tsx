@@ -22,6 +22,8 @@ function TaskItem({
   onToggle: (task: Task) => void;
   onDelete: (task: Task) => void;
 }) {
+
+  const past = task.dueDate && !task.completedAt && (new Date(task.dueDate) < new Date());
   return (
     <div data-completed={Boolean(task.completedAt)} className="flex bg-primary/10 data-[completed=true]:bg-foreground/10 items-center gap-4 p-4 rounded-4xl group">
       <Button
@@ -44,7 +46,7 @@ function TaskItem({
           </p>
         )}
         {task.dueDate && (
-          <p className="text-sm text-muted-foreground mt-1 flex items-center gap-1">
+          <p data-past={past} className="text-sm data-[past=true]:text-destructive text-muted-foreground mt-1 flex items-center gap-1">
             <CalendarBlankIcon className="size-3" />
             {format(new Date(task.dueDate), "PPP")}
           </p>
