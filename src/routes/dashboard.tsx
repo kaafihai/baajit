@@ -3,10 +3,10 @@ import { useTasks } from "@/hooks/use-tasks";
 import { useMoods } from "@/hooks/use-moods";
 import { useHabits, useAllHabitEntries } from "@/hooks/use-habits";
 import { Spinner } from "@/components/ui/spinner";
-import { ChartBarIcon } from "@phosphor-icons/react";
+import { ChartBarIcon, ChartLineUpIcon, CheckCircleIcon } from "@phosphor-icons/react";
 import { useMemo } from "react";
 import { cn } from "@/lib/utils";
-import type { Habit, HabitEntry } from "@/lib/types";
+import type { Habit, HabitEntry, MoodLevel } from "@/lib/types";
 import {
   format,
   startOfWeek,
@@ -14,6 +14,7 @@ import {
   isSameDay,
   subDays,
 } from "date-fns";
+import { MOOD_OPTIONS } from "@/components/mood-tracker-form";
 
 export const Route = createFileRoute("/dashboard")({
   component: DashboardPage,
@@ -38,6 +39,25 @@ function DashboardPage() {
   const { data: moods, isLoading: moodsLoading } = useMoods();
   const { data: habits, isLoading: habitsLoading } = useHabits();
   const { data: habitEntries, isLoading: habitEntriesLoading } = useAllHabitEntries();
+
+  const completedTasks = tasks?.filter((t) => t.completedAt) ?? [];
+  const activeTasks = tasks?.filter((t) => !t.completedAt) ?? [];
+  // Calculate mood stats
+  const moodCounts = (moods ?? []).reduce(
+    (acc, mood) => {
+      acc[mood.mood] = (acc[mood.mood] || 0) + 1;
+      return acc;
+    },
+    {} as Record<MoodLevel, number>
+  );
+
+  const mostFrequentMood = Object.entries(moodCounts).sort(
+    ([, a], [, b]) => b - a
+  )[0]?.[0] as MoodLevel | undefined;
+
+  const MostFrequentMoodIcon = MOOD_OPTIONS.find(
+    (m) => m.value === mostFrequentMood
+  )?.icon;
 
   const { activityData, weeks, stats, startDate } = useMemo(() => {
     const today = new Date();
@@ -144,17 +164,33 @@ function DashboardPage() {
         <h2 className="text-3xl font-bold">Dashboard</h2>
       </div>
 
-      <div className="grid grid-cols-2 sm:grid-cols-4 gap-4">
-        <StatBox label="Tasks Done" value={stats.totalTasks} />
-        <StatBox label="Habits Done" value={stats.totalHabits} />
-        <StatBox label="Moods Logged" value={stats.totalMoods} />
-        <StatBox label="Active Days" value={stats.activeDays} />
+      <div className="grid grid-cols-3 gap-4">
+        <StatCard
+          icon={<CheckCircleIcon className="size-6" />}
+          label="Tasks Completed"
+          value={completedTasks.length}
+          sublabel={`${activeTasks.length} active`}
+        />
+        <StatCard
+          icon={<ChartLineUpIcon className="size-6" />}
+          label="Moods Logged"
+          value={moods?.length ?? 0}
+          sublabel="total entries"
+        />
+        {MostFrequentMoodIcon && mostFrequentMood && (
+          <StatCard
+            icon={<MostFrequentMoodIcon className="size-6" />}
+            label="Top Mood"
+            value={mostFrequentMood}
+            sublabel={`${moodCounts[mostFrequentMood]} times`}
+          />
+        )}
       </div>
 
       {habits && habits.length > 0 && (
         <section className="space-y-3">
           <h3 className="text-xl font-semibold">Habits This Week</h3>
-          <div className="space-y-3">
+          <div className="space-y-4">
             {habits.map((habit) => (
               <HabitWeeklyView
                 key={habit.id}
@@ -271,14 +307,6 @@ function HeatmapCell({ day }: { day: DayActivity }) {
   );
 }
 
-function StatBox({ label, value }: { label: string; value: number }) {
-  return (
-    <div className="p-4 bg-primary/10 rounded-2xl text-center">
-      <p className="text-2xl font-bold">{value}</p>
-      <p className="text-sm text-muted-foreground">{label}</p>
-    </div>
-  );
-}
 
 const DAY_MAP: Record<number, string> = {
   0: "SU",
@@ -334,7 +362,7 @@ function HabitWeeklyView({ habit, entries }: { habit: Habit; entries: HabitEntry
     <Link
       to="/habits/$id/stats"
       params={{ id: habit.id }}
-      className="block p-4 bg-primary/10 rounded-2xl w-full text-left hover:bg-primary/15 transition-colors cursor-pointer"
+      className="block p-8 bg-primary/10 rounded-4xl w-full text-left hover:bg-primary/15 transition-colors cursor-pointer"
     >
       <div className="flex items-center justify-between mb-3">
         <h4 className="font-semibold">{habit.title}</h4>
@@ -355,9 +383,9 @@ function HabitWeeklyView({ habit, entries }: { habit: Habit; entries: HabitEntry
                 day.isCompleted
                   ? "bg-success text-success-foreground"
                   : day.isScheduled
-                    ? "bg-primary/20"
-                    : "bg-muted",
-                day.isToday && day.isScheduled && !day.isCompleted && "ring-2 ring-primary"
+                    ? "border"
+                    : "opacity-40",
+                day.isToday && day.isScheduled && !day.isCompleted && "bg-primary/20"
               )}
             >
               {format(day.date, "d")}
@@ -366,5 +394,29 @@ function HabitWeeklyView({ habit, entries }: { habit: Habit; entries: HabitEntry
         ))}
       </div>
     </Link>
+  );
+}
+
+
+function StatCard({
+  icon,
+  label,
+  value,
+  sublabel,
+}: {
+  icon: React.ReactNode;
+  label: string;
+  value: string | number;
+  sublabel: string;
+}) {
+  return (
+    <div className="p-4 bg-primary/10 rounded-3xl space-y-2">
+      <div className="flex items-center gap-2 text-primary">
+        {icon}
+        <span className="text-sm font-medium">{label}</span>
+      </div>
+      <p className="text-2xl font-bold capitalize">{value}</p>
+      <p className="text-sm text-muted-foreground">{sublabel}</p>
+    </div>
   );
 }

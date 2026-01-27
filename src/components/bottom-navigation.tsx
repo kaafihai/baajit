@@ -2,8 +2,7 @@ import { Link } from "@tanstack/react-router";
 import {
   CalendarIcon,
   CheckCircleIcon,
-  ChartBarIcon,
-  PersonIcon,
+  ChartBarIcon
 } from "@phosphor-icons/react";
 import { cn } from "@/lib/utils";
 
@@ -16,7 +15,6 @@ const navItems: NavItem[] = [
   { to: "/", icon: CheckCircleIcon, },
   { to: "/calendar", icon: CalendarIcon, },
   { to: "/dashboard", icon: ChartBarIcon,},
-  { to: "/profile", icon: PersonIcon,},
 ];
 
 export function BottomNavigation() {

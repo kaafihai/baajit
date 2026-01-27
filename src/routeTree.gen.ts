@@ -10,7 +10,6 @@
 
 import { Route as rootRouteImport } from './routes/__root'
 import { Route as SettingsRouteImport } from './routes/settings'
-import { Route as ProfileRouteImport } from './routes/profile'
 import { Route as DashboardRouteImport } from './routes/dashboard'
 import { Route as CalendarRouteImport } from './routes/calendar'
 import { Route as IndexRouteImport } from './routes/index'
@@ -24,11 +23,6 @@ import { Route as HabitsIdStatsRouteImport } from './routes/habits.$id.stats'
 const SettingsRoute = SettingsRouteImport.update({
   id: '/settings',
   path: '/settings',
-  getParentRoute: () => rootRouteImport,
-} as any)
-const ProfileRoute = ProfileRouteImport.update({
-  id: '/profile',
-  path: '/profile',
   getParentRoute: () => rootRouteImport,
 } as any)
 const DashboardRoute = DashboardRouteImport.update({
@@ -81,7 +75,6 @@ export interface FileRoutesByFullPath {
   '/': typeof IndexRoute
   '/calendar': typeof CalendarRouteWithChildren
   '/dashboard': typeof DashboardRoute
-  '/profile': typeof ProfileRoute
   '/settings': typeof SettingsRoute
   '/calendar/$timestamp': typeof CalendarTimestampRoute
   '/habits/new': typeof HabitsNewRoute
@@ -94,7 +87,6 @@ export interface FileRoutesByTo {
   '/': typeof IndexRoute
   '/calendar': typeof CalendarRouteWithChildren
   '/dashboard': typeof DashboardRoute
-  '/profile': typeof ProfileRoute
   '/settings': typeof SettingsRoute
   '/calendar/$timestamp': typeof CalendarTimestampRoute
   '/habits/new': typeof HabitsNewRoute
@@ -108,7 +100,6 @@ export interface FileRoutesById {
   '/': typeof IndexRoute
   '/calendar': typeof CalendarRouteWithChildren
   '/dashboard': typeof DashboardRoute
-  '/profile': typeof ProfileRoute
   '/settings': typeof SettingsRoute
   '/calendar/$timestamp': typeof CalendarTimestampRoute
   '/habits/new': typeof HabitsNewRoute
@@ -123,7 +114,6 @@ export interface FileRouteTypes {
     | '/'
     | '/calendar'
     | '/dashboard'
-    | '/profile'
     | '/settings'
     | '/calendar/$timestamp'
     | '/habits/new'
@@ -136,7 +126,6 @@ export interface FileRouteTypes {
     | '/'
     | '/calendar'
     | '/dashboard'
-    | '/profile'
     | '/settings'
     | '/calendar/$timestamp'
     | '/habits/new'
@@ -149,7 +138,6 @@ export interface FileRouteTypes {
     | '/'
     | '/calendar'
     | '/dashboard'
-    | '/profile'
     | '/settings'
     | '/calendar/$timestamp'
     | '/habits/new'
@@ -163,7 +151,6 @@ export interface RootRouteChildren {
   IndexRoute: typeof IndexRoute
   CalendarRoute: typeof CalendarRouteWithChildren
   DashboardRoute: typeof DashboardRoute
-  ProfileRoute: typeof ProfileRoute
   SettingsRoute: typeof SettingsRoute
   HabitsNewRoute: typeof HabitsNewRoute
   MoodTrackRoute: typeof MoodTrackRoute
@@ -179,13 +166,6 @@ declare module '@tanstack/react-router' {
       path: '/settings'
       fullPath: '/settings'
       preLoaderRoute: typeof SettingsRouteImport
-      parentRoute: typeof rootRouteImport
-    }
-    '/profile': {
-      id: '/profile'
-      path: '/profile'
-      fullPath: '/profile'
-      preLoaderRoute: typeof ProfileRouteImport
       parentRoute: typeof rootRouteImport
     }
     '/dashboard': {
@@ -270,7 +250,6 @@ const rootRouteChildren: RootRouteChildren = {
   IndexRoute: IndexRoute,
   CalendarRoute: CalendarRouteWithChildren,
   DashboardRoute: DashboardRoute,
-  ProfileRoute: ProfileRoute,
   SettingsRoute: SettingsRoute,
   HabitsNewRoute: HabitsNewRoute,
   MoodTrackRoute: MoodTrackRoute,
