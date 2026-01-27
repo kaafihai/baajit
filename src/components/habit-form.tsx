@@ -25,6 +25,10 @@ export function HabitForm({ onSuccess }: HabitFormProps) {
     archivedAt: null,
   });
 
+  const handleRRuleChange = (rrule: string | null) => {
+    setFormData({ ...formData, rrule: rrule ?? "FREQ=DAILY" });
+  };
+
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
 
@@ -70,7 +74,7 @@ export function HabitForm({ onSuccess }: HabitFormProps) {
 
       <RRulePicker
         value={formData.rrule}
-        onChange={(rrule) => setFormData({ ...formData, rrule })}
+        onChange={handleRRuleChange}
       />
 
       <DialogFooter>

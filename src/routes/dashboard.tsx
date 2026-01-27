@@ -3,7 +3,7 @@ import { useTasks } from "@/hooks/use-tasks";
 import { useMoods } from "@/hooks/use-moods";
 import { useHabits, useAllHabitEntries } from "@/hooks/use-habits";
 import { Spinner } from "@/components/ui/spinner";
-import { ChartBarIcon, ChartLineUpIcon, CheckCircleIcon } from "@phosphor-icons/react";
+import { ChartBarIcon, ChartLineUpIcon, CheckCircleIcon, CircleDashedIcon, DotIcon, XCircleIcon } from "@phosphor-icons/react";
 import { useMemo } from "react";
 import { cn } from "@/lib/utils";
 import type { Habit, HabitEntry, MoodLevel } from "@/lib/types";
@@ -191,6 +191,24 @@ function DashboardPage() {
         <section className="space-y-3">
           <h3 className="text-xl font-semibold">Habits This Week</h3>
           <div className="space-y-4">
+            <div className="bg-primary/10 p-8 rounded-4xl flex flex-row justify-between gap-2">
+              {
+                Array.from({ length: 7 }).map((x, i) => {
+                  const date = subDays(new Date(), 6 - i);
+                  return <div key={date.toISOString()} className={cn("flex flex-col items-center gap-1 rounded-2xl p-2", i === 6 ? 'bg-primary text-primary-foreground font-bold' : '')}>
+                    <span className="text-sm text-muted-foreground">
+                      {format(date, "EEE")}
+                    </span>
+                    <div
+                      className={cn(
+                        "size-8 rounded-full flex items-center justify-center text-xs")}
+                    >
+                      {format(date, "d")}
+                    </div>
+                  </div>
+                })
+              }
+            </div>
             {habits.map((habit) => (
               <HabitWeeklyView
                 key={habit.id}
@@ -372,23 +390,16 @@ function HabitWeeklyView({ habit, entries }: { habit: Habit; entries: HabitEntry
       </div>
       <div className="flex gap-2 justify-between">
         {weekDays.map((day) => (
-          <div key={day.dateString} className="flex flex-col items-center gap-1">
-            <span className="text-xs text-muted-foreground">
-              {format(day.date, "EEE")}
-            </span>
+          <div key={day.dateString} className="flex flex-col items-center gap-1 px-2">
             <div
               className={cn(
-                "size-8 rounded-full flex items-center justify-center text-xs font-medium transition-colors",
-                !day.isScheduled && "opacity-30",
-                day.isCompleted
-                  ? "bg-success text-success-foreground"
-                  : day.isScheduled
-                    ? "border"
-                    : "opacity-40",
-                day.isToday && day.isScheduled && !day.isCompleted && "bg-primary/20"
+                "size-8 rounded-full flex items-center opacity-80 justify-center text-xs font-medium transition-colors",
+                day.isScheduled
+                    ? ""
+                    : "!opacity-40",
               )}
             >
-              {format(day.date, "d")}
+              {day.isCompleted ? <CheckCircleIcon className="size-8" /> : day.isScheduled ? <XCircleIcon className="size-8" /> : <CircleDashedIcon className="size-8" />}
             </div>
           </div>
         ))}

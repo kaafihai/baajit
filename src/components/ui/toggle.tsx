@@ -9,17 +9,11 @@ const toggleVariants = cva(
     variants: {
       variant: {
         default: "bg-transparent",
-        outline: "border-input hover:bg-muted border bg-transparent",
-      },
-      size: {
-        default: "h-9 min-w-9 rounded-[min(var(--radius-2xl),12px)] px-2.5",
-        sm: "h-8 min-w-8 px-3",
-        lg: "h-10 min-w-10 px-2.5",
+        outline: "hover:bg-muted border bg-transparent",
       },
     },
     defaultVariants: {
       variant: "default",
-      size: "default",
     },
   }
 )
@@ -27,13 +21,12 @@ const toggleVariants = cva(
 function Toggle({
   className,
   variant = "default",
-  size = "default",
   ...props
 }: TogglePrimitive.Props & VariantProps<typeof toggleVariants>) {
   return (
     <TogglePrimitive
       data-slot="toggle"
-      className={cn(toggleVariants({ variant, size, className }))}
+      className={cn(toggleVariants({ variant, className }))}
       {...props}
     />
   )

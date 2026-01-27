@@ -6,27 +6,34 @@ import {
   SelectContent,
   SelectItem,
   SelectTrigger,
-  SelectValue,
 } from "./ui/select";
 
 type Frequency = "DAILY" | "WEEKLY";
 
+const FREQUENCY_LABELS: Record<string, string> = {
+  NONE: "Don't repeat",
+  DAILY: "Daily",
+  WEEKLY: "Weekly",
+};
+
 const DAYS_OF_WEEK = [
+  { value: "SU", label: "S" },
   { value: "MO", label: "M" },
   { value: "TU", label: "T" },
   { value: "WE", label: "W" },
   { value: "TH", label: "T" },
   { value: "FR", label: "F" },
   { value: "SA", label: "S" },
-  { value: "SU", label: "S" },
 ] as const;
 
 interface RRulePickerProps {
-  value: string;
-  onChange: (rrule: string) => void;
+  value: string | null;
+  onChange: (rrule: string | null) => void;
 }
 
-function parseRRule(rrule: string): { frequency: Frequency; days: string[] } {
+function parseRRule(rrule: string | null): { frequency: Frequency | null; days: string[] } {
+  if (!rrule) return { frequency: null, days: [] };
+
   const freqMatch = rrule.match(/FREQ=(\w+)/);
   const frequency = (freqMatch?.[1] as Frequency) || "DAILY";
 
@@ -36,7 +43,8 @@ function parseRRule(rrule: string): { frequency: Frequency; days: string[] } {
   return { frequency, days };
 }
 
-function buildRRule(frequency: Frequency, days: string[]): string {
+function buildRRule(frequency: Frequency | null, days: string[]): string | null {
+  if (!frequency) return null;
   if (frequency === "WEEKLY" && days.length > 0) {
     return `FREQ=WEEKLY;BYDAY=${days.join(",")}`;
   }
@@ -45,7 +53,7 @@ function buildRRule(frequency: Frequency, days: string[]): string {
 
 export function RRulePicker({ value, onChange }: RRulePickerProps) {
   const parsed = parseRRule(value);
-  const [frequency, setFrequency] = useState<Frequency>(parsed.frequency);
+  const [frequency, setFrequency] = useState<Frequency | null>(parsed.frequency);
   const [selectedDays, setSelectedDays] = useState<string[]>(parsed.days);
 
   useEffect(() => {
@@ -55,12 +63,16 @@ export function RRulePicker({ value, onChange }: RRulePickerProps) {
     }
   }, [frequency, selectedDays, onChange, value]);
 
-  const handleFrequencyChange = (newFreq: Frequency | null) => {
-    if (!newFreq) return;
-    setFrequency(newFreq);
+  const handleFrequencyChange = (newFreq: string | null) => {
+    if (!newFreq || newFreq === "NONE") {
+      setFrequency(null);
+      return;
+    }
+    const freq = newFreq as Frequency;
+    setFrequency(freq);
 
     // Set default days when switching to weekly
-    if (newFreq === "WEEKLY" && selectedDays.length === 0) {
+    if (freq === "WEEKLY" && selectedDays.length === 0) {
       setSelectedDays(["MO", "TU", "WE", "TH", "FR"]);
     }
   };
@@ -79,12 +91,13 @@ export function RRulePicker({ value, onChange }: RRulePickerProps) {
   return (
     <div className="flex flex-col gap-4">
       <div className="flex flex-col gap-2">
-        <Label>Frequency</Label>
-        <Select value={frequency} onValueChange={handleFrequencyChange}>
-          <SelectTrigger>
-            <SelectValue />
+        <Label>Repeat</Label>
+        <Select  value={frequency ?? "NONE"} onValueChange={handleFrequencyChange}>
+          <SelectTrigger className={'w-full'}>
+            {FREQUENCY_LABELS[frequency ?? "NONE"]}
           </SelectTrigger>
           <SelectContent>
+            <SelectItem value="NONE">Don't repeat</SelectItem>
             <SelectItem value="DAILY">Daily</SelectItem>
             <SelectItem value="WEEKLY">Weekly</SelectItem>
           </SelectContent>
@@ -94,13 +107,14 @@ export function RRulePicker({ value, onChange }: RRulePickerProps) {
       {frequency === "WEEKLY" && (
         <div className="flex flex-col gap-2">
           <Label>Days</Label>
-          <div className="flex gap-1">
+          <div className="flex gap-4 w-full">
             {DAYS_OF_WEEK.map((day) => {
               const isSelected = selectedDays.includes(day.value);
               return (
                 <Toggle
                   key={day.value}
                   variant="outline"
+                  className={'w-full aspect-square'}
                   pressed={isSelected}
                   onPressedChange={() => toggleDay(day.value)}
                 >

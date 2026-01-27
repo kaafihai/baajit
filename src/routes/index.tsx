@@ -41,6 +41,49 @@ export const Route = createFileRoute("/")({
   component: TasksComponent,
 });
 
+function ListItem({
+  completed,
+  onToggle,
+  title,
+  description,
+  metadata,
+  actions,
+}: {
+  completed: boolean;
+  onToggle: () => void;
+  title: string;
+  description?: string;
+  metadata?: React.ReactNode;
+  actions?: React.ReactNode;
+}) {
+  return (
+    <div
+      data-completed={completed}
+      className="flex bg-primary/10 data-[completed=true]:bg-success/10 items-center gap-4 p-4 rounded-4xl transition-colors"
+    >
+      <Button
+        size="icon"
+        variant={completed ? "ghost" : "success"}
+        onClick={onToggle}
+      >
+        <CheckIcon />
+      </Button>
+      <div className="flex-1 min-w-0">
+        <h3
+          className={`font-semibold ${completed ? "text-muted-foreground" : ""}`}
+        >
+          {title}
+        </h3>
+        {description && (
+          <p className="text-sm text-muted-foreground mt-1">{description}</p>
+        )}
+        {metadata}
+      </div>
+      {actions && <div className="flex items-center gap-1">{actions}</div>}
+    </div>
+  );
+}
+
 function HabitItem({
   habit,
   entry,
@@ -50,34 +93,21 @@ function HabitItem({
   entry: HabitEntry | null;
   onToggle: (habit: Habit, entry: HabitEntry | null) => void;
 }) {
-  const isCompleted = entry?.status === 'completed';
+  const isCompleted = entry?.status === "completed";
 
   return (
-    <div data-completed={isCompleted} className="flex bg-primary/10 data-[completed=true]:bg-success/10 items-center gap-4 p-4 rounded-4xl group transition-colors">
-      <Button
-        size="icon"
-        variant={isCompleted ? 'ghost' : 'success'}
-        onClick={() => onToggle(habit, entry)}
-      >
-        <CheckIcon />
-      </Button>
-      <div className="flex-1 min-w-0">
-        <h3
-          className={`font-semibold ${isCompleted ? "opacity-80 text-muted-foreground" : ""}`}
-        >
-          {habit.title}
-        </h3>
-        {habit.description && (
-          <p className="text-sm text-muted-foreground mt-1">
-            {habit.description}
-          </p>
-        )}
+    <ListItem
+      completed={isCompleted}
+      onToggle={() => onToggle(habit, entry)}
+      title={habit.title}
+      description={habit.description}
+      metadata={
         <p className="text-sm text-muted-foreground mt-1 flex items-center gap-1">
           <RepeatIcon className="size-3" />
           {habit.rrule}
         </p>
-      </div>
-    </div>
+      }
+    />
   );
 }
 
@@ -90,54 +120,49 @@ function TaskItem({
   onToggle: (task: Task) => void;
   onDelete: (task: Task) => void;
 }) {
+  const isCompleted = Boolean(task.completedAt);
+  const isPast =
+    task.dueDate && !task.completedAt && new Date(task.dueDate) < new Date();
 
-  const past = task.dueDate && !task.completedAt && (new Date(task.dueDate) < new Date());
   return (
-    <div data-completed={Boolean(task.completedAt)} className="flex bg-primary/10 data-[completed=true]:bg-success/10 items-center gap-4 p-4 rounded-4xl group transition-colors">
-      <Button
-        size="icon"
-        variant={Boolean(task.completedAt) ? 'ghost' : 'success'}
-        disabled={Boolean(task.completedAt)}
-        onClick={() => onToggle(task)}
-      >
-        <CheckIcon />
-      </Button>
-      <div className="flex-1 min-w-0">
-        <h3
-          className={`font-semibold ${task.completedAt ? "opacity-80 text-muted-foreground" : ""}`}
-        >
-          {task.title}
-        </h3>
-        {task.description && (
-          <p className="text-sm text-muted-foreground mt-1">
-            {task.description}
-          </p>
-        )}
-        {task.dueDate && (
-          <p data-past={past} className="text-sm data-[past=true]:text-destructive text-muted-foreground mt-1 flex items-center gap-1">
+    <ListItem
+      completed={isCompleted}
+      onToggle={() => onToggle(task)}
+      title={task.title}
+      description={task.description}
+      metadata={
+        task.dueDate ? (
+          <p
+            data-past={isPast}
+            className="text-sm data-[past=true]:text-destructive text-muted-foreground mt-1 flex items-center gap-1"
+          >
             <CalendarBlankIcon className="size-3" />
             {format(new Date(task.dueDate), "PPP")}
           </p>
-        )}
-      </div>
-      <ButtonLink
-        variant="ghost"
-        size="icon"
-        to='/tasks/$id/edit'
-        params={{id: task.id}}
-        disabled={Boolean(task.completedAt)}
-      >
-        <PencilSimpleIcon />
-      </ButtonLink>
-      <Button
-        variant="ghost"
-        size="icon"
-        className="text-destructive hover:text-destructive hover:bg-destructive/10"
-        onClick={() => onDelete(task)}
-      >
-        <TrashIcon />
-      </Button>
-    </div>
+        ) : undefined
+      }
+      actions={
+        <>
+          <ButtonLink
+            variant="ghost"
+            size="icon"
+            to="/tasks/$id/edit"
+            params={{ id: task.id }}
+            disabled={isCompleted}
+          >
+            <PencilSimpleIcon />
+          </ButtonLink>
+          <Button
+            variant="ghost"
+            size="icon"
+            className="text-destructive hover:text-destructive hover:bg-destructive/10"
+            onClick={() => onDelete(task)}
+          >
+            <TrashIcon />
+          </Button>
+        </>
+      }
+    />
   );
 }
 
@@ -193,16 +218,11 @@ function TasksComponent() {
       {/* Today's Habits Section */}
       <div className="flex justify-between items-end border-b pb-4">
         <h2 className="text-3xl font-bold">Today's Habits</h2>
-        <div className="flex items-center gap-4">
-          {todaysHabits.length > 0 && (
-            <span className="text-muted-foreground text-sm">
-              {completedHabitsCount}/{todaysHabits.length}
-            </span>
-          )}
-          <ButtonLink to="/habits/new" size="icon">
-            <PlusIcon />
-          </ButtonLink>
-        </div>
+        {todaysHabits.length > 0 && (
+          <span className="text-muted-foreground text-sm">
+            {completedHabitsCount}/{todaysHabits.length}
+          </span>
+        )}
       </div>
 
       {todaysHabits.length === 0 ? (
@@ -225,9 +245,6 @@ function TasksComponent() {
       {/* Tasks Section */}
       <div className="flex justify-between items-end border-b pb-4">
         <h2 className="text-3xl font-bold">Tasks</h2>
-        <ButtonLink to="/tasks/new" size="icon">
-          <PlusIcon />
-        </ButtonLink>
       </div>
 
       <div className="flex gap-2">
@@ -267,6 +284,16 @@ function TasksComponent() {
           />
         ))}
       </div>
+
+      {/* Floating action button */}
+      <ButtonLink
+        to="/new"
+        size="icon"
+        className="fixed bottom-28 right-6 size-14 rounded-full shadow-lg"
+      >
+        <PlusIcon className="size-6" />
+      </ButtonLink>
+
       <Outlet />
     </div>
   );
