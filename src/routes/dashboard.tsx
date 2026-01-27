@@ -1,15 +1,18 @@
-import { createFileRoute } from "@tanstack/react-router";
+import { createFileRoute, Link } from "@tanstack/react-router";
 import { useTasks } from "@/hooks/use-tasks";
 import { useMoods } from "@/hooks/use-moods";
+import { useHabits, useAllHabitEntries } from "@/hooks/use-habits";
 import { Spinner } from "@/components/ui/spinner";
 import { ChartBarIcon } from "@phosphor-icons/react";
 import { useMemo } from "react";
 import { cn } from "@/lib/utils";
+import type { Habit, HabitEntry } from "@/lib/types";
 import {
   format,
   startOfWeek,
   eachDayOfInterval,
   isSameDay,
+  subDays,
 } from "date-fns";
 
 export const Route = createFileRoute("/dashboard")({
@@ -26,12 +29,15 @@ interface DayActivity {
   date: Date;
   tasksCompleted: number;
   moodsLogged: number;
+  habitsCompleted: number;
   level: ActivityLevel;
 }
 
 function DashboardPage() {
   const { data: tasks, isLoading: tasksLoading } = useTasks();
   const { data: moods, isLoading: moodsLoading } = useMoods();
+  const { data: habits, isLoading: habitsLoading } = useHabits();
+  const { data: habitEntries, isLoading: habitEntriesLoading } = useAllHabitEntries();
 
   const { activityData, weeks, stats, startDate } = useMemo(() => {
     const today = new Date();
@@ -49,31 +55,44 @@ function DashboardPage() {
       if (createdAt < earliestDate) earliestDate = createdAt;
     });
 
+    habitEntries?.forEach((entry) => {
+      const date = new Date(entry.date);
+      if (date < earliestDate) earliestDate = date;
+    });
+
     const startDate = startOfWeek(earliestDate);
     const days = eachDayOfInterval({ start: startDate, end: today });
 
     // Build activity map
-    const activityMap = new Map<string, { tasks: number; moods: number }>();
+    const activityMap = new Map<string, { tasks: number; moods: number; habits: number }>();
 
     tasks?.forEach((task) => {
       if (task.completedAt) {
         const key = formatDateKey(new Date(task.completedAt));
-        const existing = activityMap.get(key) || { tasks: 0, moods: 0 };
+        const existing = activityMap.get(key) || { tasks: 0, moods: 0, habits: 0 };
         activityMap.set(key, { ...existing, tasks: existing.tasks + 1 });
       }
     });
 
     moods?.forEach((mood) => {
       const key = formatDateKey(new Date(mood.createdAt));
-      const existing = activityMap.get(key) || { tasks: 0, moods: 0 };
+      const existing = activityMap.get(key) || { tasks: 0, moods: 0, habits: 0 };
       activityMap.set(key, { ...existing, moods: existing.moods + 1 });
+    });
+
+    habitEntries?.forEach((entry) => {
+      if (entry.status === 'completed') {
+        const key = entry.date;
+        const existing = activityMap.get(key) || { tasks: 0, moods: 0, habits: 0 };
+        activityMap.set(key, { ...existing, habits: existing.habits + 1 });
+      }
     });
 
     // Calculate activity levels
     const activityData: DayActivity[] = days.map((date) => {
       const key = formatDateKey(date);
-      const activity = activityMap.get(key) || { tasks: 0, moods: 0 };
-      const total = activity.tasks + activity.moods;
+      const activity = activityMap.get(key) || { tasks: 0, moods: 0, habits: 0 };
+      const total = activity.tasks + activity.moods + activity.habits;
 
       let level: ActivityLevel = 0;
       if (total >= 5) level = 4;
@@ -85,6 +104,7 @@ function DashboardPage() {
         date,
         tasksCompleted: activity.tasks,
         moodsLogged: activity.moods,
+        habitsCompleted: activity.habits,
         level,
       };
     });
@@ -98,17 +118,18 @@ function DashboardPage() {
     // Calculate stats
     const totalTasks = tasks?.filter((t) => t.completedAt).length ?? 0;
     const totalMoods = moods?.length ?? 0;
+    const totalHabits = habitEntries?.filter((e) => e.status === 'completed').length ?? 0;
     const activeDays = activityData.filter((d) => d.level > 0).length;
 
     return {
       activityData,
       weeks,
-      stats: { totalTasks, totalMoods, activeDays },
+      stats: { totalTasks, totalMoods, totalHabits, activeDays },
       startDate,
     };
-  }, [tasks, moods]);
+  }, [tasks, moods, habitEntries]);
 
-  if (tasksLoading || moodsLoading) {
+  if (tasksLoading || moodsLoading || habitsLoading || habitEntriesLoading) {
     return (
       <div className="flex justify-center">
         <Spinner />
@@ -123,11 +144,27 @@ function DashboardPage() {
         <h2 className="text-3xl font-bold">Dashboard</h2>
       </div>
 
-      <div className="grid grid-cols-3 gap-4">
+      <div className="grid grid-cols-2 sm:grid-cols-4 gap-4">
         <StatBox label="Tasks Done" value={stats.totalTasks} />
+        <StatBox label="Habits Done" value={stats.totalHabits} />
         <StatBox label="Moods Logged" value={stats.totalMoods} />
         <StatBox label="Active Days" value={stats.activeDays} />
       </div>
+
+      {habits && habits.length > 0 && (
+        <section className="space-y-3">
+          <h3 className="text-xl font-semibold">Habits This Week</h3>
+          <div className="space-y-3">
+            {habits.map((habit) => (
+              <HabitWeeklyView
+                key={habit.id}
+                habit={habit}
+                entries={habitEntries?.filter((e) => e.habitId === habit.id) ?? []}
+              />
+            ))}
+          </div>
+        </section>
+      )}
 
       <section className="space-y-3">
         <h3 className="text-xl font-semibold">Activity</h3>
@@ -184,6 +221,9 @@ function DashboardPage() {
                   {day.tasksCompleted > 0 && (
                     <span>{day.tasksCompleted} task{day.tasksCompleted !== 1 ? "s" : ""}</span>
                   )}
+                  {day.habitsCompleted > 0 && (
+                    <span>{day.habitsCompleted} habit{day.habitsCompleted !== 1 ? "s" : ""}</span>
+                  )}
                   {day.moodsLogged > 0 && (
                     <span>{day.moodsLogged} mood{day.moodsLogged !== 1 ? "s" : ""}</span>
                   )}
@@ -226,7 +266,7 @@ function HeatmapCell({ day }: { day: DayActivity }) {
         getLevelColor(day.level),
         isToday && "ring-2 ring-foreground ring-offset-1 ring-offset-background"
       )}
-      title={`${format(day.date, "MMM d, yyyy")}: ${day.tasksCompleted} tasks, ${day.moodsLogged} moods`}
+      title={`${format(day.date, "MMM d, yyyy")}: ${day.tasksCompleted} tasks, ${day.habitsCompleted} habits, ${day.moodsLogged} moods`}
     />
   );
 }
@@ -237,5 +277,94 @@ function StatBox({ label, value }: { label: string; value: number }) {
       <p className="text-2xl font-bold">{value}</p>
       <p className="text-sm text-muted-foreground">{label}</p>
     </div>
+  );
+}
+
+const DAY_MAP: Record<number, string> = {
+  0: "SU",
+  1: "MO",
+  2: "TU",
+  3: "WE",
+  4: "TH",
+  5: "FR",
+  6: "SA",
+};
+
+function isDateScheduled(date: Date, rrule: string): boolean {
+  const freqMatch = rrule.match(/FREQ=(\w+)/);
+  const frequency = freqMatch?.[1] || "DAILY";
+
+  if (frequency === "DAILY") {
+    return true;
+  }
+
+  if (frequency === "WEEKLY") {
+    const daysMatch = rrule.match(/BYDAY=([A-Z,]+)/);
+    const days = daysMatch ? daysMatch[1].split(",") : [];
+    const dayOfWeek = DAY_MAP[date.getDay()];
+    return days.includes(dayOfWeek);
+  }
+
+  // For MONTHLY, just check if it's the same day of month as today (simplified)
+  return true;
+}
+
+function HabitWeeklyView({ habit, entries }: { habit: Habit; entries: HabitEntry[] }) {
+  const today = new Date();
+  const weekDays = useMemo(() => {
+    return Array.from({ length: 7 }, (_, i) => {
+      const date = subDays(today, 6 - i);
+      const dateString = format(date, "yyyy-MM-dd");
+      const entry = entries.find((e) => e.date === dateString);
+      const isScheduled = isDateScheduled(date, habit.rrule);
+      return {
+        date,
+        dateString,
+        isCompleted: entry?.status === 'completed',
+        isScheduled,
+        isToday: isSameDay(date, today),
+      };
+    });
+  }, [entries, today, habit.rrule]);
+
+  const scheduledDays = weekDays.filter((d) => d.isScheduled);
+  const completedCount = scheduledDays.filter((d) => d.isCompleted).length;
+
+  return (
+    <Link
+      to="/habits/$id/stats"
+      params={{ id: habit.id }}
+      className="block p-4 bg-primary/10 rounded-2xl w-full text-left hover:bg-primary/15 transition-colors cursor-pointer"
+    >
+      <div className="flex items-center justify-between mb-3">
+        <h4 className="font-semibold">{habit.title}</h4>
+        <span className="text-sm text-muted-foreground">
+          {completedCount}/{scheduledDays.length} this week
+        </span>
+      </div>
+      <div className="flex gap-2 justify-between">
+        {weekDays.map((day) => (
+          <div key={day.dateString} className="flex flex-col items-center gap-1">
+            <span className="text-xs text-muted-foreground">
+              {format(day.date, "EEE")}
+            </span>
+            <div
+              className={cn(
+                "size-8 rounded-full flex items-center justify-center text-xs font-medium transition-colors",
+                !day.isScheduled && "opacity-30",
+                day.isCompleted
+                  ? "bg-success text-success-foreground"
+                  : day.isScheduled
+                    ? "bg-primary/20"
+                    : "bg-muted",
+                day.isToday && day.isScheduled && !day.isCompleted && "ring-2 ring-primary"
+              )}
+            >
+              {format(day.date, "d")}
+            </div>
+          </div>
+        ))}
+      </div>
+    </Link>
   );
 }

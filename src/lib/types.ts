@@ -32,3 +32,32 @@ export interface Mood {
 }
 
 export type MoodInput = Omit<Mood, "id" | "createdAt">;
+
+// -----------------------------------------------------------------------------
+// Habit Types
+// -----------------------------------------------------------------------------
+
+export interface Habit {
+  id: string;
+  title: string;
+  description: string;
+  rrule: string; // iCalendar RRULE format (RFC 5545)
+  createdAt: string;
+  updatedAt: string;
+  archivedAt: string | null;
+}
+
+export type HabitInput = Omit<Habit, "id" | "createdAt" | "updatedAt">;
+
+export type HabitEntryStatus = "completed" | "cancelled" | "skipped" | "not_scheduled";
+
+export interface HabitEntry {
+  id: string;
+  habitId: string;
+  date: string; // YYYY-MM-DD
+  status: HabitEntryStatus;
+  note: string;
+  createdAt: string;
+}
+
+export type HabitEntryInput = Omit<HabitEntry, "id" | "createdAt">;

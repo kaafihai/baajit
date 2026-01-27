@@ -16,8 +16,10 @@ import { Route as CalendarRouteImport } from './routes/calendar'
 import { Route as IndexRouteImport } from './routes/index'
 import { Route as TasksNewRouteImport } from './routes/tasks.new'
 import { Route as MoodTrackRouteImport } from './routes/mood.track'
+import { Route as HabitsNewRouteImport } from './routes/habits.new'
 import { Route as CalendarTimestampRouteImport } from './routes/calendar.$timestamp'
 import { Route as TasksIdEditRouteImport } from './routes/tasks.$id.edit'
+import { Route as HabitsIdStatsRouteImport } from './routes/habits.$id.stats'
 
 const SettingsRoute = SettingsRouteImport.update({
   id: '/settings',
@@ -54,6 +56,11 @@ const MoodTrackRoute = MoodTrackRouteImport.update({
   path: '/mood/track',
   getParentRoute: () => rootRouteImport,
 } as any)
+const HabitsNewRoute = HabitsNewRouteImport.update({
+  id: '/habits/new',
+  path: '/habits/new',
+  getParentRoute: () => rootRouteImport,
+} as any)
 const CalendarTimestampRoute = CalendarTimestampRouteImport.update({
   id: '/$timestamp',
   path: '/$timestamp',
@@ -64,6 +71,11 @@ const TasksIdEditRoute = TasksIdEditRouteImport.update({
   path: '/tasks/$id/edit',
   getParentRoute: () => rootRouteImport,
 } as any)
+const HabitsIdStatsRoute = HabitsIdStatsRouteImport.update({
+  id: '/habits/$id/stats',
+  path: '/habits/$id/stats',
+  getParentRoute: () => rootRouteImport,
+} as any)
 
 export interface FileRoutesByFullPath {
   '/': typeof IndexRoute
@@ -72,8 +84,10 @@ export interface FileRoutesByFullPath {
   '/profile': typeof ProfileRoute
   '/settings': typeof SettingsRoute
   '/calendar/$timestamp': typeof CalendarTimestampRoute
+  '/habits/new': typeof HabitsNewRoute
   '/mood/track': typeof MoodTrackRoute
   '/tasks/new': typeof TasksNewRoute
+  '/habits/$id/stats': typeof HabitsIdStatsRoute
   '/tasks/$id/edit': typeof TasksIdEditRoute
 }
 export interface FileRoutesByTo {
@@ -83,8 +97,10 @@ export interface FileRoutesByTo {
   '/profile': typeof ProfileRoute
   '/settings': typeof SettingsRoute
   '/calendar/$timestamp': typeof CalendarTimestampRoute
+  '/habits/new': typeof HabitsNewRoute
   '/mood/track': typeof MoodTrackRoute
   '/tasks/new': typeof TasksNewRoute
+  '/habits/$id/stats': typeof HabitsIdStatsRoute
   '/tasks/$id/edit': typeof TasksIdEditRoute
 }
 export interface FileRoutesById {
@@ -95,8 +111,10 @@ export interface FileRoutesById {
   '/profile': typeof ProfileRoute
   '/settings': typeof SettingsRoute
   '/calendar/$timestamp': typeof CalendarTimestampRoute
+  '/habits/new': typeof HabitsNewRoute
   '/mood/track': typeof MoodTrackRoute
   '/tasks/new': typeof TasksNewRoute
+  '/habits/$id/stats': typeof HabitsIdStatsRoute
   '/tasks/$id/edit': typeof TasksIdEditRoute
 }
 export interface FileRouteTypes {
@@ -108,8 +126,10 @@ export interface FileRouteTypes {
     | '/profile'
     | '/settings'
     | '/calendar/$timestamp'
+    | '/habits/new'
     | '/mood/track'
     | '/tasks/new'
+    | '/habits/$id/stats'
     | '/tasks/$id/edit'
   fileRoutesByTo: FileRoutesByTo
   to:
@@ -119,8 +139,10 @@ export interface FileRouteTypes {
     | '/profile'
     | '/settings'
     | '/calendar/$timestamp'
+    | '/habits/new'
     | '/mood/track'
     | '/tasks/new'
+    | '/habits/$id/stats'
     | '/tasks/$id/edit'
   id:
     | '__root__'
@@ -130,8 +152,10 @@ export interface FileRouteTypes {
     | '/profile'
     | '/settings'
     | '/calendar/$timestamp'
+    | '/habits/new'
     | '/mood/track'
     | '/tasks/new'
+    | '/habits/$id/stats'
     | '/tasks/$id/edit'
   fileRoutesById: FileRoutesById
 }
@@ -141,8 +165,10 @@ export interface RootRouteChildren {
   DashboardRoute: typeof DashboardRoute
   ProfileRoute: typeof ProfileRoute
   SettingsRoute: typeof SettingsRoute
+  HabitsNewRoute: typeof HabitsNewRoute
   MoodTrackRoute: typeof MoodTrackRoute
   TasksNewRoute: typeof TasksNewRoute
+  HabitsIdStatsRoute: typeof HabitsIdStatsRoute
   TasksIdEditRoute: typeof TasksIdEditRoute
 }
 
@@ -197,6 +223,13 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof MoodTrackRouteImport
       parentRoute: typeof rootRouteImport
     }
+    '/habits/new': {
+      id: '/habits/new'
+      path: '/habits/new'
+      fullPath: '/habits/new'
+      preLoaderRoute: typeof HabitsNewRouteImport
+      parentRoute: typeof rootRouteImport
+    }
     '/calendar/$timestamp': {
       id: '/calendar/$timestamp'
       path: '/$timestamp'
@@ -209,6 +242,13 @@ declare module '@tanstack/react-router' {
       path: '/tasks/$id/edit'
       fullPath: '/tasks/$id/edit'
       preLoaderRoute: typeof TasksIdEditRouteImport
+      parentRoute: typeof rootRouteImport
+    }
+    '/habits/$id/stats': {
+      id: '/habits/$id/stats'
+      path: '/habits/$id/stats'
+      fullPath: '/habits/$id/stats'
+      preLoaderRoute: typeof HabitsIdStatsRouteImport
       parentRoute: typeof rootRouteImport
     }
   }
@@ -232,8 +272,10 @@ const rootRouteChildren: RootRouteChildren = {
   DashboardRoute: DashboardRoute,
   ProfileRoute: ProfileRoute,
   SettingsRoute: SettingsRoute,
+  HabitsNewRoute: HabitsNewRoute,
   MoodTrackRoute: MoodTrackRoute,
   TasksNewRoute: TasksNewRoute,
+  HabitsIdStatsRoute: HabitsIdStatsRoute,
   TasksIdEditRoute: TasksIdEditRoute,
 }
 export const routeTree = rootRouteImport

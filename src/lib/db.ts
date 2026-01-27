@@ -1,7 +1,7 @@
 import Database from "@tauri-apps/plugin-sql";
 import { appDataDir, join, resolveResource } from "@tauri-apps/api/path";
 import { readTextFile } from "@tauri-apps/plugin-fs";
-import type { Task, Mood } from "./types";
+import type { Task, Mood, Habit, HabitEntry } from "./types";
 
 let db: Database | null = null;
 
@@ -19,7 +19,7 @@ export async function initDatabase(): Promise<Database> {
   // Load and run migrations
   const migrations = [
     "migrations/001_initial.sql",
-    "migrations/002_remove_moods_date_unique.sql",
+    "migrations/002_habits.sql",
   ];
 
   for (const migration of migrations) {
@@ -298,4 +298,239 @@ export async function deleteMood(mood: Mood): Promise<Mood> {
   await database.execute(`DELETE FROM moods WHERE id = $1`, [mood.id]);
 
   return mood;
+}
+
+// =============================================================================
+// HABIT OPERATIONS
+// =============================================================================
+
+export async function getHabits(includeArchived: boolean = false): Promise<Habit[]> {
+  const database = await getDb();
+
+  const query = includeArchived
+    ? `SELECT * FROM habits ORDER BY created_at DESC`
+    : `SELECT * FROM habits WHERE archived_at IS NULL ORDER BY created_at DESC`;
+
+  const rows = await database.select<
+    Array<{
+      id: string;
+      title: string;
+      description: string;
+      rrule: string;
+      created_at: string;
+      updated_at: string;
+      archived_at: string | null;
+    }>
+  >(query);
+
+  return rows.map((row) => ({
+    id: row.id,
+    title: row.title,
+    description: row.description,
+    rrule: row.rrule,
+    createdAt: row.created_at,
+    updatedAt: row.updated_at,
+    archivedAt: row.archived_at,
+  }));
+}
+
+export async function getHabitById(id: string): Promise<Habit | null> {
+  const database = await getDb();
+
+  const rows = await database.select<
+    Array<{
+      id: string;
+      title: string;
+      description: string;
+      rrule: string;
+      created_at: string;
+      updated_at: string;
+      archived_at: string | null;
+    }>
+  >(`SELECT * FROM habits WHERE id = $1`, [id]);
+
+  if (rows.length === 0) return null;
+
+  const row = rows[0];
+  return {
+    id: row.id,
+    title: row.title,
+    description: row.description,
+    rrule: row.rrule,
+    createdAt: row.created_at,
+    updatedAt: row.updated_at,
+    archivedAt: row.archived_at,
+  };
+}
+
+export async function createHabit(habit: Habit): Promise<Habit> {
+  const database = await getDb();
+
+  await database.execute(
+    `INSERT INTO habits (id, title, description, rrule, created_at, updated_at, archived_at)
+     VALUES ($1, $2, $3, $4, $5, $6, $7)`,
+    [habit.id, habit.title, habit.description, habit.rrule, habit.createdAt, habit.updatedAt, habit.archivedAt]
+  );
+
+  return habit;
+}
+
+export async function updateHabit(habit: Habit): Promise<Habit> {
+  const database = await getDb();
+
+  const now = new Date().toISOString();
+
+  await database.execute(
+    `UPDATE habits SET title = $1, description = $2, rrule = $3, archived_at = $4, updated_at = $5 WHERE id = $6`,
+    [habit.title, habit.description, habit.rrule, habit.archivedAt, now, habit.id]
+  );
+
+  const updatedHabit = await getHabitById(habit.id);
+  if (!updatedHabit) {
+    throw new Error(`Habit with id ${habit.id} not found`);
+  }
+
+  return updatedHabit;
+}
+
+export async function deleteHabit(habit: Habit): Promise<Habit> {
+  const database = await getDb();
+
+  await database.execute(`DELETE FROM habits WHERE id = $1`, [habit.id]);
+
+  return habit;
+}
+
+// =============================================================================
+// HABIT ENTRY OPERATIONS
+// =============================================================================
+
+export async function getHabitEntries(habitId: string): Promise<HabitEntry[]> {
+  const database = await getDb();
+
+  const rows = await database.select<
+    Array<{
+      id: string;
+      habit_id: string;
+      date: string;
+      status: string;
+      note: string;
+      created_at: string;
+    }>
+  >(`SELECT * FROM habit_entries WHERE habit_id = $1 ORDER BY date DESC`, [habitId]);
+
+  return rows.map((row) => ({
+    id: row.id,
+    habitId: row.habit_id,
+    date: row.date,
+    status: row.status as HabitEntry["status"],
+    note: row.note,
+    createdAt: row.created_at,
+  }));
+}
+
+export async function getHabitEntriesByDate(date: string): Promise<HabitEntry[]> {
+  const database = await getDb();
+
+  const rows = await database.select<
+    Array<{
+      id: string;
+      habit_id: string;
+      date: string;
+      status: string;
+      note: string;
+      created_at: string;
+    }>
+  >(`SELECT * FROM habit_entries WHERE date = $1`, [date]);
+
+  return rows.map((row) => ({
+    id: row.id,
+    habitId: row.habit_id,
+    date: row.date,
+    status: row.status as HabitEntry["status"],
+    note: row.note,
+    createdAt: row.created_at,
+  }));
+}
+
+export async function getAllHabitEntries(): Promise<HabitEntry[]> {
+  const database = await getDb();
+
+  const rows = await database.select<
+    Array<{
+      id: string;
+      habit_id: string;
+      date: string;
+      status: string;
+      note: string;
+      created_at: string;
+    }>
+  >(`SELECT * FROM habit_entries ORDER BY date DESC`);
+
+  return rows.map((row) => ({
+    id: row.id,
+    habitId: row.habit_id,
+    date: row.date,
+    status: row.status as HabitEntry["status"],
+    note: row.note,
+    createdAt: row.created_at,
+  }));
+}
+
+export async function getHabitEntryByHabitAndDate(habitId: string, date: string): Promise<HabitEntry | null> {
+  const database = await getDb();
+
+  const rows = await database.select<
+    Array<{
+      id: string;
+      habit_id: string;
+      date: string;
+      status: string;
+      note: string;
+      created_at: string;
+    }>
+  >(`SELECT * FROM habit_entries WHERE habit_id = $1 AND date = $2`, [habitId, date]);
+
+  if (rows.length === 0) return null;
+
+  const row = rows[0];
+  return {
+    id: row.id,
+    habitId: row.habit_id,
+    date: row.date,
+    status: row.status as HabitEntry["status"],
+    note: row.note,
+    createdAt: row.created_at,
+  };
+}
+
+export async function createHabitEntry(entry: HabitEntry): Promise<HabitEntry> {
+  const database = await getDb();
+
+  await database.execute(
+    `INSERT INTO habit_entries (id, habit_id, date, status, note, created_at)
+     VALUES ($1, $2, $3, $4, $5, $6)`,
+    [entry.id, entry.habitId, entry.date, entry.status, entry.note, entry.createdAt]
+  );
+
+  return entry;
+}
+
+export async function updateHabitEntry(entry: HabitEntry): Promise<HabitEntry> {
+  const database = await getDb();
+
+  await database.execute(
+    `UPDATE habit_entries SET status = $1, note = $2 WHERE id = $3`,
+    [entry.status, entry.note, entry.id]
+  );
+
+  return entry;
+}
+
+export async function deleteHabitEntry(entry: HabitEntry): Promise<HabitEntry> {
+  const database = await getDb();
+
+  await database.execute(`DELETE FROM habit_entries WHERE id = $1`, [entry.id]);
+
+  return entry;
 }
