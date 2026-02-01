@@ -209,16 +209,16 @@ function TasksComponent() {
   const { data: habits = [], isLoading: isHabitsLoading } = useHabits();
   const todayDate = getTodayDateString();
   const { data: todayEntries = [] } = useHabitEntriesByDate(todayDate);
-  const { data: todaysMood, isLoading: isMoodLoading } = useTodaysMood();
+  const { data: todaysMood, isLoading: isMoodLoading, isFetching: isMoodFetching } = useTodaysMood();
   const [filter, setFilter] = useState<"active" | "completed" | "all">("all");
   const toggleTask = useToggleTask();
   const toggleHabitEntry = useToggleHabitEntry();
 
   useEffect(() => {
-    if (!isMoodLoading && todaysMood === null) {
+    if (!isMoodLoading && !isMoodFetching && todaysMood === null) {
       navigate({ to: "/mood/track" });
     }
-  }, [todaysMood, isMoodLoading, navigate]);
+  }, [todaysMood, isMoodLoading, isMoodFetching, navigate]);
 
   const filteredTasks = tasks.filter((task) => {
     if (filter === "active") return !task.completedAt;

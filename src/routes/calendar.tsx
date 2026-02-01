@@ -160,16 +160,6 @@ function CalendarPage() {
 
   const canGoNext = weekOffset > 0;
 
-  const getMoodTrend = () => {
-    if (!stats.avgMood) return null;
-    if (stats.avgMood >= 4) return { label: "Great", color: "text-green-600" };
-    if (stats.avgMood >= 3) return { label: "Good", color: "text-blue-600" };
-    if (stats.avgMood >= 2) return { label: "Mixed", color: "text-amber-600" };
-    return { label: "Challenging", color: "text-orange-600" };
-  };
-
-  const moodTrend = getMoodTrend();
-
   return (
     <div className="mx-auto space-y-6">
       <div className="flex items-center justify-between">
@@ -185,10 +175,10 @@ function CalendarPage() {
       </div>
 
       {/* Stats Section */}
-      <div className="grid grid-cols-3 gap-3">
+      <div className="grid grid-cols-2 gap-3">
         <div className="p-4 bg-primary/10 rounded-3xl space-y-1">
           <div className="flex items-center gap-2">
-            <CalendarBlankIcon className="size-5 text-amber-600" />
+            <CalendarBlankIcon className="size-5" />
             <span className="text-sm font-medium">Upcoming</span>
           </div>
           <p className="text-2xl font-bold">{stats.dueTasks}</p>
@@ -216,19 +206,6 @@ function CalendarPage() {
           <p className="text-2xl font-bold">{stats.completedTasks}</p>
           <p className="text-xs">tasks done</p>
         </div>
-
-        {moodTrend && (
-          <div className="p-4 bg-primary/10 rounded-3xl space-y-1">
-            <div className="flex items-center gap-2">
-              <TrendUpIcon className="size-5 text-primary" />
-              <span className="text-sm font-medium">Mood Trend</span>
-            </div>
-            <p className={cn("text-2xl font-bold", moodTrend.color)}>
-              {moodTrend.label}
-            </p>
-            <p className="text-xs">{stats.moodCount} entries</p>
-          </div>
-        )}
       </div>
 
       <div className="flex items-center justify-between">
