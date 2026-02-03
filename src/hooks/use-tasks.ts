@@ -5,6 +5,7 @@ import {
   getTasks,
   getTasksByDueDate,
   getTasksByCompletedAt,
+  getTasksByCancelledAt,
   createTask,
   updateTask,
   deleteTask,
@@ -50,6 +51,16 @@ export function useTasksByCompletedAt(date: Date) {
     queryFn: async () => {
       await ensureDbInitialized();
       return getTasksByCompletedAt(date);
+    },
+  });
+}
+
+export function useTasksByCancelledAt(date: Date) {
+  return useQuery({
+    queryKey: [...TASKS_BY_DATE_QUERY_KEY, 'cancelled', date.toISOString()],
+    queryFn: async () => {
+      await ensureDbInitialized();
+      return getTasksByCancelledAt(date);
     },
   });
 }

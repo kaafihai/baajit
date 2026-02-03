@@ -9,7 +9,7 @@ import {
   InputGroupButton,
   InputGroupInput,
 } from "@/components/ui/input-group";
-import { CaretDownIcon, XIcon, CheckIcon } from "@phosphor-icons/react";
+import { ChevronDownIcon, CloseIcon, CheckIcon } from "@/lib/icons";
 
 const Combobox = ComboboxPrimitive.Root;
 
@@ -29,7 +29,7 @@ function ComboboxTrigger({
       {...props}
     >
       {children}
-      <CaretDownIcon className="text-muted size-4 pointer-events-none" />
+      <ChevronDownIcon className="text-muted size-4 pointer-events-none" />
     </ComboboxPrimitive.Trigger>
   );
 }
@@ -42,7 +42,7 @@ function ComboboxClear({ className, ...props }: ComboboxPrimitive.Clear.Props) {
       className={cn(className)}
       {...props}
     >
-      <XIcon className="pointer-events-none" />
+      <CloseIcon className="pointer-events-none" />
     </ComboboxPrimitive.Clear>
   );
 }
@@ -254,7 +254,7 @@ function ComboboxChip({
           className="-ml-1 opacity-50 hover:opacity-100"
           data-slot="combobox-chip-remove"
         >
-          <XIcon className="pointer-events-none" />
+          <CloseIcon className="pointer-events-none" />
         </ComboboxPrimitive.ChipRemove>
       )}
     </ComboboxPrimitive.Chip>

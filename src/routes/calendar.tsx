@@ -1,11 +1,10 @@
 import {
   CalendarIcon,
-  CheckCircleIcon,
-  CaretLeftIcon,
-  CaretRightIcon,
-  CalendarBlankIcon,
-  TrendUpIcon,
-} from "@phosphor-icons/react";
+  CompletedIcon,
+  ChevronLeftIcon,
+  ChevronRightIcon,
+  DateIcon,
+} from "@/lib/icons";
 import { createFileRoute, useNavigate, Outlet } from "@tanstack/react-router";
 import { useTasks } from "@/hooks/use-tasks";
 import { useMoods } from "@/hooks/use-moods";
@@ -162,11 +161,8 @@ function CalendarPage() {
 
   return (
     <div className="mx-auto space-y-6">
-      <div className="flex items-center justify-between">
-        <div className="flex items-center gap-3 min-h-12">
-          <CalendarIcon className="size-8" />
-          <h2 className="text-3xl font-bold">Calendar</h2>
-        </div>
+      <div className="flex items-center justify-between min-h-12">
+        <h2 className="text-3xl font-bold">Calendar</h2>
         {weekOffset > 0 && (
           <Button variant="default" onClick={goToCurrentWeek}>
             Today
@@ -178,7 +174,7 @@ function CalendarPage() {
       <div className="grid grid-cols-2 gap-3">
         <div className="p-4 bg-primary/10 rounded-3xl space-y-1">
           <div className="flex items-center gap-2">
-            <CalendarBlankIcon className="size-5" />
+            <DateIcon className="size-5" />
             <span className="text-sm font-medium">Upcoming</span>
           </div>
           <p className="text-2xl font-bold">{stats.dueTasks}</p>
@@ -188,7 +184,7 @@ function CalendarPage() {
         {stats.overdueTasks > 0 && (
           <div className="p-4 bg-destructive/10 rounded-3xl space-y-1">
             <div className="flex items-center gap-2">
-              <CalendarBlankIcon className="size-5 text-destructive" />
+              <DateIcon className="size-5 text-destructive" />
               <span className="text-sm font-medium">Overdue</span>
             </div>
             <p className="text-2xl font-bold text-destructive">
@@ -200,7 +196,7 @@ function CalendarPage() {
 
         <div className="p-4 bg-success/10 rounded-3xl space-y-1">
           <div className="flex items-center gap-2">
-            <CheckCircleIcon className="size-5 text-success" />
+            <CompletedIcon className="size-5 text-success" />
             <span className="text-sm font-medium">Completed</span>
           </div>
           <p className="text-2xl font-bold">{stats.completedTasks}</p>
@@ -210,7 +206,7 @@ function CalendarPage() {
 
       <div className="flex items-center justify-between">
         <Button variant="ghost" size="icon" onClick={goToPreviousWeeks}>
-          <CaretLeftIcon className="size-4" />
+          <ChevronLeftIcon className="size-4" />
         </Button>
         <span className="text-sm font-medium">{weekLabel}</span>
         <Button
@@ -219,7 +215,7 @@ function CalendarPage() {
           onClick={goToNextWeeks}
           disabled={!canGoNext}
         >
-          <CaretRightIcon className="size-4" />
+          <ChevronRightIcon className="size-4" />
         </Button>
       </div>
 
@@ -298,7 +294,7 @@ function WeekSection({
                   {MoodIcon && <MoodIcon className="size-5 text-primary" />}
                   {completedTasks.length > 0 && (
                     <div className="flex items-center gap-0.5 text-success">
-                      <CheckCircleIcon className="size-4" />
+                      <CompletedIcon className="size-4" />
                       <span className="text-xs font-medium">
                         {completedTasks.length}
                       </span>
@@ -306,7 +302,7 @@ function WeekSection({
                   )}
                   {overdueTasks.length > 0 && (
                     <div className="flex items-center gap-0.5 text-destructive">
-                      <CalendarBlankIcon className="size-4" />
+                      <DateIcon className="size-4" />
                       <span className="text-xs font-medium">
                         {overdueTasks.length}
                       </span>
@@ -314,7 +310,7 @@ function WeekSection({
                   )}
                   {dueTasks.length > 0 && (
                     <div className="flex items-center gap-0.5">
-                      <CalendarBlankIcon className="size-4" />
+                      <DateIcon className="size-4" />
                       <span className="text-xs font-medium">
                         {dueTasks.length}
                       </span>

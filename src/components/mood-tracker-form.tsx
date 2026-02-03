@@ -8,12 +8,12 @@ import { useNavigate } from "@tanstack/react-router";
 import { toast } from "sonner";
 import {
   type Icon,
-  SmileyIcon,
-  SmileyMehIcon,
-  SmileySadIcon,
-  SmileyWinkIcon,
-  SmileyXEyesIcon,
-} from "@phosphor-icons/react";
+  MoodGoodIcon,
+  MoodOkayIcon,
+  MoodBadIcon,
+  MoodGreatIcon,
+  MoodTerribleIcon,
+} from "@/lib/icons";
 import { cn } from "@/lib/utils";
 import { DialogFooter } from "./ui/dialog";
 
@@ -29,27 +29,27 @@ export const MOOD_OPTIONS: Array<{
   {
     value: "terrible",
     label: "Terrible",
-    icon: SmileyXEyesIcon,
+    icon: MoodTerribleIcon,
   },
   {
     value: "bad",
     label: "Bad",
-    icon: SmileySadIcon,
+    icon: MoodBadIcon,
   },
   {
     value: "okay",
     label: "Okay",
-    icon: SmileyMehIcon,
+    icon: MoodOkayIcon,
   },
   {
     value: "good",
     label: "Good",
-    icon: SmileyIcon,
+    icon: MoodGoodIcon,
   },
   {
     value: "great",
     label: "Great",
-    icon: SmileyWinkIcon,
+    icon: MoodGreatIcon,
   },
 ];
 

@@ -135,6 +135,37 @@ export async function getTasksByCompletedAt(date: Date, limit: number = 1000): P
   }));
 }
 
+export async function getTasksByCancelledAt(date: Date, limit: number = 1000): Promise<Task[]> {
+  const database = await getDb();
+
+  const startOfDay = new Date(date.getFullYear(), date.getMonth(), date.getDate());
+  const endOfDay = new Date(date.getFullYear(), date.getMonth(), date.getDate() + 1);
+
+  const rows = await database.select<
+    Array<{
+      id: string;
+      title: string;
+      description: string;
+      due_date: string | null;
+      created_at: string;
+      updated_at: string;
+      completed_at: string | null;
+      cancelled_at: string | null;
+    }>
+  >(`SELECT * FROM tasks WHERE cancelled_at >= $1 AND cancelled_at < $2 LIMIT $3`, [startOfDay.toISOString(), endOfDay.toISOString(), limit]);
+
+  return rows.map((row) => ({
+    id: row.id,
+    title: row.title,
+    description: row.description,
+    dueDate: row.due_date,
+    createdAt: row.created_at,
+    updatedAt: row.updated_at,
+    completedAt: row.completed_at,
+    cancelledAt: row.cancelled_at,
+  }));
+}
+
 export async function getTaskById(id: string): Promise<Task | null> {
   const database = await getDb();
 

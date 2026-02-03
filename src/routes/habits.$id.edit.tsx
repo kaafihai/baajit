@@ -21,7 +21,7 @@ import {
 } from "@/hooks/use-habits";
 import { Spinner } from "@/components/ui/spinner";
 import { toast } from "sonner";
-import { PauseIcon, XCircleIcon } from "@phosphor-icons/react";
+import { PauseIcon } from "@/lib/icons";
 
 export const Route = createFileRoute("/habits/$id/edit")({
   component: EditHabitComponent,

@@ -4,12 +4,12 @@ import { useMoods } from "@/hooks/use-moods";
 import { useHabits, useAllHabitEntries } from "@/hooks/use-habits";
 import { Spinner } from "@/components/ui/spinner";
 import {
-  ChartBarIcon,
-  ChartLineUpIcon,
-  CheckCircleIcon,
-  CircleDashedIcon,
-  XCircleIcon,
-} from "@phosphor-icons/react";
+  StatsIcon,
+  TrendLineIcon,
+  CompletedIcon,
+  PendingIcon,
+  CancelIcon,
+} from "@/lib/icons";
 import { useMemo } from "react";
 import { cn } from "@/lib/utils";
 import type { Habit, HabitEntry, MoodLevel } from "@/lib/types";
@@ -187,19 +187,18 @@ function DashboardPage() {
   return (
     <div className="mx-auto space-y-6">
       <div className="flex items-center gap-3">
-        <ChartBarIcon className="size-8" />
-        <h2 className="text-3xl font-bold">Dashboard</h2>
+        <h2>Dashboard</h2>
       </div>
 
       <div className="grid grid-cols-3 gap-4">
         <StatCard
-          icon={<CheckCircleIcon className="size-6" />}
+          icon={<CompletedIcon className="size-6" />}
           label="Tasks Completed"
           value={completedTasks.length}
           sublabel={`${activeTasks.length} active`}
         />
         <StatCard
-          icon={<ChartLineUpIcon className="size-6" />}
+          icon={<TrendLineIcon className="size-6" />}
           label="Moods Logged"
           value={moods?.length ?? 0}
           sublabel="total entries"
@@ -360,7 +359,7 @@ function HeatmapCell({ day }: { day: DayActivity }) {
   return (
     <div
       className={cn(
-        "size-4 rounded-sm transition-colors",
+        "size-5 rounded-sm transition-colors",
         getLevelColor(day.level),
         isToday &&
           "ring-2 ring-foreground ring-offset-1 ring-offset-background",
@@ -451,11 +450,11 @@ function HabitWeeklyView({
               )}
             >
               {day.isCompleted ? (
-                <CheckCircleIcon className="size-8" />
+                <CompletedIcon className="size-8" />
               ) : day.isScheduled ? (
-                <XCircleIcon className="size-8" />
+                <CancelIcon className="size-8" />
               ) : (
-                <CircleDashedIcon className="size-8" />
+                <PendingIcon className="size-8" />
               )}
             </div>
           </div>

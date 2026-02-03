@@ -15,7 +15,7 @@ import { DatePicker } from "@/components/ui/date-picker";
 import { useTasks, useUpdateTask, useDeleteTask } from "@/hooks/use-tasks";
 import { Spinner } from "@/components/ui/spinner";
 import { toast } from "sonner";
-import { TrashIcon } from "@phosphor-icons/react";
+import { DeleteIcon } from "@/lib/icons";
 
 export const Route = createFileRoute("/tasks/$id/edit")({
   component: EditTaskComponent,
@@ -143,18 +143,18 @@ function EditTaskComponent() {
             />
           </div>
 
-          <DialogFooter className="flex justify-between sm:justify-between">
+          <DialogFooter>
             <Button
               type="button"
-              variant="ghost"
-              className="text-destructive hover:text-destructive hover:bg-destructive/10"
+              variant="destructive"
               disabled={deleteTask.isPending}
               onClick={handleDelete}
             >
-              <TrashIcon />
+              <DeleteIcon />
               Delete
             </Button>
             <Button
+              className={"grow"}
               type="submit"
               disabled={!formData.title.trim() || updateTask.isPending}
             >

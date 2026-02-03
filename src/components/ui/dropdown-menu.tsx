@@ -2,7 +2,7 @@ import * as React from "react";
 import { Menu as MenuPrimitive } from "@base-ui/react/menu";
 
 import { cn } from "@/lib/utils";
-import { CaretRightIcon, CheckIcon } from "@phosphor-icons/react";
+import { ChevronRightIcon, CheckIcon } from "@/lib/icons";
 import { createLink } from "@tanstack/react-router";
 
 function DropdownMenu({ ...props }: MenuPrimitive.Root.Props) {
@@ -120,7 +120,7 @@ function DropdownMenuSubTrigger({
       {...props}
     >
       {children}
-      <CaretRightIcon className="ml-auto" />
+      <ChevronRightIcon className="ml-auto" />
     </MenuPrimitive.SubmenuTrigger>
   );
 }

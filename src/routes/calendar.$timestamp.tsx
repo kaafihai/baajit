@@ -6,18 +6,19 @@ import {
   DialogTitle,
 } from "@/components/ui/dialog";
 import { useMoodByDate } from "@/hooks/use-moods";
-import { useTasksByCompletedAt, useTasksByDueDate } from "@/hooks/use-tasks";
+import { useTasksByCompletedAt, useTasksByDueDate, useTasksByCancelledAt } from "@/hooks/use-tasks";
 import { Spinner } from "@/components/ui/spinner";
 import { format } from "date-fns";
 import {
-  SmileyIcon,
-  SmileySadIcon,
-  SmileyMehIcon,
-  SmileyXEyesIcon,
-  SmileyWinkIcon,
-  CheckCircleIcon,
-  CalendarBlankIcon,
-} from "@phosphor-icons/react";
+  MoodGoodIcon,
+  MoodBadIcon,
+  MoodOkayIcon,
+  MoodTerribleIcon,
+  MoodGreatIcon,
+  CompletedIcon,
+  DateIcon,
+  CancelIcon,
+} from "@/lib/icons";
 import type { Task } from "@/lib/types";
 
 export const Route = createFileRoute("/calendar/$timestamp")({
@@ -25,11 +26,11 @@ export const Route = createFileRoute("/calendar/$timestamp")({
 });
 
 const moodIcons = {
-  great: SmileyWinkIcon,
-  good: SmileyIcon,
-  okay: SmileyMehIcon,
-  bad: SmileySadIcon,
-  terrible: SmileyXEyesIcon,
+  great: MoodGreatIcon,
+  good: MoodGoodIcon,
+  okay: MoodOkayIcon,
+  bad: MoodBadIcon,
+  terrible: MoodTerribleIcon,
 };
 
 const moodLabels = {
@@ -50,9 +51,11 @@ function CalendarDayComponent() {
     useTasksByCompletedAt(date);
   const { data: dueTasks = [], isLoading: isDueTasksLoading } =
     useTasksByDueDate(date);
+  const { data: cancelledTasks = [], isLoading: isCancelledTasksLoading } =
+    useTasksByCancelledAt(date);
 
   const completedTasks = tasks.filter((task: Task) => task.completedAt);
-  const isLoading = isMoodLoading || isTasksLoading || isDueTasksLoading;
+  const isLoading = isMoodLoading || isTasksLoading || isDueTasksLoading || isCancelledTasksLoading;
 
   return (
     <Dialog
@@ -105,7 +108,7 @@ function CalendarDayComponent() {
                       key={task.id}
                       className="flex items-start gap-3 p-3 rounded-2xl"
                     >
-                      <CalendarBlankIcon
+                      <DateIcon
                         className="size-5 mt-0.5"
                         weight="fill"
                       />
@@ -116,8 +119,14 @@ function CalendarDayComponent() {
                         )}
                         {task.completedAt && (
                           <p className="text-xs text-success mt-1 flex items-center gap-1">
-                            <CheckCircleIcon className="size-3" />
+                            <CompletedIcon className="size-3" />
                             Completed
+                          </p>
+                        )}
+                        {task.cancelledAt && (
+                          <p className="text-xs text-destructive mt-1 flex items-center gap-1">
+                            <CancelIcon className="size-3" />
+                            Cancelled
                           </p>
                         )}
                       </div>
@@ -139,7 +148,7 @@ function CalendarDayComponent() {
                       key={task.id}
                       className="flex items-start gap-3 p-3 bg-muted/50 rounded-2xl"
                     >
-                      <CheckCircleIcon
+                      <CompletedIcon
                         className="size-5 mt-0.5"
                         weight="fill"
                       />
@@ -156,6 +165,34 @@ function CalendarDayComponent() {
                 <p className="text-sm italic">No tasks completed on this day</p>
               )}
             </div>
+
+            {/* Cancelled Tasks Section */}
+            {cancelledTasks.length > 0 && (
+              <div className="space-y-3">
+                <h3 className="text-sm font-medium">
+                  Cancelled Tasks ({cancelledTasks.length})
+                </h3>
+                <div className="space-y-2">
+                  {cancelledTasks.map((task: Task) => (
+                    <div
+                      key={task.id}
+                      className="flex items-start gap-3 p-3 bg-muted/50 rounded-2xl opacity-70"
+                    >
+                      <CancelIcon
+                        className="size-5 mt-0.5 text-destructive"
+                        weight="fill"
+                      />
+                      <div className="flex-1 min-w-0">
+                        <p className="font-medium">{task.title}</p>
+                        {task.description && (
+                          <p className="text-sm mt-1">{task.description}</p>
+                        )}
+                      </div>
+                    </div>
+                  ))}
+                </div>
+              </div>
+            )}
 
             {/* All Tasks Section */}
             {tasks.length > completedTasks.length && (

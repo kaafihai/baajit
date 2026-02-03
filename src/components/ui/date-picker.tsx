@@ -2,7 +2,7 @@ import { useState } from "react";
 import { Dialog, DialogContent, DialogTrigger } from "./dialog";
 import { Calendar } from "./calendar";
 import { Button } from "./button";
-import { CalendarBlankIcon, XIcon } from "@phosphor-icons/react";
+import { DateIcon, CloseIcon } from "@/lib/icons";
 import { format } from "date-fns";
 
 interface DatePickerProps {
@@ -25,7 +25,7 @@ export function DatePicker({
           render={<Button className="bg-input/10" variant="ghost" />}
           className="flex-1 px-2 justify-start text-left font-normal"
         >
-          <CalendarBlankIcon data-icon="inline-start" className="size-4" />
+          <DateIcon data-icon="inline-start" className="size-4" />
           {value ? (
             format(new Date(value), "PPP")
           ) : (
@@ -55,12 +55,12 @@ export function DatePicker({
       </Dialog>
       {value && (
         <Button
-          variant="ghost"
+          variant="destructive"
           size="icon"
           onClick={() => onChange(null)}
           className=""
         >
-          <XIcon className="size-4" />
+          <CloseIcon className="size-4" />
         </Button>
       )}
     </div>

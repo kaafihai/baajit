@@ -1,7 +1,6 @@
 import { Outlet, createRootRoute, Link } from "@tanstack/react-router";
 import { TanStackRouterDevtools } from "@tanstack/react-router-devtools";
 import { BottomNavigation } from "@/components/bottom-navigation";
-import shardIcon from "/icon.svg";
 
 export const Route = createRootRoute({
   component: RootComponent,
@@ -16,9 +15,8 @@ function RootComponent() {
             <div className="flex items-center justify-between">
               <Link
                 to="/"
-                className="flex items-center gap-2 text-2xl font-black hover:opacity-80"
+                className="flex items-center gap-2 px-2 text-2xl font-black hover:opacity-80"
               >
-                <img src={shardIcon} className="size-8" />
                 shard
               </Link>
             </div>

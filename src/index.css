@@ -13,6 +13,11 @@
     html {
         @apply font-sans;
     }
+
+    h2 {
+        @apply text-3xl font-bold;
+    }
+
     input,
     textarea,
     [contenteditable="true"] {

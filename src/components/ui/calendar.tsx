@@ -14,7 +14,7 @@ import {
 
 import { cn } from "@/lib/utils";
 import { Button } from "@/components/ui/button";
-import { CaretLeftIcon, CaretRightIcon } from "@phosphor-icons/react";
+import { ChevronLeftIcon, ChevronRightIcon } from "@/lib/icons";
 
 type Matcher = Date[] | ((date: Date) => boolean);
 
@@ -116,7 +116,7 @@ function Calendar({
       {/* Navigation */}
       <div className="flex items-center justify-between border-b pb-2 mb-4">
         <Button variant="ghost" size="icon" onClick={goToPrevMonth}>
-          <CaretLeftIcon className="size-4" />
+          <ChevronLeftIcon className="size-4" />
         </Button>
         <span className="text-sm font-medium select-none">
           {format(currentMonth, "MMMM yyyy")}
@@ -127,7 +127,7 @@ function Calendar({
           onClick={goToNextMonth}
           disabled={!canGoNext}
         >
-          <CaretRightIcon className="size-4" />
+          <ChevronRightIcon className="size-4" />
         </Button>
       </div>
 
