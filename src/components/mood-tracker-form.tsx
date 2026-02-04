@@ -121,6 +121,7 @@ export function MoodTrackerForm({ onSuccess }: MoodTrackerFormProps) {
       <DialogFooter>
         <Button
           type="submit"
+          className="w-full"
           disabled={createMood.isPending}
         >
           Save

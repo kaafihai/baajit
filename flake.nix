@@ -46,6 +46,7 @@
           pnpm
           typescript-language-server
           xdg-utils
+          sqlite
 
           (with fenix.packages.${system};
             combine [

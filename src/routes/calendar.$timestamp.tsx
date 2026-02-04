@@ -6,7 +6,7 @@ import {
   DialogTitle,
 } from "@/components/ui/dialog";
 import { useMoodByDate } from "@/hooks/use-moods";
-import { useTasksByCompletedAt, useTasksByDueDate, useTasksByCancelledAt } from "@/hooks/use-tasks";
+import { useTasksByCompletedAt, useTasksByDueDate, useTasksByArchivedAt } from "@/hooks/use-tasks";
 import { Spinner } from "@/components/ui/spinner";
 import { format } from "date-fns";
 import {
@@ -51,11 +51,11 @@ function CalendarDayComponent() {
     useTasksByCompletedAt(date);
   const { data: dueTasks = [], isLoading: isDueTasksLoading } =
     useTasksByDueDate(date);
-  const { data: cancelledTasks = [], isLoading: isCancelledTasksLoading } =
-    useTasksByCancelledAt(date);
+  const { data: archivedTasks = [], isLoading: isArchivedTasksLoading } =
+    useTasksByArchivedAt(date);
 
   const completedTasks = tasks.filter((task: Task) => task.completedAt);
-  const isLoading = isMoodLoading || isTasksLoading || isDueTasksLoading || isCancelledTasksLoading;
+  const isLoading = isMoodLoading || isTasksLoading || isDueTasksLoading || isArchivedTasksLoading;
 
   return (
     <Dialog
@@ -123,10 +123,10 @@ function CalendarDayComponent() {
                             Completed
                           </p>
                         )}
-                        {task.cancelledAt && (
+                        {task.archivedAt && (
                           <p className="text-xs text-destructive mt-1 flex items-center gap-1">
                             <CancelIcon className="size-3" />
-                            Cancelled
+                            Archived
                           </p>
                         )}
                       </div>
@@ -166,14 +166,14 @@ function CalendarDayComponent() {
               )}
             </div>
 
-            {/* Cancelled Tasks Section */}
-            {cancelledTasks.length > 0 && (
+            {/* Archived Tasks Section */}
+            {archivedTasks.length > 0 && (
               <div className="space-y-3">
                 <h3 className="text-sm font-medium">
-                  Cancelled Tasks ({cancelledTasks.length})
+                  Archived Tasks ({archivedTasks.length})
                 </h3>
                 <div className="space-y-2">
-                  {cancelledTasks.map((task: Task) => (
+                  {archivedTasks.map((task: Task) => (
                     <div
                       key={task.id}
                       className="flex items-start gap-3 p-3 bg-muted/50 rounded-2xl opacity-70"

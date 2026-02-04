@@ -23,7 +23,7 @@ export function TaskForm({ onSuccess }: TaskFormProps) {
     description: "",
     dueDate: null,
     completedAt: null,
-    cancelledAt: null,
+    archivedAt: null,
   });
 
   const handleSubmit = async (e: React.FormEvent) => {

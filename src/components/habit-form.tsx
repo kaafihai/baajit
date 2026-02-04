@@ -82,6 +82,7 @@ export function HabitForm({ onSuccess }: HabitFormProps) {
       <DialogFooter>
         <Button
           type="submit"
+          className="w-full"
           disabled={!formData.title.trim() || createHabit.isPending}
         >
           Create Habit

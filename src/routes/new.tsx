@@ -59,7 +59,7 @@ function NewItemComponent() {
           description,
           dueDate,
           completedAt: null,
-          cancelledAt: null,
+          archivedAt: null,
         });
       }
       navigate({ to: "/" });
@@ -126,6 +126,7 @@ function NewItemComponent() {
           <DialogFooter>
             <Button
               type="submit"
+              className="w-full"
               disabled={!title.trim() || isPending}
             >
               Create {isHabit ? "Habit" : "Task"}

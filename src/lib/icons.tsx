@@ -25,6 +25,8 @@ export {
   CaretDownIcon as ChevronDownIcon,
   CaretUpIcon as ChevronUpIcon,
   PauseIcon,
+  PlayIcon,
+  ArchiveIcon,
   SpinnerIcon as LoadingIcon,
   InfoIcon,
   WarningIcon,

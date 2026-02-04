@@ -5,7 +5,7 @@ import {
   getTasks,
   getTasksByDueDate,
   getTasksByCompletedAt,
-  getTasksByCancelledAt,
+  getTasksByArchivedAt,
   createTask,
   updateTask,
   deleteTask,
@@ -55,12 +55,12 @@ export function useTasksByCompletedAt(date: Date) {
   });
 }
 
-export function useTasksByCancelledAt(date: Date) {
+export function useTasksByArchivedAt(date: Date) {
   return useQuery({
-    queryKey: [...TASKS_BY_DATE_QUERY_KEY, 'cancelled', date.toISOString()],
+    queryKey: [...TASKS_BY_DATE_QUERY_KEY, 'archived', date.toISOString()],
     queryFn: async () => {
       await ensureDbInitialized();
-      return getTasksByCancelledAt(date);
+      return getTasksByArchivedAt(date);
     },
   });
 }
@@ -78,7 +78,7 @@ export function useCreateTask() {
         description: input.description,
         dueDate: input.dueDate,
         completedAt: input.completedAt,
-        cancelledAt: input.cancelledAt,
+        archivedAt: input.archivedAt,
         createdAt: now,
         updatedAt: now,
       };

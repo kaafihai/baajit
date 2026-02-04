@@ -18,6 +18,7 @@ import {
 } from "@/hooks/use-habits";
 import { Spinner } from "@/components/ui/spinner";
 import { toast } from "sonner";
+import { PauseIcon, ArchiveIcon } from "@/lib/icons";
 
 export const Route = createFileRoute("/habits/$id/edit")({
   component: EditHabitComponent,
@@ -59,6 +60,36 @@ function EditHabitComponent() {
     }
   };
 
+  const handlePause = async () => {
+    if (!habit) return;
+
+    try {
+      await updateHabit.mutateAsync({
+        ...habit,
+        pausedAt: habit.pausedAt ? null : new Date().toISOString(),
+      });
+      history.back();
+    } catch (error) {
+      toast.error(`Failed to pause habit: ${error}`);
+    }
+  };
+
+  const handleArchive = async () => {
+    if (!habit) return;
+
+    try {
+      await updateHabit.mutateAsync({
+        ...habit,
+        archivedAt: new Date().toISOString(),
+      });
+      history.back();
+    } catch (error) {
+      toast.error(`Failed to archive habit: ${error}`);
+    }
+  };
+
+  const isPaused = Boolean(habit?.pausedAt);
+
   if (isLoading) {
     return (
       <Dialog open={true} onOpenChange={() => history.back()}>
@@ -80,7 +111,7 @@ function EditHabitComponent() {
           </DialogHeader>
           <p>The habit you're looking for doesn't exist.</p>
           <DialogFooter>
-            <Button onClick={() => history.back()}>Go Back</Button>
+            <Button className="w-full" onClick={() => history.back()}>Go Back</Button>
           </DialogFooter>
         </DialogContent>
       </Dialog>
@@ -141,10 +172,31 @@ function EditHabitComponent() {
             </Label>
           </div>
 
-          <DialogFooter>
+          <DialogFooter className="flex-row gap-2">
+            {isPaused ? (
+              <Button
+                type="button"
+                variant="ghost"
+                size="icon"
+                onClick={handleArchive}
+                disabled={updateHabit.isPending}
+              >
+                <ArchiveIcon />
+              </Button>
+            ) : (
+              <Button
+                type="button"
+                variant="destructive"
+                onClick={handlePause}
+                disabled={updateHabit.isPending}
+              >
+                <PauseIcon />
+                Pause
+              </Button>
+            )}
             <Button
               type="submit"
-              className="w-full"
+              className="flex-1"
               disabled={!formData.title.trim() || updateHabit.isPending}
             >
               Save Changes

@@ -11,11 +11,11 @@ import { Input } from "@/components/ui/input";
 import { Textarea } from "@/components/ui/textarea";
 import { Button } from "@/components/ui/button";
 import { Label } from "@/components/ui/label";
-import { Checkbox } from "@/components/ui/checkbox";
 import { DatePicker } from "@/components/ui/date-picker";
 import { useTasks, useUpdateTask } from "@/hooks/use-tasks";
 import { Spinner } from "@/components/ui/spinner";
 import { toast } from "sonner";
+import { ArchiveIcon } from "@/lib/icons";
 
 export const Route = createFileRoute("/tasks/$id/edit")({
   component: EditTaskComponent,
@@ -33,7 +33,6 @@ function EditTaskComponent() {
     title: task?.title ?? "",
     description: task?.description ?? "",
     dueDate: task?.dueDate ?? null,
-    cancelled: Boolean(task?.cancelledAt),
   });
 
   const handleSubmit = async (e: React.FormEvent) => {
@@ -49,11 +48,24 @@ function EditTaskComponent() {
         title: formData.title,
         description: formData.description,
         dueDate: formData.dueDate,
-        cancelledAt: formData.cancelled ? new Date().toISOString() : null,
       });
       history.back();
     } catch (error) {
       toast.error(`Failed to update task: ${error}`);
+    }
+  };
+
+  const handleArchive = async () => {
+    if (!task) return;
+
+    try {
+      await updateTask.mutateAsync({
+        ...task,
+        archivedAt: new Date().toISOString(),
+      });
+      history.back();
+    } catch (error) {
+      toast.error(`Failed to archive task: ${error}`);
     }
   };
 
@@ -78,7 +90,7 @@ function EditTaskComponent() {
           </DialogHeader>
           <p className="">The task you're looking for doesn't exist.</p>
           <DialogFooter>
-            <Button onClick={() => history.back()}>Go Back</Button>
+            <Button className="w-full" onClick={() => history.back()}>Go Back</Button>
           </DialogFooter>
         </DialogContent>
       </Dialog>
@@ -134,23 +146,19 @@ function EditTaskComponent() {
             />
           </div>
 
-          <div className="flex items-center gap-2">
-            <Checkbox
-              id="cancelled"
-              checked={formData.cancelled}
-              onCheckedChange={(checked) =>
-                setFormData({ ...formData, cancelled: checked === true })
-              }
-            />
-            <Label htmlFor="cancelled" className="cursor-pointer">
-              Cancel Task
-            </Label>
-          </div>
-
-          <DialogFooter>
+          <DialogFooter className="flex-row gap-2">
+            <Button
+              type="button"
+              variant="destructive"
+              onClick={handleArchive}
+              disabled={updateTask.isPending}
+            >
+              <ArchiveIcon />
+              Archive
+            </Button>
             <Button
               type="submit"
-              className="w-full"
+              className="flex-1"
               disabled={!formData.title.trim() || updateTask.isPending}
             >
               Save Changes
