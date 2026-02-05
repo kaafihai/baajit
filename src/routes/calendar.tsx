@@ -3,6 +3,8 @@ import {
   ChevronLeftIcon,
   ChevronRightIcon,
   DateIcon,
+  CalendarIcon,
+  WarningIcon,
 } from "@/lib/icons";
 import { createFileRoute, useNavigate, Outlet } from "@tanstack/react-router";
 import { useTasks } from "@/hooks/use-tasks";
@@ -177,7 +179,7 @@ function CalendarPage() {
           className="p-4 bg-amber-500/10 rounded-3xl space-y-1 text-left hover:bg-amber-500/15 transition-colors"
         >
           <div className="flex items-center gap-2">
-            <DateIcon className="size-5 text-amber-500" />
+            <CalendarIcon className="hidden sm:block size-6 text-amber-500" />
             <span className="text-sm font-bold text-amber-500">Upcoming</span>
           </div>
           <p className="text-2xl font-bold">{stats.dueTasks}</p>
@@ -190,12 +192,10 @@ function CalendarPage() {
           className="p-4 bg-destructive/10 rounded-3xl space-y-1 text-left hover:bg-destructive/15 transition-colors"
         >
           <div className="flex items-center gap-2">
-            <DateIcon className="size-5 text-destructive" />
+            <WarningIcon className="hidden sm:block size-6 text-destructive" />
             <span className="text-sm font-bold text-destructive">Overdue</span>
           </div>
-          <p className="text-2xl font-bold">
-            {stats.overdueTasks}
-          </p>
+          <p className="text-2xl font-bold">{stats.overdueTasks}</p>
           <p className="text-xs">need attention</p>
         </button>
 
@@ -205,7 +205,7 @@ function CalendarPage() {
           className="p-4 bg-success/10 rounded-3xl space-y-1 text-left hover:bg-success/15 transition-colors"
         >
           <div className="flex items-center gap-2">
-            <CompletedIcon className="size-5 text-success" />
+            <CompletedIcon className="hidden sm:block size-6 text-success" />
             <span className="text-sm font-bold text-success">Completed</span>
           </div>
           <p className="text-2xl font-bold">{stats.completedTasks}</p>

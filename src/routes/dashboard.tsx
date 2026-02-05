@@ -191,20 +191,20 @@ function DashboardPage() {
 
       <div className="grid grid-cols-3 gap-4">
         <StatCard
-          icon={<CompletedIcon className="size-6" />}
+          icon={<CompletedIcon className="hidden sm:block size-6" />}
           label="Tasks Completed"
           value={completedTasks.length}
           sublabel={`${activeTasks.length} active`}
         />
         <StatCard
-          icon={<TrendLineIcon className="size-6" />}
+          icon={<TrendLineIcon className="hidden sm:block size-6" />}
           label="Moods Logged"
           value={moods?.length ?? 0}
           sublabel="total entries"
         />
         {MostFrequentMoodIcon && mostFrequentMood && (
           <StatCard
-            icon={<MostFrequentMoodIcon className="size-6" />}
+            icon={<MostFrequentMoodIcon className="hidden sm:block size-6" />}
             label="Top Mood"
             value={mostFrequentMood}
             sublabel={`${moodCounts[mostFrequentMood]} times`}
@@ -414,7 +414,9 @@ function HabitWeeklyView({
       return {
         date,
         dateString,
+        entry,
         isCompleted: entry?.status === "completed",
+        isSkipped: entry?.status === "skipped",
         isScheduled,
         isToday: isSameDay(date, today),
       };
@@ -422,7 +424,7 @@ function HabitWeeklyView({
   }, [entries, today, habit.rrule]);
 
   const scheduledDays = weekDays.filter((d) => d.isScheduled);
-  const completedCount = scheduledDays.filter((d) => d.isCompleted).length;
+  const completedCount = weekDays.filter((d) => d.isCompleted).length;
 
   return (
     <Link
@@ -445,12 +447,12 @@ function HabitWeeklyView({
             <div
               className={cn(
                 "size-8 rounded-full flex items-center opacity-80 justify-center text-xs font-medium transition-colors",
-                day.isScheduled ? "" : "!opacity-40",
+                !day.entry && "!opacity-40",
               )}
             >
               {day.isCompleted ? (
                 <CompletedIcon className="size-8" />
-              ) : day.isScheduled ? (
+              ) : day.isSkipped ? (
                 <CancelIcon className="size-8" />
               ) : (
                 <PendingIcon className="size-8" />
