@@ -8,8 +8,9 @@ import {
   CompletedIcon,
   PendingIcon,
   CancelIcon,
+  DateIcon,
 } from "@/lib/icons";
-import { useMemo } from "react";
+import { useMemo, useState } from "react";
 import { cn } from "@/lib/utils";
 import type { Habit, HabitEntry, MoodLevel } from "@/lib/types";
 import {
@@ -18,8 +19,15 @@ import {
   eachDayOfInterval,
   isSameDay,
   subDays,
+  differenceInDays,
 } from "date-fns";
 import { MOOD_OPTIONS } from "@/components/mood-tracker-form";
+import {
+  RabbitMascot,
+  getGreetingMessage,
+  getStreakCelebration,
+  getDashboardEmptyMessage,
+} from "@/components/rabbit-mascot";
 
 export const Route = createFileRoute("/dashboard")({
   component: DashboardPage,
@@ -39,6 +47,29 @@ interface DayActivity {
   level: ActivityLevel;
 }
 
+const DAY_MAP: Record<number, string> = {
+  0: "SU",
+  1: "MO",
+  2: "TU",
+  3: "WE",
+  4: "TH",
+  5: "FR",
+  6: "SA",
+};
+
+function isDateScheduled(date: Date, rrule: string): boolean {
+  const freqMatch = rrule.match(/FREQ=(\w+)/);
+  const frequency = freqMatch?.[1] || "DAILY";
+  if (frequency === "DAILY") return true;
+  if (frequency === "WEEKLY") {
+    const daysMatch = rrule.match(/BYDAY=([A-Z,]+)/);
+    const days = daysMatch ? daysMatch[1].split(",") : [];
+    const dayOfWeek = DAY_MAP[date.getDay()];
+    return days.includes(dayOfWeek);
+  }
+  return true;
+}
+
 function DashboardPage() {
   const { data: tasks, isLoading: tasksLoading } = useTasks();
   const { data: moods, isLoading: moodsLoading } = useMoods();
@@ -46,9 +77,33 @@ function DashboardPage() {
   const { data: habitEntries, isLoading: habitEntriesLoading } =
     useAllHabitEntries();
 
+  // Stable greeting message (computed once per mount)
+  const [greeting] = useState(() => getGreetingMessage());
+
   const completedTasks = tasks?.filter((t) => t.completedAt) ?? [];
-  const activeTasks = tasks?.filter((t) => !t.completedAt) ?? [];
-  // Calculate mood stats
+  const activeTasks = tasks?.filter((t) => !t.completedAt && !t.archivedAt) ?? [];
+
+  // Tasks due today
+  const today = new Date();
+  today.setHours(0, 0, 0, 0);
+  const tasksDueToday = activeTasks.filter((t) => {
+    if (!t.dueDate) return false;
+    const due = new Date(t.dueDate);
+    due.setHours(0, 0, 0, 0);
+    return due.getTime() <= today.getTime();
+  });
+
+  // Habits scheduled today
+  const todayStr = formatDateKey(new Date());
+  const activeHabits = (habits ?? []).filter((h) => !h.archivedAt && !h.pausedAt);
+  const habitsScheduledToday = activeHabits.filter((h) => isDateScheduled(new Date(), h.rrule));
+  const habitsCompletedToday = habitsScheduledToday.filter((h) => {
+    return habitEntries?.some(
+      (e) => e.habitId === h.id && e.date === todayStr && e.status === "completed"
+    );
+  });
+
+  // Mood stats
   const moodCounts = (moods ?? []).reduce(
     (acc, mood) => {
       acc[mood.mood] = (acc[mood.mood] || 0) + 1;
@@ -56,31 +111,78 @@ function DashboardPage() {
     },
     {} as Record<MoodLevel, number>,
   );
-
   const mostFrequentMood = Object.entries(moodCounts).sort(
     ([, a], [, b]) => b - a,
   )[0]?.[0] as MoodLevel | undefined;
-
   const MostFrequentMoodIcon = MOOD_OPTIONS.find(
     (m) => m.value === mostFrequentMood,
   )?.icon;
 
+  // Recent moods for sparkline (last 7 days)
+  const recentMoods = useMemo(() => {
+    if (!moods) return [];
+    const last7Days = Array.from({ length: 7 }, (_, i) => {
+      const d = subDays(new Date(), 6 - i);
+      return formatDateKey(d);
+    });
+    return last7Days.map((dateKey) => {
+      const dayMoods = moods.filter((m) => formatDateKey(new Date(m.createdAt)) === dateKey);
+      if (dayMoods.length === 0) return null;
+      // Return the last mood of the day
+      return dayMoods[dayMoods.length - 1].mood;
+    });
+  }, [moods]);
+
+  // Calculate best current streak across all habits
+  const bestStreak = useMemo(() => {
+    if (!habits || !habitEntries) return { streak: 0, habit: null as Habit | null };
+    let best = 0;
+    let bestHabit: Habit | null = null;
+
+    for (const habit of activeHabits) {
+      const entries = habitEntries.filter((e) => e.habitId === habit.id);
+      let streak = 0;
+      const now = new Date();
+      let checkDate = now;
+      while (true) {
+        const dateString = format(checkDate, "yyyy-MM-dd");
+        const isScheduled = isDateScheduled(checkDate, habit.rrule);
+        if (isScheduled) {
+          const entry = entries.find(
+            (e) => e.date === dateString && e.status === "completed"
+          );
+          if (entry) {
+            streak++;
+          } else if (!isSameDay(checkDate, now)) {
+            break;
+          }
+        }
+        checkDate = subDays(checkDate, 1);
+        if (differenceInDays(now, checkDate) > 365) break;
+      }
+      if (streak > best) {
+        best = streak;
+        bestHabit = habit;
+      }
+    }
+    return { streak: best, habit: bestHabit };
+  }, [habits, habitEntries, activeHabits]);
+
+  const streakCelebration = bestStreak.streak > 0
+    ? getStreakCelebration(bestStreak.streak)
+    : null;
+
   const { activityData, weeks, startDate } = useMemo(() => {
     const today = new Date();
-
-    // Find the earliest activity date
     let earliestDate = today;
-
     tasks?.forEach((task) => {
       const createdAt = new Date(task.createdAt);
       if (createdAt < earliestDate) earliestDate = createdAt;
     });
-
     moods?.forEach((mood) => {
       const createdAt = new Date(mood.createdAt);
       if (createdAt < earliestDate) earliestDate = createdAt;
     });
-
     habitEntries?.forEach((entry) => {
       const date = new Date(entry.date);
       if (date < earliestDate) earliestDate = date;
@@ -89,62 +191,36 @@ function DashboardPage() {
     const startDate = startOfWeek(earliestDate);
     const days = eachDayOfInterval({ start: startDate, end: today });
 
-    // Build activity map
-    const activityMap = new Map<
-      string,
-      { tasks: number; moods: number; habits: number }
-    >();
-
+    const activityMap = new Map<string, { tasks: number; moods: number; habits: number }>();
     tasks?.forEach((task) => {
       if (task.completedAt) {
         const key = formatDateKey(new Date(task.completedAt));
-        const existing = activityMap.get(key) || {
-          tasks: 0,
-          moods: 0,
-          habits: 0,
-        };
+        const existing = activityMap.get(key) || { tasks: 0, moods: 0, habits: 0 };
         activityMap.set(key, { ...existing, tasks: existing.tasks + 1 });
       }
     });
-
     moods?.forEach((mood) => {
       const key = formatDateKey(new Date(mood.createdAt));
-      const existing = activityMap.get(key) || {
-        tasks: 0,
-        moods: 0,
-        habits: 0,
-      };
+      const existing = activityMap.get(key) || { tasks: 0, moods: 0, habits: 0 };
       activityMap.set(key, { ...existing, moods: existing.moods + 1 });
     });
-
     habitEntries?.forEach((entry) => {
       if (entry.status === "completed") {
         const key = entry.date;
-        const existing = activityMap.get(key) || {
-          tasks: 0,
-          moods: 0,
-          habits: 0,
-        };
+        const existing = activityMap.get(key) || { tasks: 0, moods: 0, habits: 0 };
         activityMap.set(key, { ...existing, habits: existing.habits + 1 });
       }
     });
 
-    // Calculate activity levels
     const activityData: DayActivity[] = days.map((date) => {
       const key = formatDateKey(date);
-      const activity = activityMap.get(key) || {
-        tasks: 0,
-        moods: 0,
-        habits: 0,
-      };
+      const activity = activityMap.get(key) || { tasks: 0, moods: 0, habits: 0 };
       const total = activity.tasks + activity.moods + activity.habits;
-
       let level: ActivityLevel = 0;
       if (total >= 5) level = 4;
       else if (total >= 3) level = 3;
       else if (total >= 2) level = 2;
       else if (total >= 1) level = 1;
-
       return {
         date,
         tasksCompleted: activity.tasks,
@@ -154,25 +230,12 @@ function DashboardPage() {
       };
     });
 
-    // Group into weeks
     const weeks: DayActivity[][] = [];
     for (let i = 0; i < activityData.length; i += 7) {
       weeks.push(activityData.slice(i, i + 7));
     }
 
-    // Calculate stats
-    const totalTasks = tasks?.filter((t) => t.completedAt).length ?? 0;
-    const totalMoods = moods?.length ?? 0;
-    const totalHabits =
-      habitEntries?.filter((e) => e.status === "completed").length ?? 0;
-    const activeDays = activityData.filter((d) => d.level > 0).length;
-
-    return {
-      activityData,
-      weeks,
-      stats: { totalTasks, totalMoods, totalHabits, activeDays },
-      startDate,
-    };
+    return { activityData, weeks, startDate };
   }, [tasks, moods, habitEntries]);
 
   if (tasksLoading || moodsLoading || habitsLoading || habitEntriesLoading) {
@@ -183,40 +246,140 @@ function DashboardPage() {
     );
   }
 
+  const hasActivity = activityData.some((d) => d.level > 0);
+
   return (
     <div className="mx-auto space-y-6">
-      <div className="flex items-center gap-3">
-        <h2>Dashboard</h2>
+      {/* Rabbit Greeting */}
+      <div className="flex items-center gap-4 p-5 rounded-4xl" style={{ background: "var(--accent-warm-subtle)" }}>
+        <RabbitMascot
+          mood={greeting.mood}
+          size="lg"
+          showBubble={false}
+        />
+        <div className="flex-1 min-w-0">
+          <h2 className="text-2xl font-bold">Dashboard</h2>
+          <p className="text-sm mt-1 opacity-80">{greeting.message}</p>
+        </div>
       </div>
 
-      <div className="grid grid-cols-3 gap-4">
+      {/* Today's Focus */}
+      {(tasksDueToday.length > 0 || habitsScheduledToday.length > 0) && (
+        <section className="space-y-3">
+          <h3 className="text-lg font-semibold">Today's Focus</h3>
+          <div className="grid grid-cols-2 gap-3">
+            <div className="p-4 rounded-3xl" style={{ background: "var(--accent-warm-subtle)" }}>
+              <div className="flex items-center gap-2 mb-1">
+                <DateIcon className="size-4" style={{ color: "var(--accent-warm-strong)" }} />
+                <span className="text-sm font-medium">Tasks Due</span>
+              </div>
+              <p className="text-2xl font-bold">{tasksDueToday.length}</p>
+              <p className="text-xs opacity-70">
+                {tasksDueToday.length === 0 ? "All clear!" : "to handle today"}
+              </p>
+            </div>
+            <div className="p-4 bg-success/10 rounded-3xl">
+              <div className="flex items-center gap-2 mb-1">
+                <CompletedIcon className="size-4 text-success" />
+                <span className="text-sm font-medium">Habits</span>
+              </div>
+              <p className="text-2xl font-bold">
+                {habitsCompletedToday.length}/{habitsScheduledToday.length}
+              </p>
+              <p className="text-xs opacity-70">
+                {habitsCompletedToday.length === habitsScheduledToday.length && habitsScheduledToday.length > 0
+                  ? "All done!"
+                  : "completed today"}
+              </p>
+            </div>
+          </div>
+        </section>
+      )}
+
+      {/* Streak Spotlight */}
+      {bestStreak.streak >= 3 && bestStreak.habit && streakCelebration && (
+        <section className="p-5 rounded-4xl bg-success/10 space-y-3">
+          <div className="flex items-center justify-between">
+            <div>
+              <h3 className="text-lg font-semibold">Streak Spotlight</h3>
+              <p className="text-sm opacity-80">{bestStreak.habit.title}</p>
+            </div>
+            <div className="text-right">
+              <p className="text-3xl font-bold text-success">{bestStreak.streak}</p>
+              <p className="text-xs opacity-70">day streak</p>
+            </div>
+          </div>
+          <RabbitMascot
+            mood={streakCelebration.mood}
+            message={streakCelebration.message}
+            size="sm"
+          />
+        </section>
+      )}
+
+      {/* Mood Sparkline */}
+      {moods && moods.length > 0 && (
+        <section className="space-y-3">
+          <h3 className="text-lg font-semibold">Mood This Week</h3>
+          <div className="flex items-center justify-between p-4 bg-primary/8 rounded-3xl">
+            {recentMoods.map((mood, i) => {
+              const date = subDays(new Date(), 6 - i);
+              const MoodIcon = mood ? MOOD_OPTIONS.find((m) => m.value === mood)?.icon : null;
+              return (
+                <div key={i} className="flex flex-col items-center gap-1">
+                  <span className="text-xs opacity-60">{format(date, "EEE")}</span>
+                  <div className={cn(
+                    "size-9 rounded-full flex items-center justify-center",
+                    mood ? "bg-primary/10" : "bg-primary/5",
+                    isSameDay(date, new Date()) && "ring-2 ring-primary/30"
+                  )}>
+                    {MoodIcon ? (
+                      <MoodIcon className="size-5" />
+                    ) : (
+                      <span className="text-xs opacity-30">-</span>
+                    )}
+                  </div>
+                </div>
+              );
+            })}
+          </div>
+          {MostFrequentMoodIcon && mostFrequentMood && (
+            <div className="flex items-center gap-2 text-sm px-1">
+              <MostFrequentMoodIcon className="size-4" />
+              <span>Top mood: <strong className="capitalize">{mostFrequentMood}</strong> ({moodCounts[mostFrequentMood]} times)</span>
+            </div>
+          )}
+        </section>
+      )}
+
+      {/* Stat Cards */}
+      <div className="grid grid-cols-3 gap-3">
         <StatCard
-          icon={<CompletedIcon className="hidden sm:block size-6" />}
-          label="Tasks Completed"
+          icon={<CompletedIcon className="hidden sm:block size-5" />}
+          label="Tasks Done"
           value={completedTasks.length}
           sublabel={`${activeTasks.length} active`}
         />
         <StatCard
-          icon={<TrendLineIcon className="hidden sm:block size-6" />}
-          label="Moods Logged"
+          icon={<TrendLineIcon className="hidden sm:block size-5" />}
+          label="Moods"
           value={moods?.length ?? 0}
-          sublabel="total entries"
+          sublabel="logged"
         />
-        {MostFrequentMoodIcon && mostFrequentMood && (
-          <StatCard
-            icon={<MostFrequentMoodIcon className="hidden sm:block size-6" />}
-            label="Top Mood"
-            value={mostFrequentMood}
-            sublabel={`${moodCounts[mostFrequentMood]} times`}
-          />
-        )}
+        <StatCard
+          icon={<PendingIcon className="hidden sm:block size-5" />}
+          label="Best Streak"
+          value={bestStreak.streak}
+          sublabel="days"
+        />
       </div>
 
+      {/* Habits This Week */}
       {habits && habits.length > 0 && (
         <section className="space-y-3">
-          <h3 className="text-xl font-semibold">Habits This Week</h3>
-          <div className="space-y-4">
-            <div className="bg-primary/10 p-8 rounded-4xl flex flex-row justify-between gap-2">
+          <h3 className="text-lg font-semibold">Habits This Week</h3>
+          <div className="space-y-3">
+            <div className="bg-primary/8 p-6 rounded-4xl flex flex-row justify-between gap-2">
               {Array.from({ length: 7 }).map((_, i) => {
                 const date = subDays(new Date(), 6 - i);
                 return (
@@ -230,11 +393,7 @@ function DashboardPage() {
                     )}
                   >
                     <span className="text-sm">{format(date, "EEE")}</span>
-                    <div
-                      className={cn(
-                        "size-8 rounded-full flex items-center justify-center text-xs",
-                      )}
-                    >
+                    <div className="size-8 rounded-full flex items-center justify-center text-xs">
                       {format(date, "d")}
                     </div>
                   </div>
@@ -245,17 +404,16 @@ function DashboardPage() {
               <HabitWeeklyView
                 key={habit.id}
                 habit={habit}
-                entries={
-                  habitEntries?.filter((e) => e.habitId === habit.id) ?? []
-                }
+                entries={habitEntries?.filter((e) => e.habitId === habit.id) ?? []}
               />
             ))}
           </div>
         </section>
       )}
 
+      {/* Activity Heatmap */}
       <section className="space-y-3">
-        <h3 className="text-xl font-semibold">Activity</h3>
+        <h3 className="text-lg font-semibold">Activity</h3>
         <div className="p-4 bg-primary/5 rounded-3xl overflow-x-auto">
           <div className="flex gap-1 min-w-fit">
             {weeks.map((week, weekIndex) => (
@@ -288,8 +446,9 @@ function DashboardPage() {
         </div>
       </section>
 
+      {/* Recent Activity */}
       <section className="space-y-3">
-        <h3 className="text-xl font-semibold">Recent Activity</h3>
+        <h3 className="text-lg font-semibold">Recent Activity</h3>
         <div className="space-y-2">
           {activityData
             .filter((d) => d.level > 0)
@@ -298,7 +457,7 @@ function DashboardPage() {
             .map((day) => (
               <div
                 key={day.date.toISOString()}
-                className="flex items-center justify-between p-3 bg-primary/10 rounded-2xl"
+                className="flex items-center justify-between p-3 bg-primary/8 rounded-2xl"
               >
                 <span className="font-medium">
                   {isSameDay(day.date, new Date())
@@ -308,14 +467,12 @@ function DashboardPage() {
                 <div className="flex gap-4 text-sm">
                   {day.tasksCompleted > 0 && (
                     <span>
-                      {day.tasksCompleted} task
-                      {day.tasksCompleted !== 1 ? "s" : ""}
+                      {day.tasksCompleted} task{day.tasksCompleted !== 1 ? "s" : ""}
                     </span>
                   )}
                   {day.habitsCompleted > 0 && (
                     <span>
-                      {day.habitsCompleted} habit
-                      {day.habitsCompleted !== 1 ? "s" : ""}
+                      {day.habitsCompleted} habit{day.habitsCompleted !== 1 ? "s" : ""}
                     </span>
                   )}
                   {day.moodsLogged > 0 && (
@@ -326,10 +483,15 @@ function DashboardPage() {
                 </div>
               </div>
             ))}
-          {activityData.filter((d) => d.level > 0).length === 0 && (
-            <p className="text-center py-8">
-              No activity yet. Start by logging a mood or completing a task!
-            </p>
+          {!hasActivity && (
+            <div className="text-center py-6">
+              <RabbitMascot
+                mood="waving"
+                message={getDashboardEmptyMessage().message}
+                size="md"
+                className="justify-center"
+              />
+            </div>
           )}
         </div>
       </section>
@@ -340,61 +502,30 @@ function DashboardPage() {
 function getLevelColor(level: ActivityLevel): string {
   switch (level) {
     case 0:
-      return "bg-primary/10";
+      return "bg-success/10";
     case 1:
-      return "bg-primary/30";
+      return "bg-success/30";
     case 2:
-      return "bg-primary/50";
+      return "bg-success/50";
     case 3:
-      return "bg-primary/70";
+      return "bg-success/70";
     case 4:
-      return "bg-primary";
+      return "bg-success";
   }
 }
 
 function HeatmapCell({ day }: { day: DayActivity }) {
   const isToday = isSameDay(day.date, new Date());
-
   return (
     <div
       className={cn(
         "size-5 rounded-sm transition-colors",
         getLevelColor(day.level),
-        isToday &&
-          "ring-2 ring-foreground ring-offset-1 ring-offset-background",
+        isToday && "ring-2 ring-foreground ring-offset-1 ring-offset-background",
       )}
       title={`${format(day.date, "MMM d, yyyy")}: ${day.tasksCompleted} tasks, ${day.habitsCompleted} habits, ${day.moodsLogged} moods`}
     />
   );
-}
-
-const DAY_MAP: Record<number, string> = {
-  0: "SU",
-  1: "MO",
-  2: "TU",
-  3: "WE",
-  4: "TH",
-  5: "FR",
-  6: "SA",
-};
-
-function isDateScheduled(date: Date, rrule: string): boolean {
-  const freqMatch = rrule.match(/FREQ=(\w+)/);
-  const frequency = freqMatch?.[1] || "DAILY";
-
-  if (frequency === "DAILY") {
-    return true;
-  }
-
-  if (frequency === "WEEKLY") {
-    const daysMatch = rrule.match(/BYDAY=([A-Z,]+)/);
-    const days = daysMatch ? daysMatch[1].split(",") : [];
-    const dayOfWeek = DAY_MAP[date.getDay()];
-    return days.includes(dayOfWeek);
-  }
-
-  // For MONTHLY, just check if it's the same day of month as today (simplified)
-  return true;
 }
 
 function HabitWeeklyView({
@@ -430,20 +561,17 @@ function HabitWeeklyView({
     <Link
       to="/habits/$id/stats"
       params={{ id: habit.id }}
-      className="block p-8 bg-primary/10 rounded-4xl w-full text-left hover:bg-primary/15 transition-colors cursor-pointer"
+      className="block p-6 bg-primary/8 rounded-4xl w-full text-left hover:bg-primary/12 transition-colors cursor-pointer"
     >
       <div className="flex items-center justify-between mb-3">
         <h4 className="font-semibold">{habit.title}</h4>
-        <span className="text-sm text-muted">
+        <span className="text-sm opacity-70">
           {completedCount}/{scheduledDays.length} this week
         </span>
       </div>
       <div className="flex gap-2 justify-between">
         {weekDays.map((day) => (
-          <div
-            key={day.dateString}
-            className="flex flex-col items-center gap-1 px-2"
-          >
+          <div key={day.dateString} className="flex flex-col items-center gap-1 px-2">
             <div
               className={cn(
                 "size-8 rounded-full flex items-center opacity-80 justify-center text-xs font-medium transition-colors",
@@ -477,13 +605,13 @@ function StatCard({
   sublabel: string;
 }) {
   return (
-    <div className="p-4 bg-primary/10 rounded-3xl space-y-2">
+    <div className="p-4 bg-primary/8 rounded-3xl space-y-2">
       <div className="flex items-center gap-2 text-primary">
         {icon}
         <span className="text-sm font-medium">{label}</span>
       </div>
       <p className="text-2xl font-bold capitalize">{value}</p>
-      <p className="text-sm">{sublabel}</p>
+      <p className="text-sm opacity-70">{sublabel}</p>
     </div>
   );
 }

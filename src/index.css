@@ -87,31 +87,39 @@
 :root {
     /* Base tokens */
     --radius: 0.625rem;
-    --primary-1: oklch(0.176 0.03 270);
-    --primary-2: oklch(0.207 0.042 270);
-    --primary-3: oklch(0.27 0.078 270);
-    --primary-4: oklch(0.319 0.106 270);
-    --primary-5: oklch(0.364 0.129 270);
-    --primary-6: oklch(0.414 0.15 270);
-    --primary-7: oklch(0.481 0.17 270);
-    --primary-8: oklch(0.567 0.187 270);
-    --primary-9: oklch(0.618 0.182 270);
-    --primary-10: oklch(0.671 0.17 270);
-    --primary-11: oklch(0.839 0.109 270);
-    --primary-12: oklch(0.916 0.04 270);
 
-    --success-1: oklch(0.176 0.03 180);
-    --success-2: oklch(0.207 0.042 180);
-    --success-3: oklch(0.27 0.078 180);
-    --success-4: oklch(0.319 0.106 180);
-    --success-5: oklch(0.364 0.129 180);
-    --success-6: oklch(0.414 0.15 180);
-    --success-7: oklch(0.481 0.17 180);
-    --success-8: oklch(0.567 0.187 180);
-    --success-9: oklch(0.618 0.182 180);
-    --success-10: oklch(0.671 0.17 180);
-    --success-11: oklch(0.839 0.109 180);
-    --success-12: oklch(0.916 0.04 180);
+    /* Lavender primary palette (hue 300 - soft purple-pink) */
+    --primary-1: oklch(0.20 0.025 300);
+    --primary-2: oklch(0.25 0.035 300);
+    --primary-3: oklch(0.32 0.055 300);
+    --primary-4: oklch(0.38 0.070 300);
+    --primary-5: oklch(0.44 0.085 300);
+    --primary-6: oklch(0.50 0.095 300);
+    --primary-7: oklch(0.57 0.105 300);
+    --primary-8: oklch(0.64 0.110 300);
+    --primary-9: oklch(0.70 0.105 300);
+    --primary-10: oklch(0.78 0.080 300);
+    --primary-11: oklch(0.88 0.045 300);
+    --primary-12: oklch(0.95 0.015 300);
+
+    /* Sage green success palette (hue 155) */
+    --success-1: oklch(0.20 0.025 155);
+    --success-2: oklch(0.25 0.035 155);
+    --success-3: oklch(0.32 0.055 155);
+    --success-4: oklch(0.38 0.070 155);
+    --success-5: oklch(0.44 0.085 155);
+    --success-6: oklch(0.50 0.090 155);
+    --success-7: oklch(0.57 0.095 155);
+    --success-8: oklch(0.64 0.095 155);
+    --success-9: oklch(0.70 0.090 155);
+    --success-10: oklch(0.78 0.065 155);
+    --success-11: oklch(0.88 0.035 155);
+    --success-12: oklch(0.95 0.012 155);
+
+    /* Peach accent (hue 50 - warm coral-peach) */
+    --accent-warm: oklch(0.80 0.10 50);
+    --accent-warm-subtle: oklch(0.92 0.04 50);
+    --accent-warm-strong: oklch(0.72 0.13 50);
 
     --card: var(--primary-12);
     --card-foreground: var(--foreground);
@@ -120,27 +128,27 @@
     --popover-foreground: var(--foreground);
 
     --primary: var(--primary-9);
-    --primary-foreground: var(--background);
+    --primary-foreground: var(--primary-1);
 
     --muted: var(--primary-10);
-    --muted-foreground: var(--background);
+    --muted-foreground: var(--primary-2);
 
-    --destructive: oklch(0.577 0.245 27.325);
+    --destructive: oklch(0.65 0.18 25);
 
     --success: var(--success-9);
-    --success-foreground: var(--background);
+    --success-foreground: var(--success-1);
 
     --border: var(--primary-10);
     --input: var(--border);
     --ring: var(--border);
 
-    --chart-1: oklch(0.646 0.222 41.116);
-    --chart-2: oklch(0.6 0.118 184.704);
-    --chart-3: oklch(0.398 0.07 227.392);
-    --chart-4: oklch(0.828 0.189 84.429);
-    --chart-5: oklch(0.769 0.188 70.08);
+    --chart-1: oklch(0.75 0.12 50);
+    --chart-2: oklch(0.70 0.09 155);
+    --chart-3: oklch(0.70 0.10 300);
+    --chart-4: oklch(0.80 0.10 85);
+    --chart-5: oklch(0.72 0.08 200);
 
-    --background: oklch(0.99 0 1);
+    --background: oklch(0.985 0.005 70);
     --foreground: var(--primary-2);
 }
 

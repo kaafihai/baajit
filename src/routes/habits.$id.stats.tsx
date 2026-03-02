@@ -18,6 +18,10 @@ import {
   isSameDay,
   isAfter,
 } from "date-fns";
+import {
+  RabbitMascot,
+  getStreakCelebration,
+} from "@/components/rabbit-mascot";
 
 export const Route = createFileRoute("/habits/$id/stats")({
   component: HabitStatsPage,
@@ -36,20 +40,18 @@ const DAY_MAP: Record<number, string> = {
 function isDateScheduled(date: Date, rrule: string): boolean {
   const freqMatch = rrule.match(/FREQ=(\w+)/);
   const frequency = freqMatch?.[1] || "DAILY";
-
-  if (frequency === "DAILY") {
-    return true;
-  }
-
+  if (frequency === "DAILY") return true;
   if (frequency === "WEEKLY") {
     const daysMatch = rrule.match(/BYDAY=([A-Z,]+)/);
     const days = daysMatch ? daysMatch[1].split(",") : [];
     const dayOfWeek = DAY_MAP[date.getDay()];
     return days.includes(dayOfWeek);
   }
-
   return true;
 }
+
+// Streak milestone thresholds
+const MILESTONES = [3, 7, 14, 21, 30, 60, 90, 180, 365];
 
 function HabitStatsPage() {
   const { id } = Route.useParams();
@@ -88,7 +90,6 @@ function HabitStatsPage() {
       }
 
       checkDate = subDays(checkDate, 1);
-
       if (differenceInDays(today, checkDate) > 365) break;
     }
 
@@ -137,6 +138,16 @@ function HabitStatsPage() {
     };
   }, [habit, entries]);
 
+  // Determine earned milestones
+  const earnedMilestones = useMemo(() => {
+    if (!stats) return [];
+    return MILESTONES.filter((m) => stats.longestStreak >= m);
+  }, [stats]);
+
+  const currentStreakCelebration = stats && stats.currentStreak >= 3
+    ? getStreakCelebration(stats.currentStreak)
+    : null;
+
   if (habitLoading || entriesLoading) {
     return (
       <Dialog open onOpenChange={() => navigate({ to: "/dashboard" })}>
@@ -171,28 +182,64 @@ function HabitStatsPage() {
           )}
         </DialogHeader>
 
-        <div className="grid grid-cols-2 gap-4">
-          <div className="p-4 bg-primary/10 rounded-2xl text-center">
+        {/* Streak Celebration */}
+        {currentStreakCelebration && (
+          <div className="p-4 bg-success/10 rounded-3xl">
+            <RabbitMascot
+              mood={currentStreakCelebration.mood}
+              message={currentStreakCelebration.message}
+              size="sm"
+            />
+          </div>
+        )}
+
+        <div className="grid grid-cols-2 gap-3">
+          <div className="p-4 bg-primary/8 rounded-2xl text-center">
             <p className="text-2xl font-bold">{stats.totalCompleted}</p>
-            <p className="text-sm">Total Completions</p>
+            <p className="text-sm opacity-70">Total Completions</p>
           </div>
-          <div className="p-4 bg-primary/10 rounded-2xl text-center">
-            <p className="text-2xl font-bold">{stats.currentStreak}</p>
-            <p className="text-sm">Current Streak</p>
+          <div className="p-4 bg-success/10 rounded-2xl text-center">
+            <p className="text-2xl font-bold text-success">{stats.currentStreak}</p>
+            <p className="text-sm opacity-70">Current Streak</p>
           </div>
-          <div className="p-4 bg-primary/10 rounded-2xl text-center">
+          <div className="p-4 bg-primary/8 rounded-2xl text-center">
             <p className="text-2xl font-bold">{stats.longestStreak}</p>
-            <p className="text-sm">Longest Streak</p>
+            <p className="text-sm opacity-70">Longest Streak</p>
           </div>
-          <div className="p-4 bg-primary/10 rounded-2xl text-center">
+          <div className="p-4 bg-primary/8 rounded-2xl text-center">
             <p className="text-2xl font-bold">{stats.daysSinceCreated}</p>
-            <p className="text-sm">Days Tracked</p>
+            <p className="text-sm opacity-70">Days Tracked</p>
           </div>
         </div>
 
+        {/* Milestone Badges */}
+        {earnedMilestones.length > 0 && (
+          <div className="space-y-2">
+            <h4 className="text-sm font-semibold">Milestones Earned</h4>
+            <div className="flex flex-wrap gap-2">
+              {MILESTONES.map((milestone) => {
+                const earned = earnedMilestones.includes(milestone);
+                return (
+                  <div
+                    key={milestone}
+                    className={`flex items-center gap-1.5 px-3 py-1.5 rounded-full text-xs font-medium transition-all ${
+                      earned
+                        ? "bg-success/15 text-success"
+                        : "bg-primary/5 opacity-40"
+                    }`}
+                  >
+                    <span>{earned ? "✦" : "○"}</span>
+                    <span>{milestone}d</span>
+                  </div>
+                );
+              })}
+            </div>
+          </div>
+        )}
+
         <CompletionCalendar entries={entries} rrule={habit.rrule} />
 
-        <div className="text-sm">
+        <div className="text-sm opacity-70">
           Started {format(new Date(habit.createdAt), "MMMM d, yyyy")}
         </div>
       </DialogContent>

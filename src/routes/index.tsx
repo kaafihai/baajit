@@ -40,8 +40,9 @@ import {
   DeleteIcon,
   AddIcon,
 } from "@/lib/icons";
-import { format } from "date-fns";
+import { format, differenceInDays } from "date-fns";
 import type { Task, Habit, HabitEntry } from "@/lib/types";
+import { RabbitMascot, getAgingMessage, getEmptyStateMessage } from "@/components/rabbit-mascot";
 
 const DAY_LABELS: Record<string, string> = {
   SU: "Sun",
@@ -283,6 +284,34 @@ function HabitItem({
   );
 }
 
+function AgingBadge({ days }: { days: number }) {
+  if (days < 1) return null;
+
+  let bgColor: string;
+  let textColor: string;
+  let label: string;
+
+  if (days <= 5) {
+    bgColor = "bg-amber-100";
+    textColor = "text-amber-700";
+    label = `${days}d`;
+  } else if (days <= 8) {
+    bgColor = "bg-orange-100";
+    textColor = "text-orange-700";
+    label = `${days}d`;
+  } else {
+    bgColor = "bg-red-100";
+    textColor = "text-red-700";
+    label = `${days}d`;
+  }
+
+  return (
+    <span className={`${bgColor} ${textColor} text-xs font-medium px-2 py-0.5 rounded-full`}>
+      {label}
+    </span>
+  );
+}
+
 function TaskItem({
   task,
   onToggle,
@@ -312,6 +341,12 @@ function TaskItem({
   // Calculate days until due
   const daysUntilDue = dueDate ? Math.floor((dueDate.getTime() - today.getTime()) / (1000 * 60 * 60 * 24)) : null;
 
+  // Calculate task age for aging reminders
+  const taskAge = !isCompleted && !isArchived
+    ? differenceInDays(new Date(), new Date(task.createdAt))
+    : 0;
+  const agingInfo = taskAge >= 1 ? getAgingMessage(taskAge) : null;
+
   // Determine variant for color coding
   const getVariant = (): "default" | "overdue" | "due" | "completed" => {
     if (isCompleted) return "completed";
@@ -321,74 +356,93 @@ function TaskItem({
   };
 
   return (
-    <ListItem
-      completed={isCompleted}
-      onToggle={() => onToggle(task)}
-      title={task.title}
-      description={!isArchived ? task.description : undefined}
-      disabled={isArchived}
-      onClick={isArchived ? undefined : () => onEdit(task)}
-      archived={isArchived}
-      variant={getVariant()}
-      metadata={
-        isArchived ? (
-          <p className="text-sm font-medium mt-1 flex items-center gap-1">
-            <ArchiveIcon className="size-3" />
-            <span className="text-gray-600">Archived</span>
-          </p>
-        ) : isCompleted ? undefined : isPast ? (
-          <p className="text-sm font-medium text-destructive/70 mt-1 flex items-center gap-1">
-            <DateIcon className="size-3" />
-            Overdue
-          </p>
-        ) : isDueToday ? (
-          <p className="text-sm font-medium text-amber-600 mt-1 flex items-center gap-1">
-            <DateIcon className="size-3" />
-            Due today
-          </p>
-        ) : daysUntilDue === 1 ? (
-          <p className="text-sm font-medium mt-1 flex items-center gap-1">
-            <DateIcon className="size-3" />
-            Due tomorrow
-          </p>
-        ) : daysUntilDue === 2 ? (
-          <p className="text-sm font-medium mt-1 flex items-center gap-1">
-            <DateIcon className="size-3" />
-            Due in 2 days
-          </p>
-        ) : daysUntilDue === 3 ? (
-          <p className="text-sm font-medium mt-1 flex items-center gap-1">
-            <DateIcon className="size-3" />
-            Due in 3 days
-          </p>
-        ) : task.dueDate ? (
-          <p className="text-sm font-medium mt-1 flex items-center gap-1">
-            <DateIcon className="size-3" />
-            {format(new Date(task.dueDate), "PPP")}
-          </p>
-        ) : undefined
-      }
-      actions={
-        isArchived && onUnarchive && onDelete ? (
-          <>
-            <Button
-              variant="destructive"
-              size="icon"
-              onClick={() => onDelete(task)}
-            >
-              <DeleteIcon />
-            </Button>
-            <Button
-              variant="default"
-              size="icon"
-              onClick={() => onUnarchive(task)}
-            >
-              <UnarchiveIcon />
-            </Button>
-          </>
-        ) : undefined
-      }
-    />
+    <div className="space-y-0">
+      <ListItem
+        completed={isCompleted}
+        onToggle={() => onToggle(task)}
+        title={task.title}
+        description={!isArchived ? task.description : undefined}
+        disabled={isArchived}
+        onClick={isArchived ? undefined : () => onEdit(task)}
+        archived={isArchived}
+        variant={getVariant()}
+        metadata={
+          <div className="space-y-1">
+            {isArchived ? (
+              <p className="text-sm font-medium mt-1 flex items-center gap-1">
+                <ArchiveIcon className="size-3" />
+                <span className="text-gray-600">Archived</span>
+              </p>
+            ) : isCompleted ? undefined : (
+              <div className="flex items-center gap-2 mt-1">
+                {isPast ? (
+                  <p className="text-sm font-medium text-destructive/70 flex items-center gap-1">
+                    <DateIcon className="size-3" />
+                    Overdue
+                  </p>
+                ) : isDueToday ? (
+                  <p className="text-sm font-medium text-amber-600 flex items-center gap-1">
+                    <DateIcon className="size-3" />
+                    Due today
+                  </p>
+                ) : daysUntilDue === 1 ? (
+                  <p className="text-sm font-medium flex items-center gap-1">
+                    <DateIcon className="size-3" />
+                    Due tomorrow
+                  </p>
+                ) : daysUntilDue === 2 ? (
+                  <p className="text-sm font-medium flex items-center gap-1">
+                    <DateIcon className="size-3" />
+                    Due in 2 days
+                  </p>
+                ) : daysUntilDue === 3 ? (
+                  <p className="text-sm font-medium flex items-center gap-1">
+                    <DateIcon className="size-3" />
+                    Due in 3 days
+                  </p>
+                ) : task.dueDate ? (
+                  <p className="text-sm font-medium flex items-center gap-1">
+                    <DateIcon className="size-3" />
+                    {format(new Date(task.dueDate), "PPP")}
+                  </p>
+                ) : null}
+                {taskAge >= 1 && <AgingBadge days={taskAge} />}
+              </div>
+            )}
+          </div>
+        }
+        actions={
+          isArchived && onUnarchive && onDelete ? (
+            <>
+              <Button
+                variant="destructive"
+                size="icon"
+                onClick={() => onDelete(task)}
+              >
+                <DeleteIcon />
+              </Button>
+              <Button
+                variant="default"
+                size="icon"
+                onClick={() => onUnarchive(task)}
+              >
+                <UnarchiveIcon />
+              </Button>
+            </>
+          ) : undefined
+        }
+      />
+      {/* Rabbit nudge for aging tasks (6+ days) */}
+      {agingInfo && taskAge >= 2 && (
+        <div className="pl-4 pt-1 pb-2">
+          <RabbitMascot
+            mood={agingInfo.mood}
+            message={agingInfo.message}
+            size="sm"
+          />
+        </div>
+      )}
+    </div>
   );
 }
 
@@ -712,7 +766,14 @@ function TasksComponent() {
     <div className="mx-auto space-y-8">
       <h1 className="text-2xl font-bold">My Tasks</h1>
       {allItems.length === 0 ? (
-        <div className="text-center py-12">All done!</div>
+        <div className="flex flex-col items-center py-12 gap-2">
+          <RabbitMascot
+            mood="happy"
+            message={getEmptyStateMessage().message}
+            size="md"
+            className="justify-center"
+          />
+        </div>
       ) : filter === "active" && groupedItems ? (
         <div className="space-y-3">
           {/* Active habits with entries for today (state 0) */}
