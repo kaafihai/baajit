@@ -15,6 +15,7 @@ import {
   initDatabase,
   backpopulateHabitEntries,
   backpopulateHabitEntriesForHabit,
+  addRabbitXP,
 } from '@/lib/db';
 
 const HABITS_QUERY_KEY = ['habits'];
@@ -212,6 +213,10 @@ export function useCompleteHabitEntry() {
     },
     onSuccess: () => {
       queryClient.invalidateQueries({ queryKey: HABIT_ENTRIES_QUERY_KEY });
+      // Award 3 XP for completing a habit entry
+      addRabbitXP(3).then(() => {
+        queryClient.invalidateQueries({ queryKey: ['rabbit', 'state'] });
+      });
     },
   });
 }

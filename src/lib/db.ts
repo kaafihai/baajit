@@ -1,7 +1,7 @@
 import Database from "@tauri-apps/plugin-sql";
 import { appDataDir, join, resolveResource } from "@tauri-apps/api/path";
 import { readTextFile } from "@tauri-apps/plugin-fs";
-import type { Task, Mood, Habit, HabitEntry } from "./types";
+import type { Task, Mood, Habit, HabitEntry, RabbitState, RabbitOutfit, RabbitMemory, RabbitLevel, RabbitMemoryType } from "./types";
 
 let db: Database | null = null;
 
@@ -19,6 +19,7 @@ export async function initDatabase(): Promise<Database> {
   // Load and run migrations
   const migrations = [
     "migrations/001_initial.sql",
+    "migrations/002_rabbit_state.sql",
   ];
 
   for (const migration of migrations) {
@@ -683,5 +684,168 @@ export async function backpopulateHabitEntries(): Promise<void> {
   // Backpopulate each active habit
   for (const habit of activeHabits) {
     await backpopulateHabitEntriesForHabit(habit);
+  }
+}
+
+// =============================================================================
+// RABBIT STATE OPERATIONS
+// =============================================================================
+
+export async function getRabbitState(): Promise<RabbitState | null> {
+  const database = await getDb();
+  const rows = await database.select<
+    Array<{
+      id: string;
+      level: number;
+      xp: number;
+      current_outfit: string;
+      created_at: string;
+      updated_at: string;
+    }>
+  >(`SELECT * FROM rabbit_state WHERE id = 'singleton'`);
+  if (rows.length === 0) return null;
+  const row = rows[0];
+  return {
+    id: row.id,
+    level: row.level as RabbitLevel,
+    xp: row.xp,
+    currentOutfit: row.current_outfit,
+    createdAt: row.created_at,
+    updatedAt: row.updated_at,
+  };
+}
+
+export async function initRabbitState(): Promise<RabbitState> {
+  const existing = await getRabbitState();
+  if (existing) return existing;
+
+  const database = await getDb();
+  const now = new Date().toISOString();
+  await database.execute(
+    `INSERT INTO rabbit_state (id, level, xp, current_outfit, created_at, updated_at) VALUES ('singleton', 1, 0, 'none', $1, $2)`,
+    [now, now]
+  );
+  return {
+    id: "singleton",
+    level: 1,
+    xp: 0,
+    currentOutfit: "none",
+    createdAt: now,
+    updatedAt: now,
+  };
+}
+
+export async function addRabbitXP(amount: number): Promise<RabbitState> {
+  const state = await initRabbitState();
+  const newXP = state.xp + amount;
+
+  // Calculate new level based on XP thresholds
+  let newLevel: RabbitLevel = 1;
+  if (newXP >= 700) newLevel = 5;
+  else if (newXP >= 350) newLevel = 4;
+  else if (newXP >= 150) newLevel = 3;
+  else if (newXP >= 50) newLevel = 2;
+
+  const database = await getDb();
+  const now = new Date().toISOString();
+  await database.execute(
+    `UPDATE rabbit_state SET xp = $1, level = $2, updated_at = $3 WHERE id = 'singleton'`,
+    [newXP, newLevel, now]
+  );
+
+  return { ...state, xp: newXP, level: newLevel as RabbitLevel, updatedAt: now };
+}
+
+export async function setRabbitOutfit(outfitId: string): Promise<void> {
+  const database = await getDb();
+  const now = new Date().toISOString();
+  await database.execute(
+    `UPDATE rabbit_state SET current_outfit = $1, updated_at = $2 WHERE id = 'singleton'`,
+    [outfitId, now]
+  );
+}
+
+// =============================================================================
+// RABBIT OUTFITS OPERATIONS
+// =============================================================================
+
+export async function getUnlockedOutfits(): Promise<RabbitOutfit[]> {
+  const database = await getDb();
+  const rows = await database.select<
+    Array<{
+      id: string;
+      unlocked_at: string;
+      unlock_reason: string;
+    }>
+  >(`SELECT * FROM rabbit_outfits ORDER BY unlocked_at`);
+  return rows.map((row) => ({
+    id: row.id,
+    unlockedAt: row.unlocked_at,
+    unlockReason: row.unlock_reason,
+  }));
+}
+
+export async function unlockOutfit(id: string, reason: string): Promise<RabbitOutfit | null> {
+  const database = await getDb();
+  // Check if already unlocked
+  const existing = await database.select<Array<{ id: string }>>(
+    `SELECT id FROM rabbit_outfits WHERE id = $1`, [id]
+  );
+  if (existing.length > 0) return null; // Already unlocked
+
+  const now = new Date().toISOString();
+  await database.execute(
+    `INSERT INTO rabbit_outfits (id, unlocked_at, unlock_reason) VALUES ($1, $2, $3)`,
+    [id, now, reason]
+  );
+  return { id, unlockedAt: now, unlockReason: reason };
+}
+
+// =============================================================================
+// RABBIT MEMORY OPERATIONS
+// =============================================================================
+
+export async function getRabbitMemories(): Promise<RabbitMemory[]> {
+  const database = await getDb();
+  const rows = await database.select<
+    Array<{
+      id: string;
+      memory_type: string;
+      memory_key: string;
+      memory_value: string;
+      created_at: string;
+      updated_at: string;
+    }>
+  >(`SELECT * FROM rabbit_memory ORDER BY updated_at DESC`);
+  return rows.map((row) => ({
+    id: row.id,
+    memoryType: row.memory_type as RabbitMemoryType,
+    memoryKey: row.memory_key,
+    memoryValue: row.memory_value,
+    createdAt: row.created_at,
+    updatedAt: row.updated_at,
+  }));
+}
+
+export async function upsertRabbitMemory(
+  memoryType: RabbitMemoryType,
+  memoryKey: string,
+  memoryValue: string
+): Promise<void> {
+  const database = await getDb();
+  const now = new Date().toISOString();
+  const id = `${memoryType}:${memoryKey}`;
+
+  // Try update first, then insert
+  const result = await database.execute(
+    `UPDATE rabbit_memory SET memory_value = $1, updated_at = $2 WHERE memory_type = $3 AND memory_key = $4`,
+    [memoryValue, now, memoryType, memoryKey]
+  );
+
+  if (result.rowsAffected === 0) {
+    await database.execute(
+      `INSERT INTO rabbit_memory (id, memory_type, memory_key, memory_value, created_at, updated_at) VALUES ($1, $2, $3, $4, $5, $6)`,
+      [id, memoryType, memoryKey, memoryValue, now, now]
+    );
   }
 }

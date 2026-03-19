@@ -1,5 +1,5 @@
 -- =============================================================================
--- SHARD SCHEMA v1 (BACKUP)
+-- NIBBLE SCHEMA v1 (BACKUP)
 -- Original schema from src/lib/db.ts before data model redesign
 -- =============================================================================
 

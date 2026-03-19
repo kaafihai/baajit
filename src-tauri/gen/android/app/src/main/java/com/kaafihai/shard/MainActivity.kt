@@ -1,4 +1,4 @@
-package com.kaafihai.shard
+package com.kaafihai.nibble
 
 import android.os.Bundle
 import androidx.activity.enableEdgeToEdge

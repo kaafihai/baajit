@@ -11,6 +11,7 @@ import {
   DateIcon,
 } from "@/lib/icons";
 import { useMemo, useState } from "react";
+import { RabbitWardrobe } from "@/components/rabbit-wardrobe";
 import { cn } from "@/lib/utils";
 import type { Habit, HabitEntry, MoodLevel } from "@/lib/types";
 import {
@@ -24,10 +25,14 @@ import {
 import { MOOD_OPTIONS } from "@/components/mood-tracker-form";
 import {
   RabbitMascot,
+  RabbitXPBar,
   getGreetingMessage,
   getStreakCelebration,
   getDashboardEmptyMessage,
+  getPersonalityMessage,
 } from "@/components/rabbit-mascot";
+import { useRabbitState, useRabbitMemories, useOutfitUnlockChecker } from "@/hooks/use-rabbit";
+import type { RabbitLevel } from "@/lib/types";
 
 export const Route = createFileRoute("/dashboard")({
   component: DashboardPage,
@@ -76,9 +81,13 @@ function DashboardPage() {
   const { data: habits, isLoading: habitsLoading } = useHabits(true);
   const { data: habitEntries, isLoading: habitEntriesLoading } =
     useAllHabitEntries();
+  const { data: rabbitState } = useRabbitState();
+  const { data: rabbitMemories } = useRabbitMemories();
+  useOutfitUnlockChecker();
 
   // Stable greeting message (computed once per mount)
   const [greeting] = useState(() => getGreetingMessage());
+  const [wardrobeOpen, setWardrobeOpen] = useState(false);
 
   const completedTasks = tasks?.filter((t) => t.completedAt) ?? [];
   const activeTasks = tasks?.filter((t) => !t.completedAt && !t.archivedAt) ?? [];
@@ -251,16 +260,38 @@ function DashboardPage() {
   return (
     <div className="mx-auto space-y-6">
       {/* Rabbit Greeting */}
-      <div className="flex items-center gap-4 p-5 rounded-4xl" style={{ background: "var(--accent-warm-subtle)" }}>
-        <RabbitMascot
-          mood={greeting.mood}
-          size="lg"
-          showBubble={false}
-        />
-        <div className="flex-1 min-w-0">
-          <h2 className="text-2xl font-bold">Dashboard</h2>
-          <p className="text-sm mt-1 opacity-80">{greeting.message}</p>
+      <RabbitWardrobe open={wardrobeOpen} onOpenChange={setWardrobeOpen} />
+      <div className="p-5 rounded-4xl space-y-3" style={{ background: "var(--accent-warm-subtle)" }}>
+        <div className="flex items-center gap-4">
+          <button
+            onClick={() => setWardrobeOpen(true)}
+            className="cursor-pointer hover:scale-105 transition-transform"
+            title="Open wardrobe"
+          >
+            <RabbitMascot
+              mood={greeting.mood}
+              size="lg"
+              showBubble={false}
+              level={(rabbitState?.level ?? 1) as RabbitLevel}
+              outfit={rabbitState?.currentOutfit ?? "none"}
+            />
+          </button>
+          <div className="flex-1 min-w-0">
+            <h2 className="text-2xl font-bold">Dashboard</h2>
+            <p className="text-sm mt-1 opacity-80">
+              {(() => {
+                const personalityMsg = getPersonalityMessage(rabbitMemories ?? []);
+                return personalityMsg ? personalityMsg.message : greeting.message;
+              })()}
+            </p>
+          </div>
         </div>
+        {rabbitState && (
+          <RabbitXPBar
+            level={rabbitState.level as RabbitLevel}
+            xp={rabbitState.xp}
+          />
+        )}
       </div>
 
       {/* Today's Focus */}
@@ -313,6 +344,8 @@ function DashboardPage() {
             mood={streakCelebration.mood}
             message={streakCelebration.message}
             size="sm"
+            level={(rabbitState?.level ?? 1) as RabbitLevel}
+            outfit={rabbitState?.currentOutfit ?? "none"}
           />
         </section>
       )}
@@ -490,6 +523,8 @@ function DashboardPage() {
                 message={getDashboardEmptyMessage().message}
                 size="md"
                 className="justify-center"
+                level={(rabbitState?.level ?? 1) as RabbitLevel}
+                outfit={rabbitState?.currentOutfit ?? "none"}
               />
             </div>
           )}

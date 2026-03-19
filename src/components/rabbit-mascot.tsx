@@ -1,4 +1,6 @@
 import { cn } from "@/lib/utils";
+import type { RabbitLevel, RabbitMemory } from "@/lib/types";
+import { RABBIT_LEVEL_NAMES, RABBIT_XP_THRESHOLDS } from "@/lib/types";
 
 export type RabbitMood =
   | "happy"
@@ -14,6 +16,9 @@ interface RabbitMascotProps {
   size?: "sm" | "md" | "lg";
   className?: string;
   showBubble?: boolean;
+  level?: RabbitLevel;
+  outfit?: string;
+  animated?: boolean;
 }
 
 export function RabbitMascot({
@@ -22,6 +27,9 @@ export function RabbitMascot({
   size = "md",
   className,
   showBubble = true,
+  level = 1,
+  outfit = "none",
+  animated = true,
 }: RabbitMascotProps) {
   const sizeClasses = {
     sm: "w-10 h-10",
@@ -29,10 +37,18 @@ export function RabbitMascot({
     lg: "w-24 h-24",
   };
 
+  // Level affects the rabbit's visual scale slightly (grows with level)
+  const levelScale = 0.9 + level * 0.025; // 0.925 → 1.025
+
   return (
     <div className={cn("flex items-end gap-3", className)}>
-      <div className={cn("shrink-0", sizeClasses[size])}>
-        <RabbitSVG mood={mood} />
+      <div
+        className={cn("shrink-0", sizeClasses[size])}
+        style={{ transform: `scale(${levelScale})` }}
+      >
+        <div className={animated ? `rabbit-idle rabbit-mood-${mood}` : ""}>
+          <RabbitSVG mood={mood} level={level} outfit={outfit} />
+        </div>
       </div>
       {message && showBubble && (
         <div className="relative bg-primary/10 rounded-2xl rounded-bl-sm px-3 py-2 text-sm max-w-[240px]">
@@ -43,12 +59,54 @@ export function RabbitMascot({
   );
 }
 
-function RabbitSVG({ mood }: { mood: RabbitMood }) {
-  // Eye expressions based on mood
+// --- XP Progress Bar ---
+interface RabbitXPBarProps {
+  level: RabbitLevel;
+  xp: number;
+  className?: string;
+}
+
+export function RabbitXPBar({ level, xp, className }: RabbitXPBarProps) {
+  const currentThreshold = RABBIT_XP_THRESHOLDS[level];
+  const nextLevel = (level < 5 ? level + 1 : 5) as RabbitLevel;
+  const nextThreshold = RABBIT_XP_THRESHOLDS[nextLevel];
+
+  const xpInLevel = xp - currentThreshold;
+  const xpNeeded = nextThreshold - currentThreshold;
+  const progress = level >= 5 ? 100 : Math.min(100, (xpInLevel / xpNeeded) * 100);
+
+  return (
+    <div className={cn("space-y-1", className)}>
+      <div className="flex justify-between text-xs">
+        <span className="font-medium">{RABBIT_LEVEL_NAMES[level]}</span>
+        <span className="opacity-60">
+          {level >= 5 ? "Max Level!" : `${xpInLevel}/${xpNeeded} XP`}
+        </span>
+      </div>
+      <div className="h-2 bg-primary/10 rounded-full overflow-hidden">
+        <div
+          className="h-full bg-success rounded-full transition-all duration-500"
+          style={{ width: `${progress}%` }}
+        />
+      </div>
+    </div>
+  );
+}
+
+// --- Rabbit SVG with outfits and level-based details ---
+
+function RabbitSVG({
+  mood,
+  level,
+  outfit,
+}: {
+  mood: RabbitMood;
+  level: RabbitLevel;
+  outfit: string;
+}) {
   const getEyes = () => {
     switch (mood) {
       case "celebrating":
-        // Excited closed eyes (happy arcs)
         return (
           <>
             <path d="M35 52 Q38 48 41 52" stroke="#5a4a5a" strokeWidth="2.5" fill="none" strokeLinecap="round" />
@@ -56,7 +114,6 @@ function RabbitSVG({ mood }: { mood: RabbitMood }) {
           </>
         );
       case "sleeping":
-        // Closed sleepy eyes
         return (
           <>
             <line x1="34" y1="51" x2="42" y2="51" stroke="#5a4a5a" strokeWidth="2" strokeLinecap="round" />
@@ -64,7 +121,6 @@ function RabbitSVG({ mood }: { mood: RabbitMood }) {
           </>
         );
       case "nudging":
-        // One eye winking
         return (
           <>
             <circle cx="38" cy="50" r="3" fill="#5a4a5a" />
@@ -72,12 +128,10 @@ function RabbitSVG({ mood }: { mood: RabbitMood }) {
           </>
         );
       default:
-        // Normal round eyes
         return (
           <>
             <circle cx="38" cy="50" r="3.5" fill="#5a4a5a" />
             <circle cx="58" cy="50" r="3.5" fill="#5a4a5a" />
-            {/* Eye shine */}
             <circle cx="39.5" cy="48.5" r="1.2" fill="white" />
             <circle cx="59.5" cy="48.5" r="1.2" fill="white" />
           </>
@@ -100,7 +154,6 @@ function RabbitSVG({ mood }: { mood: RabbitMood }) {
     }
   };
 
-  // Celebration extras (confetti, stars)
   const getExtras = () => {
     if (mood === "celebrating") {
       return (
@@ -109,7 +162,6 @@ function RabbitSVG({ mood }: { mood: RabbitMood }) {
           <circle cx="75" cy="15" r="2" fill="#b8d4c8" opacity="0.8" />
           <circle cx="80" cy="30" r="3" fill="#d4b8d8" opacity="0.7" />
           <circle cx="15" cy="35" r="2" fill="#e8a87c" opacity="0.6" />
-          {/* Stars */}
           <text x="10" y="25" fontSize="8" opacity="0.7">✦</text>
           <text x="82" y="22" fontSize="6" opacity="0.6">✦</text>
         </>
@@ -124,13 +176,19 @@ function RabbitSVG({ mood }: { mood: RabbitMood }) {
         </>
       );
     }
-    if (mood === "waving") {
-      return null; // Wave is handled by arm positioning
-    }
     return null;
   };
 
-  // Ear tilt based on mood
+  // Level-based fur gradient — slightly warmer/richer at higher levels
+  const furColors: Record<RabbitLevel, { main: string; stroke: string; inner: string }> = {
+    1: { main: "#f5e6d3", stroke: "#e8d4c0", inner: "#f0c4c4" },
+    2: { main: "#f3e2cf", stroke: "#e5d0bb", inner: "#edbfbf" },
+    3: { main: "#f0ddc8", stroke: "#e0c9b2", inner: "#e8b5b5" },
+    4: { main: "#edceb5", stroke: "#d8bca5", inner: "#e0a8a8" },
+    5: { main: "#eac5a8", stroke: "#d0af95", inner: "#d89e9e" },
+  };
+
+  const fur = furColors[level];
   const earRotation = mood === "celebrating" ? -5 : mood === "sleeping" ? 10 : 0;
 
   return (
@@ -139,25 +197,25 @@ function RabbitSVG({ mood }: { mood: RabbitMood }) {
 
       {/* Left ear */}
       <g transform={`rotate(${earRotation - 5}, 36, 30)`}>
-        <ellipse cx="36" cy="18" rx="10" ry="20" fill="#f5e6d3" stroke="#e8d4c0" strokeWidth="1.5" />
-        <ellipse cx="36" cy="18" rx="5.5" ry="14" fill="#f0c4c4" opacity="0.5" />
+        <ellipse cx="36" cy="18" rx="10" ry="20" fill={fur.main} stroke={fur.stroke} strokeWidth="1.5" />
+        <ellipse cx="36" cy="18" rx="5.5" ry="14" fill={fur.inner} opacity="0.5" />
       </g>
 
       {/* Right ear */}
       <g transform={`rotate(${-earRotation + 5}, 60, 30)`}>
-        <ellipse cx="60" cy="18" rx="10" ry="20" fill="#f5e6d3" stroke="#e8d4c0" strokeWidth="1.5" />
-        <ellipse cx="60" cy="18" rx="5.5" ry="14" fill="#f0c4c4" opacity="0.5" />
+        <ellipse cx="60" cy="18" rx="10" ry="20" fill={fur.main} stroke={fur.stroke} strokeWidth="1.5" />
+        <ellipse cx="60" cy="18" rx="5.5" ry="14" fill={fur.inner} opacity="0.5" />
       </g>
 
       {/* Body */}
-      <ellipse cx="48" cy="78" rx="18" ry="14" fill="#f5e6d3" stroke="#e8d4c0" strokeWidth="1.5" />
+      <ellipse cx="48" cy="78" rx="18" ry="14" fill={fur.main} stroke={fur.stroke} strokeWidth="1.5" />
 
       {/* Head */}
-      <ellipse cx="48" cy="52" rx="22" ry="20" fill="#f5e6d3" stroke="#e8d4c0" strokeWidth="1.5" />
+      <ellipse cx="48" cy="52" rx="22" ry="20" fill={fur.main} stroke={fur.stroke} strokeWidth="1.5" />
 
       {/* Cheek blush */}
-      <ellipse cx="30" cy="56" rx="5" ry="3.5" fill="#f0c4c4" opacity="0.45" />
-      <ellipse cx="66" cy="56" rx="5" ry="3.5" fill="#f0c4c4" opacity="0.45" />
+      <ellipse cx="30" cy="56" rx="5" ry="3.5" fill={fur.inner} opacity="0.45" />
+      <ellipse cx="66" cy="56" rx="5" ry="3.5" fill={fur.inner} opacity="0.45" />
 
       {/* Eyes */}
       {getEyes()}
@@ -177,22 +235,177 @@ function RabbitSVG({ mood }: { mood: RabbitMood }) {
       {/* Arms */}
       {mood === "waving" || mood === "celebrating" ? (
         <>
-          {/* Left arm down */}
-          <ellipse cx="32" cy="80" rx="5" ry="4" fill="#f5e6d3" stroke="#e8d4c0" strokeWidth="1" />
-          {/* Right arm raised */}
-          <ellipse cx="68" cy="68" rx="5" ry="4" fill="#f5e6d3" stroke="#e8d4c0" strokeWidth="1" transform="rotate(-30 68 68)" />
+          <ellipse cx="32" cy="80" rx="5" ry="4" fill={fur.main} stroke={fur.stroke} strokeWidth="1" />
+          <ellipse cx="68" cy="68" rx="5" ry="4" fill={fur.main} stroke={fur.stroke} strokeWidth="1" transform="rotate(-30 68 68)" />
         </>
       ) : (
         <>
-          <ellipse cx="32" cy="80" rx="5" ry="4" fill="#f5e6d3" stroke="#e8d4c0" strokeWidth="1" />
-          <ellipse cx="64" cy="80" rx="5" ry="4" fill="#f5e6d3" stroke="#e8d4c0" strokeWidth="1" />
+          <ellipse cx="32" cy="80" rx="5" ry="4" fill={fur.main} stroke={fur.stroke} strokeWidth="1" />
+          <ellipse cx="64" cy="80" rx="5" ry="4" fill={fur.main} stroke={fur.stroke} strokeWidth="1" />
         </>
       )}
 
       {/* Feet */}
-      <ellipse cx="40" cy="90" rx="7" ry="4" fill="#f5e6d3" stroke="#e8d4c0" strokeWidth="1" />
-      <ellipse cx="56" cy="90" rx="7" ry="4" fill="#f5e6d3" stroke="#e8d4c0" strokeWidth="1" />
+      <ellipse cx="40" cy="90" rx="7" ry="4" fill={fur.main} stroke={fur.stroke} strokeWidth="1" />
+      <ellipse cx="56" cy="90" rx="7" ry="4" fill={fur.main} stroke={fur.stroke} strokeWidth="1" />
+
+      {/* Level badge (levels 3+) */}
+      {level >= 3 && (
+        <g>
+          <circle cx="74" cy="74" r="8" fill="#fff" stroke={fur.stroke} strokeWidth="1.5" />
+          <text x="74" y="78" textAnchor="middle" fontSize="10" fill="#5a4a5a" fontWeight="bold">
+            {level}
+          </text>
+        </g>
+      )}
+
+      {/* Outfit rendering */}
+      <OutfitOverlay outfit={outfit} fur={fur} />
     </svg>
+  );
+}
+
+// --- Outfit SVG overlays ---
+
+function OutfitOverlay({
+  outfit,
+}: {
+  outfit: string;
+  fur: { main: string; stroke: string; inner: string };
+}) {
+  switch (outfit) {
+    case "scarf_cozy":
+      return (
+        <g>
+          <path d="M30 66 Q48 72 66 66 Q66 70 48 74 Q30 70 30 66Z" fill="#c4b5d8" stroke="#a898c0" strokeWidth="1" />
+          <path d="M58 68 L62 82 L56 82 L54 70Z" fill="#c4b5d8" stroke="#a898c0" strokeWidth="0.8" />
+        </g>
+      );
+    case "hat_party":
+      return (
+        <g>
+          <polygon points="48,8 38,34 58,34" fill="#e8a87c" stroke="#d4956a" strokeWidth="1" />
+          <ellipse cx="48" cy="34" rx="12" ry="3" fill="#e8a87c" stroke="#d4956a" strokeWidth="1" />
+          <circle cx="48" cy="8" r="3" fill="#f0d06a" />
+        </g>
+      );
+    case "glasses_smart":
+      return (
+        <g>
+          <circle cx="38" cy="50" r="7" fill="none" stroke="#8b7355" strokeWidth="1.8" />
+          <circle cx="58" cy="50" r="7" fill="none" stroke="#8b7355" strokeWidth="1.8" />
+          <line x1="45" y1="50" x2="51" y2="50" stroke="#8b7355" strokeWidth="1.5" />
+          <line x1="31" y1="49" x2="26" y2="47" stroke="#8b7355" strokeWidth="1.5" />
+          <line x1="65" y1="49" x2="70" y2="47" stroke="#8b7355" strokeWidth="1.5" />
+        </g>
+      );
+    case "bow_peach":
+      return (
+        <g>
+          <ellipse cx="63" cy="14" rx="7" ry="5" fill="#f0b89a" stroke="#e0a080" strokeWidth="0.8" transform="rotate(-15 63 14)" />
+          <ellipse cx="71" cy="10" rx="7" ry="5" fill="#f0b89a" stroke="#e0a080" strokeWidth="0.8" transform="rotate(15 71 10)" />
+          <circle cx="67" cy="12" r="2.5" fill="#e89878" />
+        </g>
+      );
+    case "cape_hero":
+      return (
+        <g>
+          <path d="M30 66 Q28 85 22 94 L48 88 L74 94 Q68 85 66 66Z" fill="#d85050" stroke="#c04040" strokeWidth="1" opacity="0.85" />
+        </g>
+      );
+    case "hat_crown":
+      return (
+        <g>
+          <path d="M34 36 L36 24 L40 32 L44 20 L48 32 L52 20 L56 32 L60 24 L62 36Z" fill="#f0d06a" stroke="#d4b44e" strokeWidth="1" />
+          <rect x="34" y="34" width="28" height="4" rx="1" fill="#f0d06a" stroke="#d4b44e" strokeWidth="1" />
+          <circle cx="48" cy="36" r="2" fill="#e85050" />
+        </g>
+      );
+    case "badge_star":
+      return (
+        <g>
+          <polygon points="20,74 22,70 24,74 28,74 25,77 26,81 22,78 18,81 19,77 16,74" fill="#f0d06a" stroke="#d4b44e" strokeWidth="0.8" />
+        </g>
+      );
+    case "cape_magic":
+      return (
+        <g>
+          <path d="M30 66 Q28 85 22 94 L48 88 L74 94 Q68 85 66 66Z" fill="#7050b0" stroke="#604098" strokeWidth="1" opacity="0.85" />
+          <text x="38" y="82" fontSize="5" fill="#f0d06a" opacity="0.7">✦</text>
+          <text x="52" y="78" fontSize="4" fill="#f0d06a" opacity="0.6">✦</text>
+          <text x="45" y="86" fontSize="3" fill="#f0d06a" opacity="0.5">✦</text>
+        </g>
+      );
+    case "glasses_heart":
+      return (
+        <g>
+          <path d="M31 50 Q31 44 38 44 Q45 44 45 50 Q45 56 38 58 Q31 56 31 50Z" fill="none" stroke="#e05080" strokeWidth="1.8" />
+          <path d="M51 50 Q51 44 58 44 Q65 44 65 50 Q65 56 58 58 Q51 56 51 50Z" fill="none" stroke="#e05080" strokeWidth="1.8" />
+          <line x1="45" y1="50" x2="51" y2="50" stroke="#e05080" strokeWidth="1.5" />
+          <line x1="31" y1="49" x2="26" y2="47" stroke="#e05080" strokeWidth="1.5" />
+          <line x1="65" y1="49" x2="70" y2="47" stroke="#e05080" strokeWidth="1.5" />
+        </g>
+      );
+    case "hat_wizard":
+      return (
+        <g>
+          <polygon points="48,2 34,36 62,36" fill="#5040a0" stroke="#403090" strokeWidth="1" />
+          <ellipse cx="48" cy="36" rx="16" ry="4" fill="#5040a0" stroke="#403090" strokeWidth="1" />
+          <text x="46" y="24" fontSize="8" fill="#f0d06a" opacity="0.8">✦</text>
+          <circle cx="42" cy="30" r="1.5" fill="#f0d06a" opacity="0.5" />
+          <circle cx="54" cy="18" r="1" fill="#f0d06a" opacity="0.4" />
+        </g>
+      );
+    default:
+      return null;
+  }
+}
+
+// --- CSS Animation Styles (inject into app root) ---
+
+export function RabbitAnimationStyles() {
+  return (
+    <style>{`
+      @keyframes rabbit-breathe {
+        0%, 100% { transform: translateY(0); }
+        50% { transform: translateY(-1.5px); }
+      }
+      @keyframes rabbit-bounce {
+        0%, 100% { transform: translateY(0); }
+        30% { transform: translateY(-4px); }
+        50% { transform: translateY(-2px); }
+        70% { transform: translateY(-5px); }
+      }
+      @keyframes rabbit-wave {
+        0%, 100% { transform: rotate(0deg); }
+        25% { transform: rotate(-8deg); }
+        75% { transform: rotate(8deg); }
+      }
+      @keyframes rabbit-sleep {
+        0%, 100% { transform: translateY(0) rotate(0deg); }
+        50% { transform: translateY(1px) rotate(2deg); }
+      }
+      @keyframes rabbit-nod {
+        0%, 100% { transform: rotate(0deg); }
+        30% { transform: rotate(5deg); }
+        60% { transform: rotate(-3deg); }
+      }
+      .rabbit-idle {
+        animation: rabbit-breathe 3s ease-in-out infinite;
+      }
+      .rabbit-mood-celebrating {
+        animation: rabbit-bounce 0.8s ease-in-out infinite !important;
+      }
+      .rabbit-mood-waving {
+        animation: rabbit-wave 1.2s ease-in-out infinite !important;
+      }
+      .rabbit-mood-sleeping {
+        animation: rabbit-sleep 4s ease-in-out infinite !important;
+      }
+      .rabbit-mood-nudging {
+        animation: rabbit-nod 1.5s ease-in-out infinite !important;
+      }
+    `}</style>
   );
 }
 
@@ -280,7 +493,6 @@ const STREAK_CELEBRATIONS: Record<number, { message: string; mood: RabbitMood }>
 };
 
 export function getStreakCelebration(streak: number): { message: string; mood: RabbitMood; milestone: number } | null {
-  // Find the highest milestone the streak has reached
   const milestones = Object.keys(STREAK_CELEBRATIONS)
     .map(Number)
     .sort((a, b) => b - a);
@@ -312,4 +524,63 @@ export function getDashboardEmptyMessage(): { message: string; mood: RabbitMood 
   ];
   const message = messages[Math.floor(Math.random() * messages.length)];
   return { message, mood: "waving" };
+}
+
+// --- Level-up messages ---
+
+export function getLevelUpMessage(newLevel: RabbitLevel): { message: string; mood: RabbitMood } {
+  const messages: Record<RabbitLevel, string> = {
+    1: "Welcome to the world, little one!",
+    2: "I'm growing up! Thanks for taking care of me!",
+    3: "Look at me — a real teen rabbit now! So cool!",
+    4: "Fully grown! We've come so far together!",
+    5: "I've reached max wisdom. Thank you for this journey!",
+  };
+  return { message: messages[newLevel], mood: "celebrating" };
+}
+
+// --- Personality memory messages ---
+
+export function getPersonalityMessage(memories: RabbitMemory[]): { message: string; mood: RabbitMood } | null {
+  if (!memories || memories.length === 0) return null;
+
+  const dayPatterns = memories.filter((m) => m.memoryType === "day_pattern");
+  const streakRecords = memories.filter((m) => m.memoryType === "streak_record");
+  const milestones = memories.filter((m) => m.memoryType === "milestone");
+  const funFacts = memories.filter((m) => m.memoryType === "fun_fact");
+
+  // Prioritize fun messages
+  if (funFacts.length > 0) {
+    const fact = funFacts[Math.floor(Math.random() * funFacts.length)];
+    return { message: fact.memoryValue, mood: "happy" };
+  }
+
+  if (dayPatterns.length > 0) {
+    const pattern = dayPatterns[0];
+    const dayMatch = pattern.memoryKey.match(/best_day=(\w+)/);
+    if (dayMatch) {
+      return {
+        message: `I noticed you're most productive on ${dayMatch[1]}s! Let's keep that streak going!`,
+        mood: "encouraging",
+      };
+    }
+  }
+
+  if (streakRecords.length > 0) {
+    const record = streakRecords[0];
+    return {
+      message: `Your best streak was ${record.memoryValue} days — can we beat it?`,
+      mood: "encouraging",
+    };
+  }
+
+  if (milestones.length > 0) {
+    const milestone = milestones[milestones.length - 1];
+    return {
+      message: `Remember when you hit ${milestone.memoryKey}? So proud!`,
+      mood: "happy",
+    };
+  }
+
+  return null;
 }

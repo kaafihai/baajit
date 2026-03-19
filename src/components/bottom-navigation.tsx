@@ -10,6 +10,9 @@ export function BottomNavigation() {
   const router = useRouterState();
   const currentPath = router.location.pathname;
 
+  // Hide nav on welcome page
+  if (currentPath === "/welcome") return null;
+
   const isCalendarActive = currentPath.startsWith("/calendar");
   const isTasksActive = currentPath === "/" || currentPath === "/archive";
   const isProfileActive = currentPath.startsWith("/dashboard");

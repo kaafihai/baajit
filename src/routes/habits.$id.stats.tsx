@@ -22,6 +22,8 @@ import {
   RabbitMascot,
   getStreakCelebration,
 } from "@/components/rabbit-mascot";
+import { useRabbitState } from "@/hooks/use-rabbit";
+import type { RabbitLevel } from "@/lib/types";
 
 export const Route = createFileRoute("/habits/$id/stats")({
   component: HabitStatsPage,
@@ -58,6 +60,7 @@ function HabitStatsPage() {
   const navigate = useNavigate();
   const { data: habit, isLoading: habitLoading } = useHabitById(id);
   const { data: allEntries, isLoading: entriesLoading } = useAllHabitEntries();
+  const { data: rabbitState } = useRabbitState();
 
   const entries = useMemo(() => {
     return allEntries?.filter((e) => e.habitId === id) ?? [];
@@ -189,6 +192,8 @@ function HabitStatsPage() {
               mood={currentStreakCelebration.mood}
               message={currentStreakCelebration.message}
               size="sm"
+              level={(rabbitState?.level ?? 1) as RabbitLevel}
+              outfit={rabbitState?.currentOutfit ?? "none"}
             />
           </div>
         )}

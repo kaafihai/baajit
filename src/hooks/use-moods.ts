@@ -6,6 +6,7 @@ import {
   getMoodByDate,
   createMood,
   initDatabase,
+  addRabbitXP,
 } from "@/lib/db";
 
 const MOODS_QUERY_KEY = ["moods"];
@@ -68,6 +69,10 @@ export function useCreateMood() {
     onSuccess: () => {
       queryClient.invalidateQueries({ queryKey: MOODS_QUERY_KEY });
       queryClient.invalidateQueries({ queryKey: TODAY_MOOD_QUERY_KEY });
+      // Award 2 XP for logging a mood
+      addRabbitXP(2).then(() => {
+        queryClient.invalidateQueries({ queryKey: ['rabbit', 'state'] });
+      });
     },
   });
 }

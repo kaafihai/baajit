@@ -10,6 +10,7 @@ import {
   updateTask,
   deleteTask,
   initDatabase,
+  addRabbitXP,
 } from '@/lib/db';
 
 const TASKS_QUERY_KEY = ['tasks'];
@@ -120,16 +121,27 @@ export function useDeleteTask() {
 
 export function useToggleTask() {
   const updateTask = useUpdateTask();
+  const queryClient = useQueryClient();
 
   return {
     ...updateTask,
     mutate: (task: Task) => {
+      const wasCompleted = !!task.completedAt;
       if (task.completedAt) {
         task.completedAt = null;
       } else {
         task.completedAt = new Date().toISOString();
       }
-      updateTask.mutate(task);
+      updateTask.mutate(task, {
+        onSuccess: () => {
+          // Award 5 XP for completing a task (not for uncompleting)
+          if (!wasCompleted) {
+            addRabbitXP(5).then(() => {
+              queryClient.invalidateQueries({ queryKey: ['rabbit', 'state'] });
+            });
+          }
+        },
+      });
     },
   };
 }
