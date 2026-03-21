@@ -1,3 +1,0 @@
-password=signingpassword
-keyAlias=signing
-storeFile=./local-keystore.jks

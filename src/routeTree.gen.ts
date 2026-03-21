@@ -9,21 +9,33 @@
 // Additionally, you should also exclude this file from your linter and/or formatter to prevent it from being checked or modified.
 
 import { Route as rootRouteImport } from './routes/__root'
+import { Route as WelcomeRouteImport } from './routes/welcome'
 import { Route as NewRouteImport } from './routes/new'
+import { Route as FocusRouteImport } from './routes/focus'
 import { Route as DashboardRouteImport } from './routes/dashboard'
 import { Route as CalendarRouteImport } from './routes/calendar'
+import { Route as BraindumpRouteImport } from './routes/braindump'
 import { Route as ArchiveRouteImport } from './routes/archive'
 import { Route as IndexRouteImport } from './routes/index'
 import { Route as MoodTrackRouteImport } from './routes/mood.track'
 import { Route as CalendarTimestampRouteImport } from './routes/calendar.$timestamp'
 import { Route as TasksIdEditRouteImport } from './routes/tasks.$id.edit'
 import { Route as HabitsIdStatsRouteImport } from './routes/habits.$id.stats'
-import { Route as WelcomeRouteImport } from './routes/welcome'
 import { Route as HabitsIdEditRouteImport } from './routes/habits.$id.edit'
 
+const WelcomeRoute = WelcomeRouteImport.update({
+  id: '/welcome',
+  path: '/welcome',
+  getParentRoute: () => rootRouteImport,
+} as any)
 const NewRoute = NewRouteImport.update({
   id: '/new',
   path: '/new',
+  getParentRoute: () => rootRouteImport,
+} as any)
+const FocusRoute = FocusRouteImport.update({
+  id: '/focus',
+  path: '/focus',
   getParentRoute: () => rootRouteImport,
 } as any)
 const DashboardRoute = DashboardRouteImport.update({
@@ -34,6 +46,11 @@ const DashboardRoute = DashboardRouteImport.update({
 const CalendarRoute = CalendarRouteImport.update({
   id: '/calendar',
   path: '/calendar',
+  getParentRoute: () => rootRouteImport,
+} as any)
+const BraindumpRoute = BraindumpRouteImport.update({
+  id: '/braindump',
+  path: '/braindump',
   getParentRoute: () => rootRouteImport,
 } as any)
 const ArchiveRoute = ArchiveRouteImport.update({
@@ -66,11 +83,6 @@ const HabitsIdStatsRoute = HabitsIdStatsRouteImport.update({
   path: '/habits/$id/stats',
   getParentRoute: () => rootRouteImport,
 } as any)
-const WelcomeRoute = WelcomeRouteImport.update({
-  id: '/welcome',
-  path: '/welcome',
-  getParentRoute: () => rootRouteImport,
-} as any)
 const HabitsIdEditRoute = HabitsIdEditRouteImport.update({
   id: '/habits/$id/edit',
   path: '/habits/$id/edit',
@@ -80,8 +92,10 @@ const HabitsIdEditRoute = HabitsIdEditRouteImport.update({
 export interface FileRoutesByFullPath {
   '/': typeof IndexRoute
   '/archive': typeof ArchiveRoute
+  '/braindump': typeof BraindumpRoute
   '/calendar': typeof CalendarRouteWithChildren
   '/dashboard': typeof DashboardRoute
+  '/focus': typeof FocusRoute
   '/new': typeof NewRoute
   '/welcome': typeof WelcomeRoute
   '/calendar/$timestamp': typeof CalendarTimestampRoute
@@ -93,8 +107,10 @@ export interface FileRoutesByFullPath {
 export interface FileRoutesByTo {
   '/': typeof IndexRoute
   '/archive': typeof ArchiveRoute
+  '/braindump': typeof BraindumpRoute
   '/calendar': typeof CalendarRouteWithChildren
   '/dashboard': typeof DashboardRoute
+  '/focus': typeof FocusRoute
   '/new': typeof NewRoute
   '/welcome': typeof WelcomeRoute
   '/calendar/$timestamp': typeof CalendarTimestampRoute
@@ -107,8 +123,10 @@ export interface FileRoutesById {
   __root__: typeof rootRouteImport
   '/': typeof IndexRoute
   '/archive': typeof ArchiveRoute
+  '/braindump': typeof BraindumpRoute
   '/calendar': typeof CalendarRouteWithChildren
   '/dashboard': typeof DashboardRoute
+  '/focus': typeof FocusRoute
   '/new': typeof NewRoute
   '/welcome': typeof WelcomeRoute
   '/calendar/$timestamp': typeof CalendarTimestampRoute
@@ -122,8 +140,10 @@ export interface FileRouteTypes {
   fullPaths:
     | '/'
     | '/archive'
+    | '/braindump'
     | '/calendar'
     | '/dashboard'
+    | '/focus'
     | '/new'
     | '/welcome'
     | '/calendar/$timestamp'
@@ -135,8 +155,10 @@ export interface FileRouteTypes {
   to:
     | '/'
     | '/archive'
+    | '/braindump'
     | '/calendar'
     | '/dashboard'
+    | '/focus'
     | '/new'
     | '/welcome'
     | '/calendar/$timestamp'
@@ -148,8 +170,10 @@ export interface FileRouteTypes {
     | '__root__'
     | '/'
     | '/archive'
+    | '/braindump'
     | '/calendar'
     | '/dashboard'
+    | '/focus'
     | '/new'
     | '/welcome'
     | '/calendar/$timestamp'
@@ -162,8 +186,10 @@ export interface FileRouteTypes {
 export interface RootRouteChildren {
   IndexRoute: typeof IndexRoute
   ArchiveRoute: typeof ArchiveRoute
+  BraindumpRoute: typeof BraindumpRoute
   CalendarRoute: typeof CalendarRouteWithChildren
   DashboardRoute: typeof DashboardRoute
+  FocusRoute: typeof FocusRoute
   NewRoute: typeof NewRoute
   WelcomeRoute: typeof WelcomeRoute
   MoodTrackRoute: typeof MoodTrackRoute
@@ -174,11 +200,25 @@ export interface RootRouteChildren {
 
 declare module '@tanstack/react-router' {
   interface FileRoutesByPath {
+    '/welcome': {
+      id: '/welcome'
+      path: '/welcome'
+      fullPath: '/welcome'
+      preLoaderRoute: typeof WelcomeRouteImport
+      parentRoute: typeof rootRouteImport
+    }
     '/new': {
       id: '/new'
       path: '/new'
       fullPath: '/new'
       preLoaderRoute: typeof NewRouteImport
+      parentRoute: typeof rootRouteImport
+    }
+    '/focus': {
+      id: '/focus'
+      path: '/focus'
+      fullPath: '/focus'
+      preLoaderRoute: typeof FocusRouteImport
       parentRoute: typeof rootRouteImport
     }
     '/dashboard': {
@@ -193,6 +233,13 @@ declare module '@tanstack/react-router' {
       path: '/calendar'
       fullPath: '/calendar'
       preLoaderRoute: typeof CalendarRouteImport
+      parentRoute: typeof rootRouteImport
+    }
+    '/braindump': {
+      id: '/braindump'
+      path: '/braindump'
+      fullPath: '/braindump'
+      preLoaderRoute: typeof BraindumpRouteImport
       parentRoute: typeof rootRouteImport
     }
     '/archive': {
@@ -244,13 +291,6 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof HabitsIdEditRouteImport
       parentRoute: typeof rootRouteImport
     }
-    '/welcome': {
-      id: '/welcome'
-      path: '/welcome'
-      fullPath: '/welcome'
-      preLoaderRoute: typeof WelcomeRouteImport
-      parentRoute: typeof rootRouteImport
-    }
   }
 }
 
@@ -269,8 +309,10 @@ const CalendarRouteWithChildren = CalendarRoute._addFileChildren(
 const rootRouteChildren: RootRouteChildren = {
   IndexRoute: IndexRoute,
   ArchiveRoute: ArchiveRoute,
+  BraindumpRoute: BraindumpRoute,
   CalendarRoute: CalendarRouteWithChildren,
   DashboardRoute: DashboardRoute,
+  FocusRoute: FocusRoute,
   NewRoute: NewRoute,
   WelcomeRoute: WelcomeRoute,
   MoodTrackRoute: MoodTrackRoute,

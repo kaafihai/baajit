@@ -1,4 +1,3 @@
-import java.io.FileInputStream
 import java.util.Properties
 
 plugins {
@@ -6,8 +5,8 @@ plugins {
     id("org.jetbrains.kotlin.android")
     id("rust")
 }
-val tauriProperties = Properties().apply {
 
+val tauriProperties = Properties().apply {
     val propFile = file("tauri.properties")
     if (propFile.exists()) {
         propFile.inputStream().use { load(it) }
@@ -25,20 +24,6 @@ android {
         versionCode = tauriProperties.getProperty("tauri.android.versionCode", "1").toInt()
         versionName = tauriProperties.getProperty("tauri.android.versionName", "1.0")
     }
-    signingConfigs {
-      create("release") {
-        val keystorePropertiesFile = rootProject.file("key.properties")
-        val keystoreProperties = Properties()
-        if (keystorePropertiesFile.exists()) {
-            keystoreProperties.load(FileInputStream(keystorePropertiesFile))
-        }
-
-        keyAlias = keystoreProperties["keyAlias"] as String
-        keyPassword = keystoreProperties["password"] as String
-        storeFile = rootProject.file(keystoreProperties["storeFile"] as String)
-        storePassword = keystoreProperties["password"] as String
-      }
-    }
     buildTypes {
         getByName("debug") {
             manifestPlaceholders["usesCleartextTraffic"] = "true"
@@ -53,7 +38,6 @@ android {
         }
         getByName("release") {
             isMinifyEnabled = true
-            signingConfig = signingConfigs.getByName("release")
             proguardFiles(
                 *fileTree(".") { include("**/*.pro") }
                     .plus(getDefaultProguardFile("proguard-android-optimize.txt"))
