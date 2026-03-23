@@ -1,5 +1,32 @@
 # Changelog
 
+All notable changes to Nibble are documented here.
+
+---
+
+## v1.0.1 — Polish (March 23, 2026)
+
+### Improved
+
+- **Welcome page carrot field** — Completely redrawn SVG with golden-hour sky, sun rays, wooden fence on distant hills, a tiny tree, wildflower clusters, two animated butterflies, pulsing fireflies, and twinkling sparkle stars. 8 carrot plants per row (up from 6) with fuller leafy fronds.
+- **Brain Dump explainer** — Added a "How Brain Dump works" section at the bottom of the dump page explaining that Tasks get added to your list, while Notes and Later items are just for clearing your head.
+
+### Fixed
+
+- Welcome page redirect now properly re-evaluates on navigation changes (added missing useEffect dependencies).
+- Unknown habit frequency types now default to "not scheduled" instead of incorrectly appearing on every day.
+- Mood form submit handler now validates selection even if the button guard is bypassed.
+
+### Added
+
+- MIT License
+- CONTRIBUTING.md with guidelines for ADHD-friendly design contributions
+- Comprehensive README with setup instructions, feature overview, and project structure
+- Play Store listing text, privacy policy, and launch note
+- `.gitignore` entries for Android signing keys and build artifacts
+
+---
+
 ## v1.0.0 — First Release (March 2026)
 
 Nibble is a task and habit management app built specifically for ADHD brains. Local-first, privacy-respecting, and designed to work with the way your brain actually works — not against it.
@@ -37,3 +64,37 @@ Nibble is a task and habit management app built specifically for ADHD brains. Lo
 - TanStack Router for navigation, TanStack React Query for data management
 - Tailwind CSS v4 with shadcn/ui components
 - Phosphor Icons throughout
+
+---
+
+## Pre-release History
+
+### Phase 2 — ADHD-Specific Tools (March 2026)
+
+- Focus Timer with preset durations and XP rewards
+- Brain Dump quick-capture with sort-and-categorize flow
+- Task Breakdown Assistant with rabbit coaching
+- Energy Level Tracking with daily check-in and dashboard adaptation
+- Sensory Grounding Exercises (box breathing, 5-4-3-2-1, body scan)
+- Transition Prompts between completed tasks
+- 5-tab bottom navigation (Calendar, Tasks, Focus, Dump, Profile)
+
+### Phase 1 — Core Experience (March 2026)
+
+- Rabbit mascot with 5 growth levels and XP progression
+- Unlockable outfits (scarf, glasses, badge, hat, cape) tied to milestones
+- Warm color palette with illustrated welcome page
+- Mood tracker with aging reminders
+- Streak rewards for habit consistency
+- App renamed from SharD to Nibble
+
+### Foundation (February–March 2026)
+
+- Tauri v2 scaffold with React, TypeScript, Vite
+- SQLite database with migrations for tasks, habits, moods, and entries
+- Task CRUD with due dates, completion, archiving, and cancellation
+- Habit system with RRULE scheduling and calendar backpopulation
+- Mood tracker with 5 mood levels and notes
+- Calendar view with day and week modes
+- Android build setup with keystore configuration
+- Nix flake for reproducible development environment
