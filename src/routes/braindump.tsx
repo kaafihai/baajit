@@ -208,6 +208,18 @@ function BrainDumpPage() {
             </div>
             <p className="text-xs opacity-40 text-center">⌘ + Enter to add quickly</p>
           </div>
+
+          {/* Explainer */}
+          <div className="p-4 rounded-2xl bg-primary/5 space-y-2">
+            <p className="text-xs font-semibold opacity-50">How Brain Dump works</p>
+            <p className="text-xs leading-relaxed opacity-40">
+              Type whatever is on your mind — one thought per line, or all at once.
+              When you're done dumping, tap Sort to categorize each thought as a Task,
+              a Note, or something for Later. Tasks get added to your task list automatically.
+              Notes and Later items are just for clearing your head — they won't be saved anywhere,
+              and that's the point.
+            </p>
+          </div>
         </>
       )}
 

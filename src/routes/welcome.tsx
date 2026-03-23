@@ -68,334 +68,334 @@ function FieldScene() {
     <svg viewBox="0 0 320 256" fill="none" xmlns="http://www.w3.org/2000/svg" className="w-full h-full">
       <defs>
         <linearGradient id="sky" x1="0" y1="0" x2="0" y2="1">
-          <stop offset="0%" stopColor="#dce8f5" />
-          <stop offset="60%" stopColor="#eae4da" />
-          <stop offset="100%" stopColor="#f0e8d8" />
+          <stop offset="0%" stopColor="#c8ddf0" />
+          <stop offset="40%" stopColor="#e8d8c4" />
+          <stop offset="70%" stopColor="#f2dcc0" />
+          <stop offset="100%" stopColor="#e8d4b0" />
         </linearGradient>
-        <linearGradient id="grass" x1="0" y1="0" x2="0" y2="1">
-          <stop offset="0%" stopColor="#8aba7a" />
-          <stop offset="100%" stopColor="#6a9a58" />
-        </linearGradient>
-        <linearGradient id="grassLight" x1="0" y1="0" x2="0" y2="1">
-          <stop offset="0%" stopColor="#b8d8a8" />
-          <stop offset="100%" stopColor="#98c488" />
-        </linearGradient>
-        <linearGradient id="soil" x1="0" y1="0" x2="0" y2="1">
-          <stop offset="0%" stopColor="#8B6E4E" />
-          <stop offset="100%" stopColor="#6B5038" />
-        </linearGradient>
-        <linearGradient id="sunGlow" cx="0.5" cy="0.5" r="0.5" fx="0.5" fy="0.5">
+        <radialGradient id="sunGlow" cx="0.5" cy="0.5" r="0.5">
           <stop offset="0%" stopColor="#fff8e0" />
+          <stop offset="40%" stopColor="#fce8b0" stopOpacity="0.5" />
           <stop offset="100%" stopColor="#f5dca0" stopOpacity="0" />
+        </radialGradient>
+        <linearGradient id="grass" x1="0" y1="0" x2="0" y2="1">
+          <stop offset="0%" stopColor="#7db86a" />
+          <stop offset="100%" stopColor="#5a9848" />
+        </linearGradient>
+        <linearGradient id="grassWarm" x1="0" y1="0" x2="0" y2="1">
+          <stop offset="0%" stopColor="#a8cc88" />
+          <stop offset="100%" stopColor="#88b868" />
+        </linearGradient>
+        <linearGradient id="carrotBody" x1="0" y1="0" x2="0" y2="1">
+          <stop offset="0%" stopColor="#f09050" />
+          <stop offset="100%" stopColor="#d06828" />
         </linearGradient>
       </defs>
 
-      {/* Sky */}
+      {/* Sky with warm golden-hour tone */}
       <rect width="320" height="256" fill="url(#sky)" rx="16" />
 
-      {/* Sun with glow */}
-      <circle cx="270" cy="38" r="32" fill="url(#sunGlow)" />
-      <circle cx="270" cy="38" r="16" fill="#f5dca0" opacity="0.7" />
-      <circle cx="270" cy="38" r="10" fill="#f8e8b8" opacity="0.9" />
-
-      {/* Clouds */}
-      <g opacity="0.5">
-        <ellipse cx="55" cy="35" rx="28" ry="11" fill="white" />
-        <ellipse cx="78" cy="31" rx="20" ry="9" fill="white" opacity="0.8" />
-        <ellipse cx="42" cy="32" rx="14" ry="8" fill="white" opacity="0.7" />
-      </g>
-      <g opacity="0.4">
-        <ellipse cx="180" cy="48" rx="22" ry="9" fill="white" />
-        <ellipse cx="198" cy="45" rx="16" ry="7" fill="white" opacity="0.8" />
-      </g>
-      <g opacity="0.3">
-        <ellipse cx="120" cy="25" rx="18" ry="7" fill="white" />
+      {/* Sun with layered glow */}
+      <circle cx="268" cy="36" r="48" fill="url(#sunGlow)" />
+      <circle cx="268" cy="36" r="20" fill="#f8e0a0" opacity="0.6" />
+      <circle cx="268" cy="36" r="12" fill="#fff4d0" opacity="0.8" />
+      {/* Sun rays */}
+      <g opacity="0.15" stroke="#f0c860" strokeWidth="1">
+        <line x1="268" y1="8" x2="268" y2="0" />
+        <line x1="290" y1="18" x2="298" y2="12" />
+        <line x1="296" y1="36" x2="305" y2="36" />
+        <line x1="248" y1="16" x2="240" y2="10" />
+        <line x1="288" y1="54" x2="296" y2="60" />
+        <line x1="248" y1="56" x2="240" y2="62" />
       </g>
 
-      {/* Distant hills */}
-      <ellipse cx="80" cy="140" rx="120" ry="30" fill="#c4d8b8" opacity="0.5" />
-      <ellipse cx="260" cy="145" rx="100" ry="28" fill="#c4d8b8" opacity="0.4" />
-
-      {/* Main ground - lush green */}
-      <ellipse cx="160" cy="210" rx="200" ry="70" fill="url(#grass)" />
-      <ellipse cx="60" cy="220" rx="110" ry="50" fill="url(#grassLight)" opacity="0.6" />
-      <ellipse cx="270" cy="215" rx="100" ry="55" fill="url(#grassLight)" opacity="0.5" />
-
-      {/* Soil rows for carrot field */}
-      <g opacity="0.3">
-        <ellipse cx="160" cy="195" rx="130" ry="4" fill="#8B6E4E" />
-        <ellipse cx="160" cy="208" rx="140" ry="4" fill="#8B6E4E" />
-        <ellipse cx="160" cy="221" rx="135" ry="4" fill="#8B6E4E" />
+      {/* Clouds - softer, warmer */}
+      <g opacity="0.45">
+        <ellipse cx="52" cy="34" rx="30" ry="12" fill="white" />
+        <ellipse cx="76" cy="30" rx="22" ry="10" fill="white" opacity="0.8" />
+        <ellipse cx="38" cy="31" rx="16" ry="9" fill="white" opacity="0.7" />
+      </g>
+      <g opacity="0.35">
+        <ellipse cx="175" cy="46" rx="24" ry="10" fill="white" />
+        <ellipse cx="195" cy="43" rx="18" ry="8" fill="white" opacity="0.8" />
+      </g>
+      <g opacity="0.2">
+        <ellipse cx="125" cy="22" rx="20" ry="8" fill="#fff8f0" />
       </g>
 
-      {/* === CARROT PLANTS ROW 1 (back row, smaller) === */}
-      <g opacity="0.7">
-        {/* Plant 1 */}
-        <g transform="translate(45, 178)">
-          <path d="M0 0 Q-3 -14 -1 -18" stroke="#4a8a38" strokeWidth="1.5" fill="none" />
-          <path d="M0 0 Q1 -16 3 -20" stroke="#5a9a45" strokeWidth="1.5" fill="none" />
-          <path d="M0 0 Q4 -12 6 -16" stroke="#4a8a38" strokeWidth="1.2" fill="none" />
-          <path d="M0 2 L0 6" stroke="#e88040" strokeWidth="3" strokeLinecap="round" />
-        </g>
-        {/* Plant 2 */}
-        <g transform="translate(75, 176)">
-          <path d="M0 0 Q-2 -16 0 -20" stroke="#5a9a45" strokeWidth="1.5" fill="none" />
-          <path d="M0 0 Q2 -14 4 -18" stroke="#4a8a38" strokeWidth="1.5" fill="none" />
-          <path d="M0 0 Q-4 -12 -5 -15" stroke="#5a9a45" strokeWidth="1.2" fill="none" />
-          <path d="M0 2 L0 7" stroke="#e88040" strokeWidth="3.5" strokeLinecap="round" />
-        </g>
-        {/* Plant 3 */}
-        <g transform="translate(105, 178)">
-          <path d="M0 0 Q-1 -18 1 -22" stroke="#4a8a38" strokeWidth="1.5" fill="none" />
-          <path d="M0 0 Q3 -15 5 -19" stroke="#5a9a45" strokeWidth="1.5" fill="none" />
-          <path d="M0 2 L0 6" stroke="#e88040" strokeWidth="3" strokeLinecap="round" />
-        </g>
-        {/* Plant 4 */}
-        <g transform="translate(215, 177)">
-          <path d="M0 0 Q-2 -15 -1 -19" stroke="#5a9a45" strokeWidth="1.5" fill="none" />
-          <path d="M0 0 Q2 -17 3 -21" stroke="#4a8a38" strokeWidth="1.5" fill="none" />
-          <path d="M0 0 Q5 -11 6 -14" stroke="#5a9a45" strokeWidth="1.2" fill="none" />
-          <path d="M0 2 L0 7" stroke="#e88040" strokeWidth="3" strokeLinecap="round" />
-        </g>
-        {/* Plant 5 */}
-        <g transform="translate(245, 179)">
-          <path d="M0 0 Q-3 -13 -1 -17" stroke="#4a8a38" strokeWidth="1.5" fill="none" />
-          <path d="M0 0 Q1 -15 2 -19" stroke="#5a9a45" strokeWidth="1.5" fill="none" />
-          <path d="M0 2 L0 5" stroke="#e88040" strokeWidth="2.5" strokeLinecap="round" />
-        </g>
-        {/* Plant 6 */}
-        <g transform="translate(275, 178)">
-          <path d="M0 0 Q-2 -14 0 -18" stroke="#5a9a45" strokeWidth="1.5" fill="none" />
-          <path d="M0 0 Q3 -12 4 -16" stroke="#4a8a38" strokeWidth="1.2" fill="none" />
-          <path d="M0 2 L0 6" stroke="#e88040" strokeWidth="3" strokeLinecap="round" />
-        </g>
+      {/* Distant rolling hills with depth */}
+      <ellipse cx="70" cy="138" rx="130" ry="34" fill="#b8d0a8" opacity="0.45" />
+      <ellipse cx="250" cy="142" rx="110" ry="30" fill="#b8d0a8" opacity="0.35" />
+      <ellipse cx="160" cy="148" rx="80" ry="20" fill="#c4d8b0" opacity="0.3" />
+
+      {/* Little wooden fence on distant hill */}
+      <g opacity="0.3" stroke="#8a7050" strokeWidth="1.2">
+        <line x1="20" y1="136" x2="20" y2="126" />
+        <line x1="34" y1="134" x2="34" y2="124" />
+        <line x1="48" y1="133" x2="48" y2="123" />
+        <line x1="62" y1="133" x2="62" y2="123" />
+        <line x1="20" y1="128" x2="62" y2="125" strokeWidth="0.8" />
+        <line x1="20" y1="133" x2="62" y2="130" strokeWidth="0.8" />
       </g>
 
-      {/* === CARROT PLANTS ROW 2 (middle row) === */}
-      <g opacity="0.85">
-        {/* Plant 1 */}
-        <g transform="translate(30, 192)">
-          <path d="M0 0 Q-4 -18 -1 -24" stroke="#4a8a38" strokeWidth="2" fill="none" />
-          <path d="M0 0 Q2 -20 4 -26" stroke="#5a9a45" strokeWidth="2" fill="none" />
-          <path d="M0 0 Q5 -14 7 -20" stroke="#4a8a38" strokeWidth="1.5" fill="none" />
-          <path d="M0 0 Q-5 -10 -7 -16" stroke="#5a9a45" strokeWidth="1.5" fill="none" />
-          <path d="M0 2 L0 9" stroke="#e88040" strokeWidth="4" strokeLinecap="round" />
-        </g>
-        {/* Plant 2 */}
-        <g transform="translate(58, 190)">
-          <path d="M0 0 Q-3 -20 0 -26" stroke="#5a9a45" strokeWidth="2" fill="none" />
-          <path d="M0 0 Q3 -18 5 -24" stroke="#4a8a38" strokeWidth="2" fill="none" />
-          <path d="M0 0 Q-5 -15 -6 -20" stroke="#4a8a38" strokeWidth="1.5" fill="none" />
-          <path d="M0 2 L0 10" stroke="#e88040" strokeWidth="4.5" strokeLinecap="round" />
-        </g>
-        {/* Plant 3 */}
-        <g transform="translate(88, 191)">
-          <path d="M0 0 Q-2 -22 1 -28" stroke="#4a8a38" strokeWidth="2" fill="none" />
-          <path d="M0 0 Q4 -17 6 -22" stroke="#5a9a45" strokeWidth="2" fill="none" />
-          <path d="M0 0 Q-4 -13 -5 -18" stroke="#5a9a45" strokeWidth="1.5" fill="none" />
-          <path d="M0 2 L0 8" stroke="#e88040" strokeWidth="3.5" strokeLinecap="round" />
-        </g>
-        {/* Plant 4 */}
-        <g transform="translate(230, 191)">
-          <path d="M0 0 Q-3 -19 -1 -25" stroke="#5a9a45" strokeWidth="2" fill="none" />
-          <path d="M0 0 Q2 -21 4 -27" stroke="#4a8a38" strokeWidth="2" fill="none" />
-          <path d="M0 0 Q5 -14 7 -19" stroke="#5a9a45" strokeWidth="1.5" fill="none" />
-          <path d="M0 2 L0 9" stroke="#e88040" strokeWidth="4" strokeLinecap="round" />
-        </g>
-        {/* Plant 5 */}
-        <g transform="translate(260, 192)">
-          <path d="M0 0 Q-4 -17 -2 -23" stroke="#4a8a38" strokeWidth="2" fill="none" />
-          <path d="M0 0 Q1 -20 3 -25" stroke="#5a9a45" strokeWidth="2" fill="none" />
-          <path d="M0 0 Q-5 -12 -6 -17" stroke="#4a8a38" strokeWidth="1.5" fill="none" />
-          <path d="M0 2 L0 10" stroke="#e88040" strokeWidth="4.5" strokeLinecap="round" />
-        </g>
-        {/* Plant 6 */}
-        <g transform="translate(290, 190)">
-          <path d="M0 0 Q-2 -18 0 -24" stroke="#5a9a45" strokeWidth="2" fill="none" />
-          <path d="M0 0 Q3 -16 5 -21" stroke="#4a8a38" strokeWidth="1.5" fill="none" />
-          <path d="M0 2 L0 8" stroke="#e88040" strokeWidth="3.5" strokeLinecap="round" />
-        </g>
+      {/* Distant tiny tree */}
+      <g opacity="0.35">
+        <rect x="295" y="120" width="2.5" height="12" fill="#7a6040" rx="1" />
+        <ellipse cx="296" cy="118" rx="8" ry="10" fill="#6a9850" />
+        <ellipse cx="293" cy="120" rx="5" ry="7" fill="#5a8840" />
       </g>
 
-      {/* === CARROT PLANTS ROW 3 (front row, largest) === */}
+      {/* Main ground layers */}
+      <ellipse cx="160" cy="215" rx="210" ry="75" fill="url(#grass)" />
+      <ellipse cx="55" cy="222" rx="115" ry="52" fill="url(#grassWarm)" opacity="0.55" />
+      <ellipse cx="275" cy="218" rx="105" ry="58" fill="url(#grassWarm)" opacity="0.45" />
+
+      {/* Soil mounds for carrot rows - warmer, more visible */}
+      <g opacity="0.35">
+        <path d="M30 192 Q160 184 290 192" stroke="#8B6E4E" strokeWidth="6" fill="none" strokeLinecap="round" />
+        <path d="M20 206 Q160 198 300 206" stroke="#8B6E4E" strokeWidth="7" fill="none" strokeLinecap="round" />
+        <path d="M10 220 Q160 212 310 220" stroke="#8B6E4E" strokeWidth="8" fill="none" strokeLinecap="round" />
+      </g>
+
+      {/* === CARROT PLANTS ROW 1 (back, smaller, faded) === */}
+      <g opacity="0.6">
+        {[40, 70, 100, 130, 190, 220, 250, 280].map((x, i) => (
+          <g key={`r1-${i}`} transform={`translate(${x}, ${176 + (i % 3) * 2})`}>
+            <path d="M0 0 Q-3 -14 -1 -19" stroke="#4a8a38" strokeWidth="1.5" fill="none" />
+            <path d="M0 0 Q1 -16 3 -21" stroke="#5a9a45" strokeWidth="1.5" fill="none" />
+            <path d="M0 0 Q4 -11 6 -15" stroke="#3a7a28" strokeWidth="1.2" fill="none" />
+            <path d="M0 2 L0 7" stroke="#e88040" strokeWidth="3" strokeLinecap="round" />
+          </g>
+        ))}
+      </g>
+
+      {/* === CARROT PLANTS ROW 2 (middle) === */}
+      <g opacity="0.8">
+        {[25, 55, 85, 115, 205, 235, 265, 295].map((x, i) => (
+          <g key={`r2-${i}`} transform={`translate(${x}, ${190 + (i % 3)})`}>
+            <path d="M0 0 Q-4 -18 -1 -25" stroke="#4a8a38" strokeWidth="2" fill="none" />
+            <path d="M0 0 Q2 -20 4 -27" stroke="#5a9a45" strokeWidth="2" fill="none" />
+            <path d="M0 0 Q5 -13 7 -19" stroke="#3a7a28" strokeWidth="1.5" fill="none" />
+            <path d="M0 0 Q-5 -10 -7 -16" stroke="#5a9a45" strokeWidth="1.5" fill="none" />
+            <path d="M0 2 L0 10" stroke="#e88040" strokeWidth="4" strokeLinecap="round" />
+            <path d="M0 10 L0 12" stroke="#d07030" strokeWidth="3" strokeLinecap="round" />
+          </g>
+        ))}
+      </g>
+
+      {/* === CARROT PLANTS ROW 3 (front, largest, fullest) === */}
       <g>
-        {/* Plant 1 */}
-        <g transform="translate(18, 208)">
-          <path d="M0 0 Q-5 -22 -2 -30" stroke="#4a8a38" strokeWidth="2.5" fill="none" />
-          <path d="M0 0 Q2 -25 5 -32" stroke="#5a9a45" strokeWidth="2.5" fill="none" />
-          <path d="M0 0 Q6 -18 8 -24" stroke="#4a8a38" strokeWidth="2" fill="none" />
-          <path d="M0 0 Q-6 -14 -8 -20" stroke="#5a9a45" strokeWidth="2" fill="none" />
-          <path d="M0 2 L0 12" stroke="#e88040" strokeWidth="5" strokeLinecap="round" />
-        </g>
-        {/* Plant 2 */}
-        <g transform="translate(48, 206)">
-          <path d="M0 0 Q-4 -24 -1 -32" stroke="#5a9a45" strokeWidth="2.5" fill="none" />
-          <path d="M0 0 Q3 -22 5 -30" stroke="#4a8a38" strokeWidth="2.5" fill="none" />
-          <path d="M0 0 Q-6 -16 -7 -22" stroke="#4a8a38" strokeWidth="2" fill="none" />
-          <path d="M0 0 Q6 -15 8 -20" stroke="#5a9a45" strokeWidth="1.8" fill="none" />
-          <path d="M0 2 L0 13" stroke="#e88040" strokeWidth="5.5" strokeLinecap="round" />
-        </g>
-        {/* Plant 3 */}
-        <g transform="translate(78, 207)">
-          <path d="M0 0 Q-3 -26 0 -34" stroke="#4a8a38" strokeWidth="2.5" fill="none" />
-          <path d="M0 0 Q4 -20 6 -28" stroke="#5a9a45" strokeWidth="2.5" fill="none" />
-          <path d="M0 0 Q-5 -15 -7 -22" stroke="#5a9a45" strokeWidth="2" fill="none" />
-          <path d="M0 2 L0 11" stroke="#e88040" strokeWidth="5" strokeLinecap="round" />
-        </g>
-        {/* Plant 4 */}
-        <g transform="translate(240, 207)">
-          <path d="M0 0 Q-4 -23 -1 -31" stroke="#5a9a45" strokeWidth="2.5" fill="none" />
-          <path d="M0 0 Q3 -25 5 -33" stroke="#4a8a38" strokeWidth="2.5" fill="none" />
-          <path d="M0 0 Q6 -16 8 -22" stroke="#5a9a45" strokeWidth="2" fill="none" />
-          <path d="M0 0 Q-6 -14 -8 -19" stroke="#4a8a38" strokeWidth="1.8" fill="none" />
-          <path d="M0 2 L0 12" stroke="#e88040" strokeWidth="5" strokeLinecap="round" />
-        </g>
-        {/* Plant 5 */}
-        <g transform="translate(270, 206)">
-          <path d="M0 0 Q-5 -21 -2 -29" stroke="#4a8a38" strokeWidth="2.5" fill="none" />
-          <path d="M0 0 Q2 -24 4 -31" stroke="#5a9a45" strokeWidth="2.5" fill="none" />
-          <path d="M0 0 Q5 -17 7 -23" stroke="#4a8a38" strokeWidth="2" fill="none" />
-          <path d="M0 2 L0 13" stroke="#e88040" strokeWidth="5.5" strokeLinecap="round" />
-        </g>
-        {/* Plant 6 */}
-        <g transform="translate(300, 208)">
-          <path d="M0 0 Q-3 -20 -1 -27" stroke="#5a9a45" strokeWidth="2.5" fill="none" />
-          <path d="M0 0 Q3 -18 5 -25" stroke="#4a8a38" strokeWidth="2" fill="none" />
-          <path d="M0 0 Q-5 -12 -6 -18" stroke="#4a8a38" strokeWidth="1.8" fill="none" />
-          <path d="M0 2 L0 11" stroke="#e88040" strokeWidth="4.5" strokeLinecap="round" />
-        </g>
+        {[15, 48, 80, 112, 208, 240, 272, 304].map((x, i) => (
+          <g key={`r3-${i}`} transform={`translate(${x}, ${206 + (i % 2) * 2})`}>
+            {/* Leafy fronds - 5 per plant */}
+            <path d="M0 0 Q-6 -22 -3 -32" stroke="#4a8a38" strokeWidth="2.5" fill="none" />
+            <path d="M0 0 Q2 -26 5 -34" stroke="#5a9a45" strokeWidth="2.5" fill="none" />
+            <path d="M0 0 Q6 -18 9 -26" stroke="#3a7a28" strokeWidth="2" fill="none" />
+            <path d="M0 0 Q-7 -14 -9 -22" stroke="#5a9a45" strokeWidth="2" fill="none" />
+            <path d="M0 0 Q-1 -28 1 -36" stroke="#4a8a38" strokeWidth="2" fill="none" />
+            {/* Carrot body - tapered */}
+            <path d="M0 2 L0 14" stroke="#f09050" strokeWidth="5.5" strokeLinecap="round" />
+            <path d="M0 12 L0 16" stroke="#d07030" strokeWidth="4" strokeLinecap="round" />
+          </g>
+        ))}
       </g>
 
-      {/* Tiny flowers scattered */}
-      <circle cx="38" cy="198" r="2.5" fill="#f0b0a0" opacity="0.6" />
-      <circle cx="38" cy="198" r="1" fill="#f5d0a0" />
-      <circle cx="285" cy="200" r="2.5" fill="#c4b5d8" opacity="0.6" />
-      <circle cx="285" cy="200" r="1" fill="#f5d0a0" />
-      <circle cx="110" cy="215" r="2" fill="#f0b0a0" opacity="0.5" />
-      <circle cx="210" cy="212" r="2" fill="#c4b5d8" opacity="0.5" />
-      <circle cx="15" cy="218" r="2" fill="#eeb0c0" opacity="0.5" />
-      <circle cx="305" cy="218" r="2" fill="#eeb0c0" opacity="0.4" />
+      {/* Wildflower clusters */}
+      {/* Cluster left */}
+      <g transform="translate(10, 215)">
+        <path d="M0 0 Q1 -8 2 0" stroke="#5a8a48" strokeWidth="0.8" fill="none" />
+        <circle cx="1" cy="-9" r="2.5" fill="#e8a0b0" opacity="0.7" />
+        <circle cx="1" cy="-9" r="1" fill="#f8d0a0" />
+        <path d="M5 0 Q6 -6 7 0" stroke="#5a8a48" strokeWidth="0.8" fill="none" />
+        <circle cx="6" cy="-7" r="2" fill="#c4b0d8" opacity="0.6" />
+        <circle cx="6" cy="-7" r="0.8" fill="#f8d0a0" />
+      </g>
+      {/* Cluster right */}
+      <g transform="translate(298, 217)">
+        <path d="M0 0 Q1 -7 2 0" stroke="#5a8a48" strokeWidth="0.8" fill="none" />
+        <circle cx="1" cy="-8" r="2.5" fill="#e8a0b0" opacity="0.6" />
+        <circle cx="1" cy="-8" r="1" fill="#f5d0a0" />
+        <path d="M-5 0 Q-4 -9 -3 0" stroke="#5a8a48" strokeWidth="0.8" fill="none" />
+        <circle cx="-4" cy="-10" r="2" fill="#a8c8e8" opacity="0.6" />
+        <circle cx="-4" cy="-10" r="0.8" fill="#f5d0a0" />
+      </g>
+      {/* Scattered individual flowers */}
+      <circle cx="140" cy="218" r="2" fill="#e8a0b0" opacity="0.5" />
+      <circle cx="140" cy="218" r="0.8" fill="#f5d0a0" />
+      <circle cx="180" cy="222" r="1.8" fill="#c4b0d8" opacity="0.45" />
+      <circle cx="180" cy="222" r="0.7" fill="#f5d0a0" />
 
-      {/* Grass tufts */}
-      <g opacity="0.5" stroke="#5a8a48" strokeWidth="1.5" fill="none">
-        <path d="M10 210 Q12 198 14 210" />
-        <path d="M13 210 Q16 195 19 210" />
-        <path d="M305 212 Q307 200 309 212" />
-        <path d="M308 212 Q311 197 314 212" />
-        <path d="M135 220 Q137 210 139 220" />
-        <path d="M185 218 Q187 208 189 218" />
+      {/* Grass tufts - more of them */}
+      <g opacity="0.45" stroke="#4a8a38" strokeWidth="1.2" fill="none">
+        <path d="M8 212 Q10 200 12 212" />
+        <path d="M11 212 Q14 197 17 212" />
+        <path d="M303 214 Q305 202 307 214" />
+        <path d="M306 214 Q309 199 312 214" />
+        <path d="M132 222 Q134 213 136 222" />
+        <path d="M183 220 Q185 211 187 220" />
+        <path d="M95 216 Q97 208 99 216" />
+        <path d="M210 224 Q212 216 214 224" />
       </g>
 
       {/* === OVERFLOWING BASKET OF CARROTS === */}
-      <g transform="translate(197, 155)">
-        {/* Basket shadow */}
-        <ellipse cx="35" cy="48" rx="38" ry="6" fill="#000" opacity="0.08" />
+      <g transform="translate(197, 153)">
+        {/* Basket shadow - softer */}
+        <ellipse cx="35" cy="50" rx="40" ry="7" fill="#000" opacity="0.06" />
 
-        {/* Basket body - woven look */}
-        <path d="M0 16 Q3 46 14 46 L56 46 Q67 46 70 16Z" fill="#c4956a" stroke="#a07048" strokeWidth="1.5" />
-        {/* Basket rim - thick woven edge */}
-        <ellipse cx="35" cy="16" rx="37" ry="8" fill="#d4a878" stroke="#a07048" strokeWidth="1.5" />
-        <ellipse cx="35" cy="16" rx="33" ry="5.5" fill="#c49868" stroke="none" />
-        {/* Basket weave pattern */}
-        <path d="M10 24 Q35 30 60 24" stroke="#a07048" strokeWidth="0.8" fill="none" opacity="0.4" />
-        <path d="M8 30 Q35 36 62 30" stroke="#a07048" strokeWidth="0.8" fill="none" opacity="0.4" />
-        <path d="M10 36 Q35 42 60 36" stroke="#a07048" strokeWidth="0.8" fill="none" opacity="0.4" />
-        {/* Vertical weave lines */}
-        <line x1="20" y1="16" x2="18" y2="44" stroke="#a07048" strokeWidth="0.5" opacity="0.3" />
-        <line x1="35" y1="16" x2="35" y2="46" stroke="#a07048" strokeWidth="0.5" opacity="0.3" />
-        <line x1="50" y1="16" x2="52" y2="44" stroke="#a07048" strokeWidth="0.5" opacity="0.3" />
-        {/* Basket handle */}
-        <path d="M15 16 Q35 -8 55 16" stroke="#a07048" strokeWidth="2.5" fill="none" />
-        <path d="M15 16 Q35 -6 55 16" stroke="#c4956a" strokeWidth="1.5" fill="none" />
+        {/* Basket body */}
+        <path d="M2 18 Q4 48 15 48 L55 48 Q66 48 68 18Z" fill="#c4956a" stroke="#9a6840" strokeWidth="1.2" />
+        {/* Basket highlight */}
+        <path d="M8 22 Q35 20 62 22 Q60 36 55 46 L15 46 Q10 36 8 22Z" fill="#d4a878" opacity="0.3" />
+        {/* Basket rim */}
+        <ellipse cx="35" cy="18" rx="36" ry="9" fill="#d4a878" stroke="#9a6840" strokeWidth="1.2" />
+        <ellipse cx="35" cy="18" rx="32" ry="6" fill="#c49868" />
+        {/* Weave pattern - horizontal */}
+        <path d="M10 26 Q35 31 60 26" stroke="#9a6840" strokeWidth="0.7" fill="none" opacity="0.35" />
+        <path d="M8 32 Q35 37 62 32" stroke="#9a6840" strokeWidth="0.7" fill="none" opacity="0.35" />
+        <path d="M10 38 Q35 43 60 38" stroke="#9a6840" strokeWidth="0.7" fill="none" opacity="0.35" />
+        <path d="M12 44 Q35 47 58 44" stroke="#9a6840" strokeWidth="0.7" fill="none" opacity="0.3" />
+        {/* Weave pattern - vertical */}
+        <line x1="18" y1="18" x2="16" y2="46" stroke="#9a6840" strokeWidth="0.5" opacity="0.25" />
+        <line x1="27" y1="18" x2="26" y2="47" stroke="#9a6840" strokeWidth="0.5" opacity="0.25" />
+        <line x1="35" y1="18" x2="35" y2="48" stroke="#9a6840" strokeWidth="0.5" opacity="0.25" />
+        <line x1="43" y1="18" x2="44" y2="47" stroke="#9a6840" strokeWidth="0.5" opacity="0.25" />
+        <line x1="52" y1="18" x2="54" y2="46" stroke="#9a6840" strokeWidth="0.5" opacity="0.25" />
+        {/* Handle - thicker, more woven look */}
+        <path d="M14 18 Q35 -10 56 18" stroke="#9a6840" strokeWidth="3" fill="none" />
+        <path d="M14 18 Q35 -8 56 18" stroke="#c4956a" strokeWidth="1.8" fill="none" />
+        <path d="M15 18 Q35 -6 55 18" stroke="#d4a878" strokeWidth="0.8" fill="none" opacity="0.5" />
 
-        {/* Carrots overflowing from basket - big bushy tops! */}
-
-        {/* Carrot 1 - far left, leaning out */}
-        <g transform="rotate(-30 12 10)">
-          <path d="M12 10 L8 -12" stroke="#e88040" strokeWidth="5" strokeLinecap="round" />
-          <path d="M8 -12 L7 -16" stroke="#d87030" strokeWidth="4" strokeLinecap="round" />
-          <path d="M4 -14 Q7 -26 10 -14" fill="#4a8a38" />
-          <path d="M6 -14 Q9 -28 12 -14" fill="#5a9a45" />
-          <path d="M8 -14 Q11 -24 14 -14" fill="#4a8a38" opacity="0.8" />
+        {/* Carrots overflowing! */}
+        {/* Carrot 1 - far left, leaning */}
+        <g transform="rotate(-32 10 10)">
+          <path d="M10 10 L6 -14" stroke="#f09050" strokeWidth="5.5" strokeLinecap="round" />
+          <path d="M6 -14 L5 -18" stroke="#d07030" strokeWidth="4.5" strokeLinecap="round" />
+          <path d="M2 -16 Q5 -28 8 -16" fill="#4a8a38" />
+          <path d="M4 -16 Q7 -30 10 -16" fill="#5a9a45" />
+          <path d="M6 -16 Q9 -26 12 -16" fill="#3a7a28" opacity="0.7" />
         </g>
 
         {/* Carrot 2 - left-center */}
-        <g transform="rotate(-12 22 8)">
-          <path d="M22 8 L20 -16" stroke="#e88040" strokeWidth="5.5" strokeLinecap="round" />
-          <path d="M20 -16 L19 -20" stroke="#d87030" strokeWidth="4.5" strokeLinecap="round" />
-          <path d="M15 -18 Q19 -32 23 -18" fill="#5a9a45" />
-          <path d="M17 -18 Q21 -34 25 -18" fill="#4a8a38" />
-          <path d="M19 -18 Q23 -30 27 -18" fill="#5a9a45" opacity="0.8" />
-          <path d="M21 -18 Q24 -28 27 -18" fill="#3a7a28" opacity="0.6" />
+        <g transform="rotate(-14 22 8)">
+          <path d="M22 8 L20 -18" stroke="#f09050" strokeWidth="6" strokeLinecap="round" />
+          <path d="M20 -18 L19 -22" stroke="#d07030" strokeWidth="5" strokeLinecap="round" />
+          <path d="M14 -20 Q19 -34 24 -20" fill="#5a9a45" />
+          <path d="M16 -20 Q21 -36 26 -20" fill="#4a8a38" />
+          <path d="M18 -20 Q22 -32 26 -20" fill="#3a7a28" opacity="0.7" />
+          <path d="M20 -20 Q24 -30 28 -20" fill="#5a9a45" opacity="0.6" />
         </g>
 
-        {/* Carrot 3 - center (tallest) */}
-        <g transform="rotate(3 35 6)">
-          <path d="M35 6 L33 -20" stroke="#e88040" strokeWidth="6" strokeLinecap="round" />
-          <path d="M33 -20 L32 -25" stroke="#d87030" strokeWidth="5" strokeLinecap="round" />
-          <path d="M27 -22 Q32 -38 37 -22" fill="#4a8a38" />
-          <path d="M29 -22 Q34 -40 39 -22" fill="#5a9a45" />
-          <path d="M31 -22 Q36 -36 41 -22" fill="#4a8a38" opacity="0.8" />
-          <path d="M33 -22 Q37 -34 41 -22" fill="#5a9a45" opacity="0.7" />
-          <path d="M35 -22 Q38 -32 41 -22" fill="#3a7a28" opacity="0.5" />
+        {/* Carrot 3 - center (tallest, biggest greens) */}
+        <g transform="rotate(2 35 6)">
+          <path d="M35 6 L33 -22" stroke="#f09050" strokeWidth="6.5" strokeLinecap="round" />
+          <path d="M33 -22 L32 -27" stroke="#d07030" strokeWidth="5.5" strokeLinecap="round" />
+          <path d="M26 -24 Q32 -42 38 -24" fill="#4a8a38" />
+          <path d="M28 -24 Q34 -44 40 -24" fill="#5a9a45" />
+          <path d="M30 -24 Q35 -40 40 -24" fill="#3a7a28" opacity="0.8" />
+          <path d="M32 -24 Q37 -38 42 -24" fill="#5a9a45" opacity="0.7" />
+          <path d="M34 -24 Q38 -36 42 -24" fill="#4a8a38" opacity="0.5" />
         </g>
 
         {/* Carrot 4 - right-center */}
-        <g transform="rotate(15 48 8)">
-          <path d="M48 8 L50 -14" stroke="#e88040" strokeWidth="5" strokeLinecap="round" />
-          <path d="M50 -14 L51 -18" stroke="#d87030" strokeWidth="4" strokeLinecap="round" />
-          <path d="M46 -16 Q50 -28 54 -16" fill="#5a9a45" />
-          <path d="M48 -16 Q52 -30 56 -16" fill="#4a8a38" />
-          <path d="M50 -16 Q53 -26 56 -16" fill="#5a9a45" opacity="0.8" />
+        <g transform="rotate(16 48 8)">
+          <path d="M48 8 L50 -16" stroke="#f09050" strokeWidth="5.5" strokeLinecap="round" />
+          <path d="M50 -16 L51 -20" stroke="#d07030" strokeWidth="4.5" strokeLinecap="round" />
+          <path d="M45 -18 Q49 -30 53 -18" fill="#5a9a45" />
+          <path d="M47 -18 Q51 -32 55 -18" fill="#4a8a38" />
+          <path d="M49 -18 Q52 -28 55 -18" fill="#3a7a28" opacity="0.7" />
         </g>
 
         {/* Carrot 5 - far right, leaning out */}
-        <g transform="rotate(28 58 10)">
-          <path d="M58 10 L61 -8" stroke="#e88040" strokeWidth="4.5" strokeLinecap="round" />
-          <path d="M61 -8 L62 -12" stroke="#d87030" strokeWidth="3.5" strokeLinecap="round" />
-          <path d="M58 -10 Q61 -22 64 -10" fill="#4a8a38" />
-          <path d="M59 -10 Q63 -24 66 -10" fill="#5a9a45" />
-          <path d="M61 -10 Q64 -20 67 -10" fill="#4a8a38" opacity="0.7" />
+        <g transform="rotate(30 60 10)">
+          <path d="M60 10 L63 -10" stroke="#f09050" strokeWidth="5" strokeLinecap="round" />
+          <path d="M63 -10 L64 -14" stroke="#d07030" strokeWidth="4" strokeLinecap="round" />
+          <path d="M59 -12 Q62 -24 65 -12" fill="#4a8a38" />
+          <path d="M61 -12 Q64 -22 67 -12" fill="#5a9a45" />
         </g>
 
-        {/* Carrot 6 - tiny one peeking from middle */}
-        <g transform="rotate(-5 28 12)">
-          <path d="M28 12 L27 2" stroke="#e88040" strokeWidth="3.5" strokeLinecap="round" />
-          <path d="M24 2 Q27 -6 30 2" fill="#5a9a45" />
-          <path d="M26 2 Q28 -4 30 2" fill="#4a8a38" opacity="0.8" />
+        {/* Carrot 6 - small one peeking between */}
+        <g transform="rotate(-6 28 12)">
+          <path d="M28 12 L27 1" stroke="#f09050" strokeWidth="3.5" strokeLinecap="round" />
+          <path d="M24 1 Q27 -8 30 1" fill="#5a9a45" />
+          <path d="M26 1 Q28 -5 30 1" fill="#3a7a28" opacity="0.7" />
         </g>
 
-        {/* Carrot 7 - another small one on right side */}
-        <g transform="rotate(8 42 12)">
-          <path d="M42 12 L43 2" stroke="#e88040" strokeWidth="3" strokeLinecap="round" />
-          <path d="M40 2 Q43 -5 46 2" fill="#4a8a38" />
-          <path d="M42 2 Q44 -3 46 2" fill="#5a9a45" opacity="0.8" />
+        {/* Carrot 7 - small right */}
+        <g transform="rotate(10 44 12)">
+          <path d="M44 12 L45 2" stroke="#f09050" strokeWidth="3" strokeLinecap="round" />
+          <path d="M42 2 Q44 -5 47 2" fill="#4a8a38" />
+          <path d="M43 2 Q45 -3 47 2" fill="#5a9a45" opacity="0.8" />
         </g>
       </g>
 
-      {/* Loose carrots on the ground near basket */}
-      <g transform="translate(178, 210) rotate(-40)">
-        <path d="M0 0 L-2 -14" stroke="#e88040" strokeWidth="4" strokeLinecap="round" />
-        <path d="M-5 -14 Q-2 -22 1 -14" fill="#5a9a45" />
-        <path d="M-3 -14 Q0 -20 3 -14" fill="#4a8a38" />
+      {/* Loose carrots on the ground */}
+      <g transform="translate(175, 212) rotate(-45)">
+        <path d="M0 0 L-2 -15" stroke="#f09050" strokeWidth="4" strokeLinecap="round" />
+        <path d="M-2 -15 L-2 -18" stroke="#d07030" strokeWidth="3" strokeLinecap="round" />
+        <path d="M-6 -16 Q-2 -24 2 -16" fill="#5a9a45" />
+        <path d="M-4 -16 Q0 -22 4 -16" fill="#4a8a38" />
       </g>
-      <g transform="translate(285, 212) rotate(25)">
-        <path d="M0 0 L1 -12" stroke="#e88040" strokeWidth="3.5" strokeLinecap="round" />
-        <path d="M-2 -12 Q1 -19 4 -12" fill="#5a9a45" />
-        <path d="M0 -12 Q2 -17 4 -12" fill="#4a8a38" />
+      <g transform="translate(288, 214) rotate(30)">
+        <path d="M0 0 L1 -13" stroke="#f09050" strokeWidth="3.5" strokeLinecap="round" />
+        <path d="M-3 -13 Q1 -20 5 -13" fill="#5a9a45" />
+        <path d="M-1 -13 Q2 -18 5 -13" fill="#4a8a38" />
+      </g>
+      {/* Third loose carrot */}
+      <g transform="translate(165, 220) rotate(-20)">
+        <path d="M0 0 L-1 -10" stroke="#f09050" strokeWidth="3" strokeLinecap="round" />
+        <path d="M-3 -10 Q-1 -16 2 -10" fill="#5a9a45" />
       </g>
 
-      {/* Sparkles */}
-      <text x="195" y="148" fontSize="7" opacity="0.35">&#10022;</text>
-      <text x="275" y="160" fontSize="6" opacity="0.3">&#10022;</text>
-      <text x="140" y="175" fontSize="5" opacity="0.25">&#10022;</text>
-
-      {/* Tiny butterfly */}
-      <g transform="translate(50, 120)" opacity="0.5">
-        <path d="M0 0 Q-5 -4 -3 -8 Q0 -5 0 0" fill="#d8a8d0" />
-        <path d="M0 0 Q5 -4 3 -8 Q0 -5 0 0" fill="#c898c0" />
+      {/* Butterflies */}
+      <g className="field-butterfly" transform="translate(48, 115)" opacity="0.55">
+        <path d="M0 0 Q-6 -5 -4 -9 Q0 -6 0 0" fill="#d8a8d0" />
+        <path d="M0 0 Q6 -5 4 -9 Q0 -6 0 0" fill="#c898c0" />
+        <path d="M0 0 Q-4 -2 -3 -6 Q0 -4 0 0" fill="#e0b8d8" opacity="0.6" />
+        <path d="M0 0 Q4 -2 3 -6 Q0 -4 0 0" fill="#d0a8c8" opacity="0.6" />
         <line x1="0" y1="0" x2="0" y2="3" stroke="#886088" strokeWidth="0.5" />
       </g>
+      <g className="field-butterfly-2" transform="translate(275, 100)" opacity="0.4">
+        <path d="M0 0 Q-4 -4 -3 -7 Q0 -4 0 0" fill="#a8c8e0" />
+        <path d="M0 0 Q4 -4 3 -7 Q0 -4 0 0" fill="#90b8d0" />
+        <line x1="0" y1="0" x2="0" y2="2.5" stroke="#607888" strokeWidth="0.4" />
+      </g>
+
+      {/* Animated firefly sparkles */}
+      <circle className="field-firefly" cx="200" cy="145" r="1.5" fill="#f8e888" opacity="0.5" />
+      <circle className="field-firefly-2" cx="130" cy="160" r="1.2" fill="#f8e888" opacity="0.4" />
+      <circle className="field-firefly" cx="260" cy="155" r="1" fill="#f8e888" opacity="0.35" />
+      <circle className="field-firefly-2" cx="90" cy="170" r="1.3" fill="#f8e888" opacity="0.3" />
+
+      {/* Tiny sparkle stars near basket */}
+      <g className="field-sparkle" opacity="0.4">
+        <path d="M230 148 L231 145 L232 148 L235 149 L232 150 L231 153 L230 150 L227 149Z" fill="#f8e0a0" />
+      </g>
+      <g className="field-sparkle-2" opacity="0.3">
+        <path d="M195 138 L196 136 L197 138 L199 139 L197 140 L196 142 L195 140 L193 139Z" fill="#f8e0a0" />
+      </g>
+
+      <style>{`
+        .field-butterfly { animation: field-float 4s ease-in-out infinite; }
+        .field-butterfly-2 { animation: field-float 5s ease-in-out 1s infinite; }
+        .field-firefly { animation: field-glow 2.5s ease-in-out infinite; }
+        .field-firefly-2 { animation: field-glow 3s ease-in-out 1.2s infinite; }
+        .field-sparkle { animation: field-twinkle 2s ease-in-out infinite; }
+        .field-sparkle-2 { animation: field-twinkle 2.5s ease-in-out 0.8s infinite; }
+        @keyframes field-float {
+          0%, 100% { transform: translate(0, 0); }
+          25% { transform: translate(3px, -2px); }
+          50% { transform: translate(0, -4px); }
+          75% { transform: translate(-3px, -2px); }
+        }
+        @keyframes field-glow {
+          0%, 100% { opacity: 0.2; r: 1; }
+          50% { opacity: 0.7; r: 2; }
+        }
+        @keyframes field-twinkle {
+          0%, 100% { opacity: 0.15; transform: scale(0.8); }
+          50% { opacity: 0.5; transform: scale(1.2); }
+        }
+      `}</style>
     </svg>
   );
 }
