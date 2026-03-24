@@ -45,8 +45,7 @@ function WelcomePage() {
           {/* === PAGE 1: Welcome with Photo === */}
           <div className="w-full shrink-0 flex flex-col items-center space-y-8">
             {/* Hero image */}
-            <div className="relative w-full max-w-md h-80 rounded-3xl overflow-hidden shadow-2xl">
-              {/* Image with dark overlay for text contrast */}
+            <div className="relative w-full max-w-lg h-72 rounded-3xl overflow-hidden shadow-2xl">
               <img
                 src="/landing-bg.jpg"
                 alt="Lush carrot field at harvest"
@@ -55,7 +54,7 @@ function WelcomePage() {
               <div className="absolute inset-0 bg-gradient-to-t from-black/40 via-transparent to-transparent" />
             </div>
 
-            {/* Title and tagline with warmth */}
+            {/* Title and tagline */}
             <div className="space-y-3">
               <h1 className="text-5xl font-black tracking-tight bg-gradient-to-r from-amber-700 via-amber-600 to-yellow-600 bg-clip-text text-transparent">
                 baajit
@@ -64,15 +63,15 @@ function WelcomePage() {
               <p className="text-sm text-amber-700 opacity-80">For ADHD brains that work a little differently</p>
             </div>
 
-            {/* Warm introduction box with rabbit beside it */}
-            <div className="flex items-center gap-6 max-w-2xl px-4 w-full">
-              {/* Rabbit on the left - centered vertically */}
-              <div className="shrink-0 flex-shrink-0 w-32">
+            {/* Rabbit + message — same max-width as image */}
+            <div className="flex items-center gap-5 w-full max-w-lg">
+              {/* Rabbit */}
+              <div className="shrink-0">
                 <RabbitMascot mood="waving" size="lg" showBubble={false} animated />
               </div>
 
-              {/* Text box on the right - equal spacing */}
-              <div className="space-y-3 p-6 rounded-3xl bg-gradient-to-br from-amber-50 via-orange-50 to-yellow-50 border border-amber-200/50 shadow-lg flex-1">
+              {/* Message box fills remaining width */}
+              <div className="space-y-3 p-6 rounded-3xl bg-gradient-to-br from-amber-50 via-orange-50 to-yellow-50 border border-amber-200/50 shadow-lg flex-1 text-left">
                 <p className="text-sm leading-relaxed text-gray-800 font-medium">
                   Hey there! I'm your rabbit buddy. I'm here to help you manage your day without the overwhelm — because you deserve a tool that gets how your brain actually works.
                 </p>
