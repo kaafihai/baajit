@@ -71,7 +71,7 @@ function WelcomePage() {
               </div>
 
               {/* Message box fills remaining width */}
-              <div className="space-y-3 p-6 rounded-3xl bg-gradient-to-br from-amber-50 via-orange-50 to-yellow-50 border border-amber-200/50 shadow-lg flex-1 text-left">
+              <div className="space-y-3 flex-1 text-left">
                 <p className="text-sm leading-relaxed text-gray-800 font-medium">
                   Hey there! I'm your rabbit buddy. I'm here to help you manage your day without the overwhelm — because you deserve a tool that gets how your brain actually works.
                 </p>
