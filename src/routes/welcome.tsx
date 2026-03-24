@@ -60,7 +60,7 @@ function WelcomePage() {
                 baajit
               </h1>
               <p className="text-lg font-medium text-amber-900">your little life companion</p>
-              <p className="text-sm text-amber-700 opacity-80">For ADHD brains that work a little differently</p>
+              <p className="text-sm text-amber-700 opacity-80">For neurodivergent brains that are wired different</p>
             </div>
 
             {/* Rabbit + message — same max-width as image */}
@@ -78,7 +78,7 @@ function WelcomePage() {
                 <p className="text-xs leading-relaxed text-gray-700">
                   No rigid systems. No judgment. Just gentle nudges, a little cheering, and the space to do things your own way.
                 </p>
-                <p className="text-xs text-amber-800 italic font-semibold">
+                <p className="text-base text-amber-800 italic font-semibold">
                   "One nibble at a time."
                 </p>
               </div>
