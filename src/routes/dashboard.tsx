@@ -259,6 +259,17 @@ function DashboardPage() {
 
   return (
     <div className="mx-auto space-y-6">
+      {/* Explainer */}
+      <div className="p-4 rounded-2xl bg-primary/5 space-y-2">
+        <p className="text-xs font-semibold opacity-50">How Dashboard works</p>
+        <p className="text-xs leading-relaxed opacity-40">
+          This is your home base. Your rabbit companion levels up as you
+          complete tasks and habits — tap it to open the wardrobe. The activity
+          grid shows your streak at a glance, and Today's Focus highlights
+          what's due right now. Everything stays on your device, always private.
+        </p>
+      </div>
+
       {/* Rabbit Greeting */}
       <RabbitWardrobe open={wardrobeOpen} onOpenChange={setWardrobeOpen} />
       <div className="p-5 rounded-4xl space-y-3" style={{ background: "var(--accent-warm-subtle)" }}>
@@ -531,16 +542,6 @@ function DashboardPage() {
         </div>
       </section>
 
-      {/* Explainer */}
-      <div className="p-4 rounded-2xl bg-primary/5 space-y-2">
-        <p className="text-xs font-semibold opacity-50">How Dashboard works</p>
-        <p className="text-xs leading-relaxed opacity-40">
-          This is your home base. Your rabbit companion levels up as you
-          complete tasks and habits — tap it to open the wardrobe. The activity
-          grid shows your streak at a glance, and Today's Focus highlights
-          what's due right now. Everything stays on your device, always private.
-        </p>
-      </div>
     </div>
   );
 }
