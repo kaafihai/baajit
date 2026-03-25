@@ -9,7 +9,6 @@
 // Additionally, you should also exclude this file from your linter and/or formatter to prevent it from being checked or modified.
 
 import { Route as rootRouteImport } from './routes/__root'
-import { Route as AboutRouteImport } from './routes/about'
 import { Route as WelcomeRouteImport } from './routes/welcome'
 import { Route as NewRouteImport } from './routes/new'
 import { Route as GroundingRouteImport } from './routes/grounding'
@@ -18,6 +17,7 @@ import { Route as DashboardRouteImport } from './routes/dashboard'
 import { Route as CalendarRouteImport } from './routes/calendar'
 import { Route as BraindumpRouteImport } from './routes/braindump'
 import { Route as ArchiveRouteImport } from './routes/archive'
+import { Route as AboutRouteImport } from './routes/about'
 import { Route as IndexRouteImport } from './routes/index'
 import { Route as MoodTrackRouteImport } from './routes/mood.track'
 import { Route as CalendarTimestampRouteImport } from './routes/calendar.$timestamp'
@@ -25,11 +25,6 @@ import { Route as TasksIdEditRouteImport } from './routes/tasks.$id.edit'
 import { Route as HabitsIdStatsRouteImport } from './routes/habits.$id.stats'
 import { Route as HabitsIdEditRouteImport } from './routes/habits.$id.edit'
 
-const AboutRoute = AboutRouteImport.update({
-  id: '/about',
-  path: '/about',
-  getParentRoute: () => rootRouteImport,
-} as any)
 const WelcomeRoute = WelcomeRouteImport.update({
   id: '/welcome',
   path: '/welcome',
@@ -68,6 +63,11 @@ const BraindumpRoute = BraindumpRouteImport.update({
 const ArchiveRoute = ArchiveRouteImport.update({
   id: '/archive',
   path: '/archive',
+  getParentRoute: () => rootRouteImport,
+} as any)
+const AboutRoute = AboutRouteImport.update({
+  id: '/about',
+  path: '/about',
   getParentRoute: () => rootRouteImport,
 } as any)
 const IndexRoute = IndexRouteImport.update({
@@ -226,13 +226,6 @@ export interface RootRouteChildren {
 
 declare module '@tanstack/react-router' {
   interface FileRoutesByPath {
-    '/about': {
-      id: '/about'
-      path: '/about'
-      fullPath: '/about'
-      preLoaderRoute: typeof AboutRouteImport
-      parentRoute: typeof rootRouteImport
-    }
     '/welcome': {
       id: '/welcome'
       path: '/welcome'
@@ -287,6 +280,13 @@ declare module '@tanstack/react-router' {
       path: '/archive'
       fullPath: '/archive'
       preLoaderRoute: typeof ArchiveRouteImport
+      parentRoute: typeof rootRouteImport
+    }
+    '/about': {
+      id: '/about'
+      path: '/about'
+      fullPath: '/about'
+      preLoaderRoute: typeof AboutRouteImport
       parentRoute: typeof rootRouteImport
     }
     '/': {

@@ -1,7 +1,11 @@
-import { useNavigate } from '@tanstack/react-router';
+import { createFileRoute, useNavigate } from '@tanstack/react-router';
 import { CaretLeft } from '@phosphor-icons/react';
 
-export default function About() {
+export const Route = createFileRoute('/about')({
+  component: About,
+});
+
+function About() {
   const navigate = useNavigate();
 
   return (
