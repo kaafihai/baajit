@@ -1,5 +1,5 @@
 import { useNavigate } from '@tanstack/react-router';
-import { CaretLeft } from 'phosphor-react';
+import { CaretLeft } from 'phosphor-icons/react';
 
 export default function About() {
   const navigate = useNavigate();
