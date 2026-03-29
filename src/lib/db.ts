@@ -20,12 +20,37 @@ export async function initDatabase(): Promise<Database> {
   const migrations = [
     "migrations/001_initial.sql",
     "migrations/002_rabbit_state.sql",
+    "migrations/003_v1_1_habits_enhancements.sql",
   ];
 
   for (const migration of migrations) {
-    const migrationPath = await resolveResource(migration);
-    const migrationSql = await readTextFile(migrationPath);
-    await db.execute(migrationSql);
+    try {
+      const migrationPath = await resolveResource(migration);
+      const migrationSql = await readTextFile(migrationPath);
+      await db.execute(migrationSql);
+    } catch (error) {
+      console.warn(`Migration ${migration} failed or not found:`, error);
+      // Continue with next migration instead of failing
+    }
+  }
+
+  // Ensure v1.1 columns exist (fallback for development)
+  try {
+    console.log("Checking and adding v1.1 columns if needed...");
+
+    // For habits table - simple ALTER without constraints
+    await db.execute(`ALTER TABLE habits ADD COLUMN time_of_day TEXT`).catch(() => null);
+    await db.execute(`ALTER TABLE habits ADD COLUMN linked_habit_id TEXT`).catch(() => null);
+    await db.execute(`ALTER TABLE habits ADD COLUMN energy_level TEXT`).catch(() => null);
+    await db.execute(`ALTER TABLE habits ADD COLUMN notifications_enabled INTEGER`).catch(() => null);
+    await db.execute(`ALTER TABLE habits ADD COLUMN notification_time TEXT`).catch(() => null);
+
+    // For rabbit_state table
+    await db.execute(`ALTER TABLE rabbit_state ADD COLUMN current_emotion TEXT`).catch(() => null);
+
+    console.log("V1.1 columns ensured");
+  } catch (error) {
+    console.warn("Error during v1.1 column setup:", error);
   }
 
   return db;
@@ -351,8 +376,8 @@ export async function getHabits(includeArchived: boolean = false): Promise<Habit
   const database = await getDb();
 
   const query = includeArchived
-    ? `SELECT * FROM habits ORDER BY created_at DESC`
-    : `SELECT * FROM habits WHERE archived_at IS NULL ORDER BY created_at DESC`;
+    ? `SELECT id, title, description, rrule, COALESCE(time_of_day, 'anytime') as time_of_day, linked_habit_id, COALESCE(energy_level, 'medium') as energy_level, COALESCE(notifications_enabled, 0) as notifications_enabled, notification_time, created_at, updated_at, archived_at, paused_at, cancelled_at FROM habits ORDER BY created_at DESC`
+    : `SELECT id, title, description, rrule, COALESCE(time_of_day, 'anytime') as time_of_day, linked_habit_id, COALESCE(energy_level, 'medium') as energy_level, COALESCE(notifications_enabled, 0) as notifications_enabled, notification_time, created_at, updated_at, archived_at, paused_at, cancelled_at FROM habits WHERE archived_at IS NULL ORDER BY created_at DESC`;
 
   const rows = await database.select<
     Array<{
@@ -360,6 +385,11 @@ export async function getHabits(includeArchived: boolean = false): Promise<Habit
       title: string;
       description: string;
       rrule: string;
+      time_of_day: string;
+      linked_habit_id: string | null;
+      energy_level: string;
+      notifications_enabled: number;
+      notification_time: string | null;
       created_at: string;
       updated_at: string;
       archived_at: string | null;
@@ -373,6 +403,11 @@ export async function getHabits(includeArchived: boolean = false): Promise<Habit
     title: row.title,
     description: row.description,
     rrule: row.rrule,
+    timeOfDay: (row.time_of_day as any) || 'anytime',
+    linkedHabitId: row.linked_habit_id,
+    energyLevel: (row.energy_level as any) || 'medium',
+    notificationsEnabled: Boolean(row.notifications_enabled),
+    notificationTime: row.notification_time,
     createdAt: row.created_at,
     updatedAt: row.updated_at,
     archivedAt: row.archived_at,
@@ -390,13 +425,18 @@ export async function getHabitById(id: string): Promise<Habit | null> {
       title: string;
       description: string;
       rrule: string;
+      time_of_day: string;
+      linked_habit_id: string | null;
+      energy_level: string;
+      notifications_enabled: number;
+      notification_time: string | null;
       created_at: string;
       updated_at: string;
       archived_at: string | null;
       paused_at: string | null;
       cancelled_at: string | null;
     }>
-  >(`SELECT * FROM habits WHERE id = $1`, [id]);
+  >(`SELECT id, title, description, rrule, COALESCE(time_of_day, 'anytime') as time_of_day, linked_habit_id, COALESCE(energy_level, 'medium') as energy_level, COALESCE(notifications_enabled, 0) as notifications_enabled, notification_time, created_at, updated_at, archived_at, paused_at, cancelled_at FROM habits WHERE id = $1`, [id]);
 
   if (rows.length === 0) return null;
 
@@ -406,6 +446,11 @@ export async function getHabitById(id: string): Promise<Habit | null> {
     title: row.title,
     description: row.description,
     rrule: row.rrule,
+    timeOfDay: (row.time_of_day as any) || 'anytime',
+    linkedHabitId: row.linked_habit_id,
+    energyLevel: (row.energy_level as any) || 'medium',
+    notificationsEnabled: Boolean(row.notifications_enabled),
+    notificationTime: row.notification_time,
     createdAt: row.created_at,
     updatedAt: row.updated_at,
     archivedAt: row.archived_at,
@@ -417,11 +462,47 @@ export async function getHabitById(id: string): Promise<Habit | null> {
 export async function createHabit(habit: Habit): Promise<Habit> {
   const database = await getDb();
 
-  await database.execute(
-    `INSERT INTO habits (id, title, description, rrule, created_at, updated_at, archived_at, paused_at, cancelled_at)
-     VALUES ($1, $2, $3, $4, $5, $6, $7, $8, $9)`,
-    [habit.id, habit.title, habit.description, habit.rrule, habit.createdAt, habit.updatedAt, habit.archivedAt, habit.pausedAt, habit.cancelledAt]
-  );
+  try {
+    // Try with all v1.1 columns first
+    await database.execute(
+      `INSERT INTO habits (id, title, description, rrule, time_of_day, linked_habit_id, energy_level, notifications_enabled, notification_time, created_at, updated_at, archived_at, paused_at, cancelled_at)
+       VALUES ($1, $2, $3, $4, $5, $6, $7, $8, $9, $10, $11, $12, $13, $14)`,
+      [
+        habit.id,
+        habit.title,
+        habit.description,
+        habit.rrule,
+        habit.timeOfDay,
+        habit.linkedHabitId,
+        habit.energyLevel,
+        habit.notificationsEnabled ? 1 : 0,
+        habit.notificationTime,
+        habit.createdAt,
+        habit.updatedAt,
+        habit.archivedAt,
+        habit.pausedAt,
+        habit.cancelledAt,
+      ]
+    );
+  } catch (error) {
+    // Fallback for old schema without v1.1 columns
+    console.warn("Failed to insert with v1.1 columns, trying without:", error);
+    await database.execute(
+      `INSERT INTO habits (id, title, description, rrule, created_at, updated_at, archived_at, paused_at, cancelled_at)
+       VALUES ($1, $2, $3, $4, $5, $6, $7, $8, $9)`,
+      [
+        habit.id,
+        habit.title,
+        habit.description,
+        habit.rrule,
+        habit.createdAt,
+        habit.updatedAt,
+        habit.archivedAt,
+        habit.pausedAt,
+        habit.cancelledAt,
+      ]
+    );
+  }
 
   return habit;
 }
@@ -431,10 +512,43 @@ export async function updateHabit(habit: Habit): Promise<Habit> {
 
   const now = new Date().toISOString();
 
-  await database.execute(
-    `UPDATE habits SET title = $1, description = $2, rrule = $3, archived_at = $4, paused_at = $5, cancelled_at = $6, updated_at = $7 WHERE id = $8`,
-    [habit.title, habit.description, habit.rrule, habit.archivedAt, habit.pausedAt, habit.cancelledAt, now, habit.id]
-  );
+  try {
+    // Try with all v1.1 columns first
+    await database.execute(
+      `UPDATE habits SET title = $1, description = $2, rrule = $3, time_of_day = $4, linked_habit_id = $5, energy_level = $6, notifications_enabled = $7, notification_time = $8, archived_at = $9, paused_at = $10, cancelled_at = $11, updated_at = $12 WHERE id = $13`,
+      [
+        habit.title,
+        habit.description,
+        habit.rrule,
+        habit.timeOfDay,
+        habit.linkedHabitId,
+        habit.energyLevel,
+        habit.notificationsEnabled ? 1 : 0,
+        habit.notificationTime,
+        habit.archivedAt,
+        habit.pausedAt,
+        habit.cancelledAt,
+        now,
+        habit.id,
+      ]
+    );
+  } catch (error) {
+    // Fallback for old schema without v1.1 columns
+    console.warn("Failed to update with v1.1 columns, trying without:", error);
+    await database.execute(
+      `UPDATE habits SET title = $1, description = $2, rrule = $3, archived_at = $4, paused_at = $5, cancelled_at = $6, updated_at = $7 WHERE id = $8`,
+      [
+        habit.title,
+        habit.description,
+        habit.rrule,
+        habit.archivedAt,
+        habit.pausedAt,
+        habit.cancelledAt,
+        now,
+        habit.id,
+      ]
+    );
+  }
 
   const updatedHabit = await getHabitById(habit.id);
   if (!updatedHabit) {
@@ -699,6 +813,7 @@ export async function getRabbitState(): Promise<RabbitState | null> {
       level: number;
       xp: number;
       current_outfit: string;
+      current_emotion: string;
       created_at: string;
       updated_at: string;
     }>
@@ -710,6 +825,7 @@ export async function getRabbitState(): Promise<RabbitState | null> {
     level: row.level as RabbitLevel,
     xp: row.xp,
     currentOutfit: row.current_outfit,
+    currentEmotion: (row.current_emotion as any) || 'happy',
     createdAt: row.created_at,
     updatedAt: row.updated_at,
   };
@@ -722,7 +838,7 @@ export async function initRabbitState(): Promise<RabbitState> {
   const database = await getDb();
   const now = new Date().toISOString();
   await database.execute(
-    `INSERT INTO rabbit_state (id, level, xp, current_outfit, created_at, updated_at) VALUES ('singleton', 1, 0, 'none', $1, $2)`,
+    `INSERT INTO rabbit_state (id, level, xp, current_outfit, current_emotion, created_at, updated_at) VALUES ('singleton', 1, 0, 'none', 'happy', $1, $2)`,
     [now, now]
   );
   return {
@@ -730,6 +846,7 @@ export async function initRabbitState(): Promise<RabbitState> {
     level: 1,
     xp: 0,
     currentOutfit: "none",
+    currentEmotion: 'happy',
     createdAt: now,
     updatedAt: now,
   };

@@ -59,7 +59,7 @@ export function MoodTrackerForm({ onSuccess }: MoodTrackerFormProps) {
   const createMood = useCreateMood();
 
   const [formData, setFormData] = useState<MoodInput>({
-    mood: "" as any,
+    mood: "okay",
     note: "",
   });
 

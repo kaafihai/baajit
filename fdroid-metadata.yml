@@ -1,0 +1,34 @@
+Categories:
+  - Office
+  - Health & Fitness
+License: MIT
+AuthorName: Sharada Rao
+AuthorEmail: sharadarao0@gmail.com
+WebSite: https://github.com/kaafihai/shard
+SourceCode: https://github.com/kaafihai/shard
+IssueTracker: https://github.com/kaafihai/shard/issues
+Changelog: https://github.com/kaafihai/shard/releases
+
+Name: Baajit
+Summary: Task & habit management for neurodivergent minds
+
+Description: |-
+  Baajit is a task and habit management app designed from the ground up for neurodivergent minds—specifically ADHD and autistic brains. Built with the belief that productivity tools should work *with* your brain, not against it.
+
+  Most apps assume neurotypical brains: linear thinking, sustained focus, and willpower-based motivation. Baajit is different. Every feature addresses a real neurodivergent challenge: executive dysfunction, sensory overwhelm, time blindness, rejection sensitivity, and the constant battle between knowing what to do and being able to do it.
+
+  Features include energy-aware task suggestions (because capacity matters), brain dump capture for racing thoughts, task breakdown for overwhelming projects, sensory grounding exercises for focus and overwhelm, a rabbit companion that grows with your progress, habit streak tracking, mood logging, and a focus timer. Everything stays on your device—always private, always yours.
+
+RepoType: git
+Repo: https://github.com/kaafihai/shard.git
+
+Builds:
+  - versionName: '1.0.0'
+    versionCode: 1
+    commit: v1.0.0
+    subdir: .
+    gradle:
+      - yes
+
+CurrentVersion: '1.0.0'
+CurrentVersionCode: 1

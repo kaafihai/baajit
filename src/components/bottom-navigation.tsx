@@ -69,14 +69,14 @@ export function BottomNavigation() {
             </Link>
           </div>
 
-          {/* User / Dashboard */}
+          {/* Dashboard */}
           <div className="flex items-center justify-center">
             <Link
               to="/dashboard"
               className={cn("btn p-2 flex flex-col items-center gap-0.5", isProfileActive ? "text-primary" : "btn--ghost")}
             >
               <User className="size-5" weight={isProfileActive ? "fill" : "regular"} />
-              <span className={cn("text-[10px]", isProfileActive ? "font-medium" : "opacity-60")}>Profile</span>
+              <span className={cn("text-[10px]", isProfileActive ? "font-medium" : "opacity-60")}>Dashboard</span>
             </Link>
           </div>
         </div>

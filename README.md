@@ -13,6 +13,7 @@ For years I tried every productivity app I could find. None of them worked. They
 I didn't need another app that told me what to do. I needed one that understood why I couldn't.
 
 **Read the full launch note:** [Why I Built Baajit](play-store/LAUNCH_NOTE.md)
+**v1.1 Features & Details:** [Habit Formation Enhancements](V1_1_FEATURES.md)
 
 ## Thank You to Kaafihai Founders
 
@@ -27,6 +28,18 @@ Baajit takes a different approach — it meets you where you are with energy-awa
 **Core Task & Habit Management** — Create tasks with due dates and energy tags, build habits with streak tracking, and archive completed work. A calendar view ties everything together across days and weeks.
 
 **Rabbit Progression System** — Your rabbit companion levels up as you complete tasks, log habits, and track moods. Five growth stages from tiny kit to majestic elder, each with unique outfits and encouraging messages. XP is earned across everything you do in the app.
+
+### ✨ v1.1 Features (Habit Formation Enhancements)
+
+**Time-of-Day Cues** — Set when each habit fits your natural rhythm: 🌅 morning, ☀️ afternoon, 🌙 evening, or ⏰ anytime. Match habits to your energy patterns throughout the day.
+
+**Energy-Aware Smart Suggestions** — The app analyzes your mood and suggests habits that match your current energy level. Low energy days get gentle 5-10 minute tasks; high energy days unlock bigger challenges. Finally, a system that meets you where you are, not where you "should" be.
+
+**Gentle Notifications** — Optional, non-intrusive reminders at times you choose. No aggressive pings — just kind nudges to keep you on track without the stress.
+
+**Rabbit Emotions** — Your rabbit's mood reflects your actual activity and emotional state. Watch them be 👑 proud when you crush your day, 😴 tired when you need rest, or 🤔 confused when life gets mixed signals. Real emotional validation from a pixel friend.
+
+### Core Features
 
 **Focus Timer** — A simple, distraction-free timer with preset durations (5, 15, 25, 45 minutes) and XP rewards for completed sessions. No complicated Pomodoro setup — just pick a time and go.
 
@@ -58,8 +71,8 @@ Baajit takes a different approach — it meets you where you are with energy-awa
 
 #### Quick Download
 
-**macOS (v1.0.0):**
-[⬇️ Download Baajit for Mac](https://github.com/kaafihai/shard/releases/download/v1.0.0/baajit_1.0.0_aarch64.dmg) (38 MB)
+**macOS (v1.1.0):**
+[⬇️ Download Baajit for Mac](https://github.com/kaafihai/shard/releases/download/v1.1.0/baajit_1.1.0_aarch64.dmg) (38 MB)
 
 Windows and Linux builds coming soon. Check the [Releases](https://github.com/kaafihai/shard/releases) page for updates.
 
@@ -68,8 +81,8 @@ If you want the latest version or prefer to build it yourself, see the Getting S
 
 ### Mobile (Android & iOS)
 
-#### Android (v1.0.0)
-[⬇️ Download Baajit for Android](https://github.com/kaafihai/shard/releases/download/v1.0.0/app-universal-release-unsigned.apk) (54.8 MB)
+#### Android (v1.1.0)
+[⬇️ Download Baajit for Android](https://github.com/kaafihai/shard/releases/download/v1.1.0/app-universal-release-unsigned.apk) (54.8 MB)
 
 To install on your device:
 1. Download the APK file

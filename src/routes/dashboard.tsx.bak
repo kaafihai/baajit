@@ -4,7 +4,6 @@ import { useMoods } from "@/hooks/use-moods";
 import { useHabits, useAllHabitEntries } from "@/hooks/use-habits";
 import { Spinner } from "@/components/ui/spinner";
 import { GardenOverlay } from "@/components/garden-scene";
-import { EnergyAwareSuggestions } from "@/components/energy-aware-suggestions";
 import {
   TrendLineIcon,
   CompletedIcon,
@@ -343,12 +342,6 @@ function DashboardPage() {
         </section>
       )}
 
-      {/* V1.1: Energy-Aware Habit Suggestions */}
-      <section className="space-y-3">
-        <h3 className="text-lg font-semibold">Smart Suggestions</h3>
-        <EnergyAwareSuggestions compact={false} />
-      </section>
-
       {/* Streak Spotlight */}
       {bestStreak.streak >= 3 && bestStreak.habit && streakCelebration && (
         <section className="p-5 rounded-4xl bg-success/10 space-y-3">
@@ -560,7 +553,7 @@ function DashboardPage() {
           Built for neurodivergent minds by Sharada. Learn the story behind every feature.
         </p>
         <Link
-          to="/"
+          to="/about"
           className="inline-block text-sm font-medium text-orange-700 hover:text-orange-900 underline"
         >
           Read the full story →

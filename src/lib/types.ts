@@ -38,11 +38,19 @@ export type MoodInput = Omit<Mood, "id" | "createdAt">;
 // Habit Types
 // -----------------------------------------------------------------------------
 
+export type TimeOfDay = "morning" | "afternoon" | "evening" | "anytime";
+export type EnergyLevel = "low" | "medium" | "high";
+
 export interface Habit {
   id: string;
   title: string;
   description: string;
   rrule: string; // iCalendar RRULE format (RFC 5545)
+  timeOfDay: TimeOfDay; // When to do this habit (v1.1)
+  linkedHabitId: string | null; // For habit stacking: "do X after Y" (v1.1)
+  energyLevel: EnergyLevel; // Low/Medium/High energy required (v1.1)
+  notificationsEnabled: boolean; // Enable notifications (v1.1)
+  notificationTime: string | null; // HH:MM format, e.g., "09:00" (v1.1)
   createdAt: string;
   updatedAt: string;
   archivedAt: string | null;
@@ -88,11 +96,14 @@ export const RABBIT_XP_THRESHOLDS: Record<RabbitLevel, number> = {
   5: 700,
 };
 
+export type RabbitEmotion = "happy" | "energetic" | "calm" | "tired" | "focused" | "confused" | "proud";
+
 export interface RabbitState {
   id: string;
   level: RabbitLevel;
   xp: number;
   currentOutfit: string;
+  currentEmotion: RabbitEmotion; // Emotion based on user's daily activity (v1.1)
   createdAt: string;
   updatedAt: string;
 }
