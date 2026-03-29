@@ -1,0 +1,65 @@
+═══════════════════════════════════════════════════════════════════════════════
+  BAAJIT v1.1.0 - QUICK BUILD STEPS
+═══════════════════════════════════════════════════════════════════════════════
+
+📋 PREREQUISITE CHECK:
+  ✓ Node.js v18+ installed?
+  ✓ pnpm installed? (npm install -g pnpm)
+  ✓ Rust installed? (https://rustup.rs)
+  ✓ Android SDK installed?
+
+🚀 BUILD COMMANDS (on your Mac):
+
+  1. Navigate to project:
+     cd ~/Desktop/shard
+
+  2. Install dependencies:
+     pnpm install
+
+  3. Build TypeScript:
+     npm run build
+
+  4. Build Android APK:
+     pnpm tauri android build
+
+  5. Find APK at:
+     src-tauri/gen/android/app/build/outputs/apk/universal/release/
+     app-universal-release-unsigned.apk
+
+📦 RENAME APK:
+  cp src-tauri/gen/android/app/build/outputs/apk/universal/release/app-universal-release-unsigned.apk \
+     baajit-v1.1.0.apk
+
+🐙 PUSH TO GITHUB:
+  git push origin main
+
+📤 CREATE RELEASE:
+  1. Go to https://github.com/kaafihai/shard/releases
+  2. Click "Create a new release"
+  3. Tag: v1.1.0
+  4. Title: Baajit v1.1.0 - Energy-Aware & Rabbit Emotions
+  5. Upload: baajit-v1.1.0.apk
+  6. Publish
+
+✅ VERIFY:
+  - Download APK from release
+  - Install on Android phone
+  - Test energy suggestions
+  - Test rabbit emotions
+  - Test time-of-day settings
+  - Test notifications
+
+═══════════════════════════════════════════════════════════════════════════════
+
+v1.1.0 FEATURES INCLUDED:
+  ✨ Time-of-day cues for habits
+  ✨ Energy-aware smart suggestions
+  ✨ Gentle notifications
+  ✨ Rabbit emotions based on activity
+
+TypeScript errors: FIXED ✓
+Code ready: YES ✓
+Commits pushed: PENDING (do this on your Mac)
+Build status: READY
+
+═══════════════════════════════════════════════════════════════════════════════
