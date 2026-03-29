@@ -1,0 +1,10 @@
+[build]
+target-dir = "target"
+
+[target.aarch64-linux-android]
+linker = "/Users/sharadarao/Library/Android/sdk/ndk/26.1.10909125/toolchains/llvm/prebuilt/darwin-arm64/bin/aarch64-linux-android29-clang"
+ar = "/Users/sharadarao/Library/Android/sdk/ndk/26.1.10909125/toolchains/llvm/prebuilt/darwin-arm64/bin/llvm-ar"
+
+[env]
+ANDROID_NDK_HOME = "/Users/sharadarao/Library/Android/sdk/ndk/26.1.10909125"
+ANDROID_NDK = "/Users/sharadarao/Library/Android/sdk/ndk/26.1.10909125"
