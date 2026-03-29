@@ -52,13 +52,12 @@ jobs:
         with:
           targets: aarch64-linux-android
 
-      - name: Setup Android NDK
-        run: |
-          mkdir -p $ANDROID_SDK_ROOT/ndk
-          cd $ANDROID_SDK_ROOT/ndk
-          wget -q https://dl.google.com/android/repository/android-ndk-r26b-linux.zip
-          unzip -q android-ndk-r26b-linux.zip
-          mv android-ndk-r26b 26.1.10909125
+      - name: Setup Android SDK
+        uses: android-actions/setup-android@v3
+        with:
+          api-level: 29
+          ndk-version: 26.1.10909125
+          cmake-version: '3.22.1'
 
       - name: Build APK
         run: pnpm tauri android build
