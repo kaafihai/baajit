@@ -72,6 +72,12 @@ jobs:
           find src-tauri/gen/android -name "*.apk" -type f -exec cp {} ./release-apk/ \;
           ls -lh ./release-apk/
 
+      - name: Upload APK Artifacts
+        uses: actions/upload-artifact@v4
+        with:
+          name: android-apk
+          path: ./release-apk/*.apk
+
       - name: Create Release
         if: startsWith(github.ref, 'refs/tags/')
         uses: softprops/action-gh-release@v1
