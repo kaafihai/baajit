@@ -66,11 +66,31 @@ jobs:
 
       - name: Find and Copy APK
         run: |
-          echo "Looking for APK files..."
-          find src-tauri/gen/android -name "*.apk" -type f
+          echo "=== Debugging APK Location ==="
+          echo "Current working directory:"
+          pwd
+          echo ""
+          echo "Directory structure of src-tauri:"
+          ls -la src-tauri/ || echo "src-tauri not found"
+          echo ""
+          echo "Searching for APK files recursively in entire workspace..."
+          find . -name "*.apk" -type f 2>/dev/null || echo "No APK files found"
+          echo ""
+          echo "Checking Gradle build outputs:"
+          find src-tauri/gen/android -path "*/build/outputs/apk*" -type d 2>/dev/null || echo "No apk output directory found"
+          echo ""
+          echo "Creating release-apk directory..."
           mkdir -p ./release-apk
-          find src-tauri/gen/android -name "*.apk" -type f -exec cp {} ./release-apk/ \;
-          ls -lh ./release-apk/
+          echo ""
+          echo "Attempting to copy APK files..."
+          if find . -name "*.apk" -type f 2>/dev/null | xargs -I {} cp {} ./release-apk/ 2>&1; then
+            echo "Copy successful"
+          else
+            echo "Copy failed or no files found"
+          fi
+          echo ""
+          echo "Contents of release-apk directory:"
+          ls -lh ./release-apk/ || echo "release-apk directory is empty"
 
       - name: Upload APK Artifacts
         uses: actions/upload-artifact@v4
