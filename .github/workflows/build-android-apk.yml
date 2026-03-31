@@ -59,10 +59,17 @@ jobs:
           ndk-version: 26.1.10909125
           cmake-version: '3.22.1'
 
+      - name: Decode Keystore
+        run: |
+          echo "${{ secrets.ANDROID_KEYSTORE_BASE64 }}" | base64 -d > keystore.jks
+          ls -lh keystore.jks
+
       - name: Build APK
-        run: pnpm tauri android build
+        run: pnpm tauri android build --release
         env:
           ANDROID_NDK_HOME: ${{ env.ANDROID_SDK_ROOT }}/ndk/26.1.10909125
+          TAURI_SIGNING_PRIVATE_KEY: ${{ secrets.ANDROID_KEYSTORE_BASE64 }}
+          TAURI_SIGNING_PRIVATE_KEY_PASSWORD: ${{ secrets.ANDROID_KEYSTORE_PASSWORD }}
 
       - name: Find and Copy APK
         run: |
