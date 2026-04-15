@@ -44,7 +44,8 @@ import {
 } from "@/lib/icons";
 import { format, differenceInDays } from "date-fns";
 import type { Task, Habit, HabitEntry } from "@/lib/types";
-import { RabbitMascot, getAgingMessage, getEmptyStateMessage } from "@/components/rabbit-mascot";
+import { RabbitMascot, CelebrationPopup, getAgingMessage, getEmptyStateMessage } from "@/components/rabbit-mascot";
+import { useRabbitState } from "@/hooks/use-rabbit";
 import { playChirp } from "@/lib/sounds";
 
 const DAY_LABELS: Record<string, string> = {
@@ -517,6 +518,8 @@ function TasksComponent() {
   const toggleTask = useToggleTask();
   const updateTask = useUpdateTask();
   const deleteTask = useDeleteTask();
+  const { data: rabbitState } = useRabbitState();
+  const [showCelebration, setShowCelebration] = useState(false);
   const completeHabitEntry = useCompleteHabitEntry();
   const updateHabit = useUpdateHabit();
   const deleteHabit = useDeleteHabit();
@@ -714,6 +717,7 @@ function TasksComponent() {
     if (!wasCompleted) {
       playChirp();
       setShowTransition(true);
+      setShowCelebration(true);
     }
   };
 
@@ -824,6 +828,15 @@ function TasksComponent() {
   return (
     <div className="mx-auto space-y-8">
       <h1 className="text-2xl font-bold">My Tasks</h1>
+
+      {/* Celebration popup on task completion */}
+      {showCelebration && (
+        <CelebrationPopup
+          outfit="hat_party"
+          level={rabbitState?.level ?? 1}
+          onDismiss={() => setShowCelebration(false)}
+        />
+      )}
 
       {/* Energy level banner */}
       {todayEnergy && filter === "active" && (

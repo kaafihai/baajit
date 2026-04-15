@@ -1,6 +1,7 @@
 import { cn } from "@/lib/utils";
 import type { RabbitLevel, RabbitMemory } from "@/lib/types";
 import { RABBIT_LEVEL_NAMES, RABBIT_XP_THRESHOLDS } from "@/lib/types";
+import { useEffect } from "react";
 
 export type RabbitMood =
   | "happy"
@@ -627,4 +628,48 @@ export function getPersonalityMessage(memories: RabbitMemory[]): { message: stri
   }
 
   return null;
+}
+
+// --- Celebration Popup ---
+
+interface CelebrationPopupProps {
+  outfit?: string;
+  level?: RabbitLevel;
+  onDismiss: () => void;
+}
+
+const CELEBRATION_MESSAGES = [
+  "Task crushed! 🎉",
+  "You did it!",
+  "One more down!",
+  "Nailed it! ✨",
+  "Keep going!",
+];
+
+export function CelebrationPopup({ outfit = "none", level = 1, onDismiss }: CelebrationPopupProps) {
+  const message = CELEBRATION_MESSAGES[Math.floor(Math.random() * CELEBRATION_MESSAGES.length)];
+
+  useEffect(() => {
+    const timer = setTimeout(onDismiss, 2500);
+    return () => clearTimeout(timer);
+  }, [onDismiss]);
+
+  return (
+    <div
+      className="fixed bottom-24 left-1/2 -translate-x-1/2 z-50 animate-in fade-in slide-in-from-bottom-4 duration-300"
+      onClick={onDismiss}
+    >
+      <div className="bg-background border border-primary/20 shadow-xl rounded-3xl px-5 py-4 flex items-end gap-3">
+        <RabbitMascot
+          mood="celebrating"
+          message={message}
+          size="md"
+          outfit={outfit}
+          level={level}
+          animated={true}
+          showBubble={true}
+        />
+      </div>
+    </div>
+  );
 }

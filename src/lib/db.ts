@@ -838,14 +838,14 @@ export async function initRabbitState(): Promise<RabbitState> {
   const database = await getDb();
   const now = new Date().toISOString();
   await database.execute(
-    `INSERT INTO rabbit_state (id, level, xp, current_outfit, current_emotion, created_at, updated_at) VALUES ('singleton', 1, 0, 'none', 'happy', $1, $2)`,
+    `INSERT INTO rabbit_state (id, level, xp, current_outfit, current_emotion, created_at, updated_at) VALUES ('singleton', 1, 0, 'scarf_cozy', 'happy', $1, $2)`,
     [now, now]
   );
   return {
     id: "singleton",
     level: 1,
     xp: 0,
-    currentOutfit: "none",
+    currentOutfit: "scarf_cozy",
     currentEmotion: 'happy',
     createdAt: now,
     updatedAt: now,
