@@ -28,7 +28,6 @@ function WelcomePage() {
   const [page, setPage] = useState(0);
 
   const handleStart = useCallback(() => {
-    localStorage.setItem("baajit_welcomed", "true");
     navigate({ to: "/" });
   }, [navigate]);
 

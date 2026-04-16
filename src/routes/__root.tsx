@@ -14,8 +14,7 @@ function RootComponent() {
   const isWelcomePage = currentPath === "/welcome";
 
   useEffect(() => {
-    const hasSeenWelcome = localStorage.getItem("baajit_welcomed");
-    if (!hasSeenWelcome && currentPath !== "/welcome") {
+    if (currentPath !== "/welcome") {
       navigate({ to: "/welcome" });
     }
   }, [navigate, currentPath]);
