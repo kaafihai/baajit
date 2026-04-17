@@ -14,6 +14,7 @@ I didn't need another app that told me what to do. I needed one that understood 
 
 **Read the full launch note:** [Why I Built Baajit](play-store/LAUNCH_NOTE.md)
 **v1.1 Features & Details:** [Habit Formation Enhancements](V1_1_FEATURES.md)
+**User Manual:** [Baajit User Manual](docs/Baajit-User-Manual.docx)
 
 ## Thank You to Kaafihai Founders
 
@@ -28,6 +29,14 @@ Baajit takes a different approach — it meets you where you are with energy-awa
 **Core Task & Habit Management** — Create tasks with due dates and energy tags, build habits with streak tracking, and archive completed work. A calendar view ties everything together across days and weeks.
 
 **Rabbit Progression System** — Your rabbit companion levels up as you complete tasks, log habits, and track moods. Five growth stages from tiny kit to majestic elder, each with unique outfits and encouraging messages. XP is earned across everything you do in the app.
+
+### ✨ v1.1.1 Updates
+
+**Task Celebration Popup** — Every time you complete a task, your rabbit appears in a party hat to cheer you on. Auto-dismisses after a few seconds.
+
+**Default Outfit** — New users start with the Cozy Scarf outfit equipped from day one, so the rabbit never feels bare.
+
+**Landing Pages Always Show** — The welcome screens now appear every time you open the app, so new installs always get the full intro experience.
 
 ### ✨ v1.1 Features (Habit Formation Enhancements)
 
@@ -81,17 +90,17 @@ If you want the latest version or prefer to build it yourself, see the Getting S
 
 ### Mobile (Android & iOS)
 
-#### Android (v1.1.0)
-[⬇️ Download Baajit for Android](https://github.com/kaafihai/shard/releases/download/v1.1.0/app-universal-release-unsigned.apk) (54.8 MB)
+#### Android (v1.1.1 — Latest)
+[⬇️ Download Baajit for Android](https://github.com/kaafihai/baajit/releases/latest) (51 MB)
 
 To install on your device:
-1. Download the APK file
+1. Download the APK file from the link above
 2. Transfer to your Android device or download directly on it
-3. Open Settings → Security → Enable "Unknown Sources"
+3. Open Settings → Security → Enable "Install from Unknown Sources"
 4. Open the APK file and tap "Install"
-5. Launch Baajit!
+5. Launch Baajit! 🐰
 
-**Future:** Baajit will be available on Google Play Store for easier discovery and updates.
+**Coming soon:** Baajit will be available on Google Play Store for easier discovery and automatic updates.
 
 #### iOS (Coming Soon)
 iOS version coming after Android is stable. Will be available on Apple App Store.
