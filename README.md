@@ -2,9 +2,16 @@
 
 A task and habit management app designed specifically for ADHD brains. Built with Tauri, React, and SQLite for a fast, local-first experience on desktop and mobile.
 
+[![License: MIT](https://img.shields.io/badge/License-MIT-green.svg)](https://opensource.org/licenses/MIT)
+[![Platform](https://img.shields.io/badge/platform-Android%20%7C%20iOS%20%7C%20macOS-blue)](https://github.com/kaafihai/baajit/releases)
+[![Release](https://img.shields.io/github/v/release/kaafihai/baajit)](https://github.com/kaafihai/baajit/releases/latest)
+[![Built with Tauri](https://img.shields.io/badge/built%20with-Tauri%20v2-purple)](https://tauri.app)
+
+---
+
 ## The Story
 
-My eldest child used to say "Baajit" instead of "rabbit" when they were a baby. Fully smart at two; and quirks that I never got fully as a young mom. It stuck with me — that word, that voice, the way a kid's pronunciation becomes its own thing entirely. Years later, I learned they have ADHD. And I was diagnosed with AUDHD as an adult.
+My eldest child used to say "Baajit" instead of "rabbit" when they were a baby. Fully smart at two; and quirks that I never got fully as a young mom. It stuck with me — that word, that voice, the way a kid's pronunciation becomes its own thing entirely. Years later, I learned they have ADHD. And I was diagnosed with AuDHD as an adult.
 
 That's where the name comes from. And that's why this app exists.
 
@@ -16,13 +23,19 @@ I didn't need another app that told me what to do. I needed one that understood 
 **v1.1 Features & Details:** [Habit Formation Enhancements](V1_1_FEATURES.md)
 **User Manual:** [Baajit User Manual](docs/Baajit-User-Manual.docx)
 
+---
+
 ## Thank You to Kaafihai Founders
 
 This app would not exist without the vision and patience of **Sahiti [itihas], Azan, and Kaustubh** at Kaafihai. They listened to my neurodivergent rants, encouraged me to learn to code, and helped shape this idea from clay into a first cut. Thank you for creating space for this, believing in the mission, and building something that matters for neurodivergent minds. 💚
 
+---
+
 ## Why Baajit?
 
 Baajit takes a different approach — it meets you where you are with energy-aware task suggestions, gentle transition prompts, sensory grounding exercises, and a rabbit mascot that grows alongside your progress. Every feature exists because of a specific neurodivergent challenge I've lived with.
+
+---
 
 ## Features
 
@@ -64,6 +77,8 @@ Baajit takes a different approach — it meets you where you are with energy-awa
 
 **Mood Tracking** — Log your mood throughout the day with five options and optional notes. Mood data earns XP and feeds into your overall progress.
 
+---
+
 ## Tech Stack
 
 - **Framework**: [Tauri v2](https://v2.tauri.app/) (Rust backend, web frontend)
@@ -74,16 +89,18 @@ Baajit takes a different approach — it meets you where you are with energy-awa
 - **Icons**: Phosphor Icons
 - **Build**: Vite 7
 
+---
+
 ## Download & Run Baajit
 
 ### Desktop (macOS, Windows, Linux)
 
 #### Quick Download
 
-**macOS (v1.1.0):**
-[⬇️ Download Baajit for Mac](https://github.com/kaafihai/shard/releases/download/v1.1.0/baajit_1.1.0_aarch64.dmg) (38 MB)
+**macOS (latest):**
+[⬇️ Download Baajit for Mac](https://github.com/kaafihai/baajit/releases/latest) (38 MB)
 
-Windows and Linux builds coming soon. Check the [Releases](https://github.com/kaafihai/shard/releases) page for updates.
+Windows and Linux builds coming soon. Check the [Releases](https://github.com/kaafihai/baajit/releases) page for updates.
 
 #### Build From Source
 If you want the latest version or prefer to build it yourself, see the Getting Started section below.
@@ -108,6 +125,8 @@ iOS version coming after Android is stable. Will be available on Apple App Store
 #### Build Mobile From Source
 For developers who want to build Android or iOS versions themselves, see the Android/iOS sections under Getting Started.
 
+---
+
 ## Getting Started
 
 ### Prerequisites
@@ -122,8 +141,8 @@ For developers who want to build Android or iOS versions themselves, see the And
 **Clone the repository:**
 
 ```shell
-git clone https://github.com/kaafihai/shard.git
-cd shard
+git clone https://github.com/kaafihai/baajit.git
+cd baajit
 ```
 
 **Install dependencies:**
@@ -175,6 +194,8 @@ echo "storeFile=$keystorePath" >> keystore.properties
 pnpm tauri android build
 ```
 
+---
+
 ## Project Structure
 
 ```
@@ -199,10 +220,37 @@ src/
 src-tauri/            # Rust backend + SQLite migrations
 ```
 
+---
+
 ## Contributing
 
 Contributions are welcome! See [CONTRIBUTING.md](CONTRIBUTING.md) for guidelines on getting started, making changes, and what kinds of contributions are most helpful.
 
-## License
+If you have ADHD, autism, or bipolar disorder and want to contribute feedback, feature ideas, or lived-experience perspectives — that is the most valuable contribution of all. Open an issue labelled `lived-experience`.
+
+---
+
+## Evaluation & Research
+
+Baajit has been submitted for inclusion in the **NIMHANS ICMR Mental Health App Repository** — India's quality-assessed catalogue of digital mental health tools, applying the MARS (Mobile App Rating Scale) framework. The app's feature architecture is grounded in DSM-5 neurodivergence criteria.
+
+---
+
+## Licence
 
 This project is licensed under the [MIT License](LICENSE).
+
+---
+
+## About
+
+Baajit is part of the **Svayam** mental wellness platform — a family of free tools built for people the mental health technology industry has historically underserved.
+
+| | |
+|---|---|
+| Platform | [svayam.reachsharu.com](https://svayam.reachsharu.com) |
+| Founder | [Dr. Sharada Rao](https://sharada.reachsharu.com) |
+| Also from Svayam | [Manas](https://svayam.reachsharu.com/manas) · [NarcSafe](https://narcsafe.netlify.app) |
+| ORCID | [0009-0000-9969-0790](https://orcid.org/0009-0000-9969-0790) |
+
+*Envisioned e2e by Sharada. Built by Sharada & Kaafihai team.*
