@@ -53,12 +53,17 @@ function DialogContent({
       <DialogPrimitive.Popup
         data-slot="dialog-content"
         className={cn(
-          "bg-background data-open:animate-in data-closed:animate-out data-closed:fade-out-0 data-open:fade-in-0 data-open:slide-in-from-bottom-10 data-closed:zoom-out-95 data-open:zoom-in-95 ring-foreground/5 flex flex-col max-w-4xl gap-6 rounded-t-4xl p-6 text-sm ring-1 duration-100 fixed bottom-0 left-1/2 z-50 w-full -translate-x-1/2 outline-none pb-10",
+          "bg-background data-open:animate-in data-closed:animate-out data-closed:fade-out-0 data-open:fade-in-0 data-open:slide-in-from-bottom-10 data-closed:zoom-out-95 data-open:zoom-in-95 ring-foreground/5 flex flex-col max-w-4xl max-h-[85vh] rounded-t-4xl text-sm ring-1 duration-100 fixed bottom-0 left-1/2 z-50 w-full -translate-x-1/2 outline-none overflow-hidden",
           className,
         )}
         {...props}
       >
-        {children}
+        {/* Scrolls independently of the close button below, so long dialog
+            content (e.g. the habit-stats calendar) can never push the close
+            button out of the viewport - see habits.$id.stats.tsx. */}
+        <div className="flex flex-col gap-6 overflow-y-auto min-h-0 p-6 pb-10">
+          {children}
+        </div>
         {showCloseButton && (
           <DialogPrimitive.Close
             data-slot="dialog-close"

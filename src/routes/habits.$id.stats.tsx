@@ -2,12 +2,14 @@ import { createFileRoute, useNavigate } from "@tanstack/react-router";
 import { useHabitById, useAllHabitEntries } from "@/hooks/use-habits";
 import { Spinner } from "@/components/ui/spinner";
 import { Calendar } from "@/components/ui/calendar";
+import { Button } from "@/components/ui/button";
 import {
   Dialog,
   DialogContent,
   DialogHeader,
   DialogTitle,
   DialogDescription,
+  DialogFooter,
 } from "@/components/ui/dialog";
 import { useMemo } from "react";
 import type { HabitEntry } from "@/lib/types";
@@ -247,6 +249,16 @@ function HabitStatsPage() {
         <div className="text-sm opacity-70">
           Started {format(new Date(habit.createdAt), "MMMM d, yyyy")}
         </div>
+
+        <DialogFooter>
+          <Button
+            type="button"
+            onClick={() => navigate({ to: "/dashboard" })}
+            className="w-full"
+          >
+            Back to Dashboard
+          </Button>
+        </DialogFooter>
       </DialogContent>
     </Dialog>
   );
