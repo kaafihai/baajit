@@ -61,12 +61,12 @@ jobs:
           echo "storeFile=$RUNNER_TEMP/keystore.jks" >> keystore.properties
 
       - name: Build AAB (Google Play upload artifact)
-        run: pnpm tauri android build -- --aab
+        run: pnpm tauri android build --aab
         env:
           ANDROID_NDK_HOME: ${{ env.ANDROID_SDK_ROOT }}/ndk/26.1.10909125
 
       - name: Build APK (direct-install / GitHub release artifact)
-        run: pnpm tauri android build -- --apk
+        run: pnpm tauri android build --apk
         env:
           ANDROID_NDK_HOME: ${{ env.ANDROID_SDK_ROOT }}/ndk/26.1.10909125
 
