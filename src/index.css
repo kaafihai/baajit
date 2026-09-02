@@ -200,3 +200,81 @@
 @utility btn--ghost {
     @apply hover:bg-muted hover:text-muted-foreground aria-expanded:bg-muted aria-expanded:text-muted-foreground;
 }
+
+/* ---------------------------------------------------------------------
+   Rabbit companion — idle presence animation
+   ---------------------------------------------------------------------
+   RabbitMascot has applied `.rabbit-idle .rabbit-mood-{mood}` classes to
+   every rendered rabbit since it was built (see rabbit-mascot.tsx), but no
+   animation was ever defined for them — the mascot has been fully static.
+   This is most visible on the Focus Timer, where the rabbit is meant to
+   act as a body double (see focus.tsx's FOCUS_MESSAGES / "encouraging"
+   mood) but currently just sits there.
+
+   These are deliberately subtle — the Focus Timer rabbit especially needs
+   to read as present without competing for attention with the task at
+   hand — and fully disabled under prefers-reduced-motion, since this is a
+   sensory-sensitive, neurodivergent-first app (see grounding.tsx). */
+
+@media (prefers-reduced-motion: no-preference) {
+    .rabbit-idle {
+        animation: rabbit-breathe 3.2s ease-in-out infinite;
+        transform-origin: 50% 85%;
+    }
+
+    /* Focus Timer body-double state: slower and quieter than the default
+       breathing so it doesn't pull focus away from the work itself. */
+    .rabbit-idle.rabbit-mood-encouraging {
+        animation: rabbit-breathe-companion 4.5s ease-in-out infinite;
+    }
+
+    .rabbit-idle.rabbit-mood-celebrating {
+        animation: rabbit-bounce 0.9s cubic-bezier(0.34, 1.56, 0.64, 1) infinite;
+    }
+
+    .rabbit-idle.rabbit-mood-nudging {
+        animation: rabbit-nudge 1.6s ease-in-out infinite;
+    }
+
+    .rabbit-idle.rabbit-mood-sleeping {
+        animation: rabbit-breathe-slow 5.5s ease-in-out infinite;
+    }
+
+    .rabbit-idle.rabbit-mood-waving {
+        animation: rabbit-wave-idle 2.6s ease-in-out infinite;
+    }
+}
+
+@keyframes rabbit-breathe {
+    0%, 100% { transform: translateY(0) scale(1); }
+    50% { transform: translateY(-2px) scale(1.015); }
+}
+
+@keyframes rabbit-breathe-companion {
+    0%, 100% { transform: translateY(0); }
+    50% { transform: translateY(-1.5px); }
+}
+
+@keyframes rabbit-bounce {
+    0%, 100% { transform: translateY(0) rotate(0deg); }
+    40% { transform: translateY(-6px) rotate(-3deg); }
+    60% { transform: translateY(-6px) rotate(3deg); }
+}
+
+@keyframes rabbit-nudge {
+    0%, 100% { transform: rotate(0deg); }
+    25% { transform: rotate(-4deg); }
+    75% { transform: rotate(4deg); }
+}
+
+@keyframes rabbit-breathe-slow {
+    0%, 100% { transform: translateY(0) scale(1); }
+    50% { transform: translateY(1px) scale(0.99); }
+}
+
+@keyframes rabbit-wave-idle {
+    0%, 100% { transform: rotate(0deg); }
+    15% { transform: rotate(-6deg); }
+    30% { transform: rotate(4deg); }
+    45% { transform: rotate(0deg); }
+}
