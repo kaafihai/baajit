@@ -1,8 +1,5 @@
 allowBuilds:
-  esbuild: set this to true or false
-  msw: set this to true or false
-onlyBuiltDependencies:
-  - esbuild
-  - msw
+  esbuild: true
+  msw: true
 overrides:
   seroval: ">=1.5.3"
