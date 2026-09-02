@@ -50,7 +50,11 @@ jobs:
       - name: Setup Rust
         uses: dtolnay/rust-toolchain@stable
         with:
-          targets: aarch64-linux-android
+          # All four targets are needed to produce a universal AAB/APK for
+          # Google Play (Play's dynamic delivery then serves each device only
+          # its matching slice). Drop targets here only if you also decide to
+          # stop supporting those architectures.
+          targets: aarch64-linux-android,armv7-linux-androideabi,i686-linux-android,x86_64-linux-android
 
       - name: Setup Android SDK
         uses: android-actions/setup-android@v3
@@ -67,49 +71,69 @@ jobs:
           base64 -d <<< "${{ secrets.ANDROID_KEY_BASE64 }}" > $RUNNER_TEMP/keystore.jks
           echo "storeFile=$RUNNER_TEMP/keystore.jks" >> keystore.properties
 
-      - name: Build APK
-        run: pnpm tauri android build
+      - name: Build AAB (Google Play upload artifact)
+        run: pnpm tauri android build -- --aab
         env:
           ANDROID_NDK_HOME: ${{ env.ANDROID_SDK_ROOT }}/ndk/26.1.10909125
 
-      - name: Find and Copy APK
+      - name: Build APK (direct-install / GitHub release artifact)
+        run: pnpm tauri android build -- --apk
+        env:
+          ANDROID_NDK_HOME: ${{ env.ANDROID_SDK_ROOT }}/ndk/26.1.10909125
+
+      - name: Find and Copy Build Outputs
         run: |
-          echo "=== Debugging APK Location ==="
+          echo "=== Debugging Build Output Location ==="
           echo "Current working directory:"
           pwd
           echo ""
           echo "Directory structure of src-tauri:"
           ls -la src-tauri/ || echo "src-tauri not found"
           echo ""
-          echo "Searching for APK files recursively in entire workspace..."
-          find . -name "*.apk" -type f 2>/dev/null || echo "No APK files found"
+          echo "Searching for APK/AAB files recursively in entire workspace..."
+          find . -name "*.apk" -o -name "*.aab" 2>/dev/null || echo "No APK/AAB files found"
           echo ""
           echo "Checking Gradle build outputs:"
-          find src-tauri/gen/android -path "*/build/outputs/apk*" -type d 2>/dev/null || echo "No apk output directory found"
+          find src-tauri/gen/android -path "*/build/outputs/apk*" -o -path "*/build/outputs/bundle*" -type d 2>/dev/null || echo "No apk/bundle output directory found"
           echo ""
           echo "Creating release-apk directory..."
           mkdir -p ./release-apk
           echo ""
           echo "Attempting to copy APK files..."
           if find . -name "*.apk" -type f 2>/dev/null | xargs -I {} cp {} ./release-apk/ 2>&1; then
-            echo "Copy successful"
+            echo "APK copy successful"
           else
-            echo "Copy failed or no files found"
+            echo "APK copy failed or no files found"
+          fi
+          echo ""
+          echo "Attempting to copy AAB files..."
+          if find . -name "*.aab" -type f 2>/dev/null | xargs -I {} cp {} ./release-apk/ 2>&1; then
+            echo "AAB copy successful"
+          else
+            echo "AAB copy failed or no files found"
           fi
           echo ""
           echo "Contents of release-apk directory:"
           ls -lh ./release-apk/ || echo "release-apk directory is empty"
 
-      - name: Upload APK Artifacts
+      - name: Upload APK Artifact
         uses: actions/upload-artifact@v4
         with:
           name: android-apk
           path: ./release-apk/*.apk
 
+      - name: Upload AAB Artifact (upload this file to Google Play Console)
+        uses: actions/upload-artifact@v4
+        with:
+          name: android-aab
+          path: ./release-apk/*.aab
+
       - name: Create Release
         if: startsWith(github.ref, 'refs/tags/')
         uses: softprops/action-gh-release@v1
         with:
-          files: ./release-apk/*.apk
+          files: |
+            ./release-apk/*.apk
+            ./release-apk/*.aab
         env:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
