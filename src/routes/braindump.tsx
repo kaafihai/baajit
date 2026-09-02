@@ -43,6 +43,30 @@ const DONE_MESSAGES = [
   "Tasks saved! Your future self will thank you.",
 ];
 
+// Splits a dump into separate thoughts. If the user typed one thought per
+// line, respect that as-is - that's an explicit, unambiguous signal. If
+// they typed it "all at once" as one continuous paragraph (no line
+// breaks), fall back to splitting on sentence boundaries, so a dump like
+// "Check on PF. Locker work by next week. Remind Sahiti for visa." still
+// becomes three separate, categorizable thoughts instead of one giant
+// clump - which is what the UI's own copy ("one thought per line, or all
+// at once") already promises, but the previous newline-only split never
+// delivered on for single-line input.
+function splitIntoThoughts(text: string): string[] {
+  const trimmed = text.trim();
+  if (!trimmed) return [];
+
+  const lines = trimmed.split("\n").map((l) => l.trim()).filter(Boolean);
+  if (lines.length > 1) return lines;
+
+  const sentences = trimmed
+    .split(/(?<=[.!?])\s+(?=[A-Z0-9])/)
+    .map((s) => s.trim())
+    .filter(Boolean);
+
+  return sentences.length > 0 ? sentences : [trimmed];
+}
+
 function BrainDumpPage() {
   const [mode, setMode] = useState<"dump" | "sort" | "done">("dump");
   const [items, setItems] = useState<DumpItem[]>([]);
@@ -68,14 +92,12 @@ function BrainDumpPage() {
   }, [mode]);
 
   const handleAddItem = () => {
-    const trimmed = currentText.trim();
-    if (!trimmed) return;
+    const thoughts = splitIntoThoughts(currentText);
+    if (thoughts.length === 0) return;
 
-    // Split by newlines to capture multiple thoughts
-    const lines = trimmed.split("\n").filter((l) => l.trim().length > 0);
-    const newItems = lines.map((line) => ({
+    const newItems = thoughts.map((text) => ({
       id: uuidv4(),
-      text: line.trim(),
+      text,
       category: null as DumpCategory,
     }));
 
@@ -197,7 +219,7 @@ function BrainDumpPage() {
                     : "bg-primary/5 opacity-40"
                 )}
               >
-                Add {currentText.includes("\n") ? "Thoughts" : "Thought"}
+                Add {splitIntoThoughts(currentText).length > 1 ? "Thoughts" : "Thought"}
               </button>
               {items.length > 0 && (
                 <button
