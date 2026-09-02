@@ -272,7 +272,7 @@ export async function getMoods(limit: number = 1000): Promise<Mood[]> {
       note: string;
       created_at: string;
     }>
-  >(`SELECT * FROM moods LIMIT $1`, [limit]);
+  >(`SELECT * FROM moods ORDER BY created_at DESC LIMIT $1`, [limit]);
 
   return rows.map((row) => ({
     id: row.id,
