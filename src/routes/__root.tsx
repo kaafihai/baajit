@@ -1,5 +1,5 @@
 import { Outlet, createRootRoute, Link, useNavigate, useRouterState } from "@tanstack/react-router";
-import { useEffect } from "react";
+import { useEffect, useRef } from "react";
 import { BottomNavigation } from "@/components/bottom-navigation";
 import { RabbitAnimationStyles } from "@/components/rabbit-mascot";
 
@@ -13,11 +13,23 @@ function RootComponent() {
   const currentPath = router.location.pathname;
   const isWelcomePage = currentPath === "/welcome";
 
+  // Redirect to /welcome once, on cold start, if the app didn't open there
+  // (e.g. a deep link). This must NOT re-fire on every navigation - it
+  // previously depended on `currentPath` and ran on every path change,
+  // which meant leaving /welcome via any route (including the "Let's go!"
+  // button on the welcome screen itself) got immediately bounced back
+  // here, trapping every user on the welcome screen permanently.
+  const hasCheckedInitialRoute = useRef(false);
+
   useEffect(() => {
+    if (hasCheckedInitialRoute.current) return;
+    hasCheckedInitialRoute.current = true;
+
     if (currentPath !== "/welcome") {
       navigate({ to: "/welcome" });
     }
-  }, [navigate, currentPath]);
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, []);
 
   return (
     <>
