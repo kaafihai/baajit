@@ -48,9 +48,7 @@ jobs:
       - name: Setup Android SDK
         uses: android-actions/setup-android@v3
         with:
-          api-level: 29
-          ndk-version: 26.1.10909125
-          cmake-version: '3.22.1'
+          packages: 'platform-tools platforms;android-36 build-tools;36.0.0 ndk;26.1.10909125'
 
       - name: setup Android signing
         run: |
