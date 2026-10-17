@@ -67,7 +67,7 @@ jobs:
           ANDROID_NDK_HOME: ${{ env.ANDROID_SDK_ROOT }}/ndk/26.1.10909125
 
       - name: Build APK (direct-install / GitHub release artifact)
-        run: pnpm tauri android build --apk
+        run: pnpm tauri android build --apk && pnpm tauri android build --apk --split-per-abi --target aarch64
         env:
           ANDROID_NDK_HOME: ${{ env.ANDROID_SDK_ROOT }}/ndk/26.1.10909125
 
@@ -90,14 +90,14 @@ jobs:
           mkdir -p ./release-apk
           echo ""
           echo "Attempting to copy APK files..."
-          if find . -name "*.apk" -type f 2>/dev/null | xargs -I {} cp {} ./release-apk/ 2>&1; then
+          if find src-tauri/gen/android/app/build/outputs -name "*.apk" -type f 2>/dev/null | xargs -I {} cp {} ./release-apk/ 2>&1; then
             echo "APK copy successful"
           else
             echo "APK copy failed or no files found"
           fi
           echo ""
           echo "Attempting to copy AAB files..."
-          if find . -name "*.aab" -type f 2>/dev/null | xargs -I {} cp {} ./release-apk/ 2>&1; then
+          if find src-tauri/gen/android/app/build/outputs -name "*.aab" -type f 2>/dev/null | xargs -I {} cp {} ./release-apk/ 2>&1; then
             echo "AAB copy successful"
           else
             echo "AAB copy failed or no files found"
