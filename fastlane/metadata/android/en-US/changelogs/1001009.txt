@@ -1,1 +1,0 @@
-Latest Baajit release: Brain Dump now splits single-paragraph input into separate thoughts, habit-stats dialog close button fixed on tall content, and a Tauri security update. All data stays on your device.

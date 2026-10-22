@@ -1,1 +1,0 @@
-Task manager built for ADHD brains. Track habits, moods, and energy your way.
