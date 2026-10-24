@@ -3,3 +3,4 @@ allowBuilds:
   msw: true
 overrides:
   seroval: ">=1.5.3"
+  zod: ">=4.6.6"
