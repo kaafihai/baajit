@@ -9,54 +9,24 @@
 // Additionally, you should also exclude this file from your linter and/or formatter to prevent it from being checked or modified.
 
 import { Route as rootRouteImport } from './routes/__root'
-import { Route as WelcomeRouteImport } from './routes/welcome'
-import { Route as NewRouteImport } from './routes/new'
-import { Route as GroundingRouteImport } from './routes/grounding'
-import { Route as FocusRouteImport } from './routes/focus'
-import { Route as DashboardRouteImport } from './routes/dashboard'
-import { Route as CalendarRouteImport } from './routes/calendar'
-import { Route as BraindumpRouteImport } from './routes/braindump'
-import { Route as ArchiveRouteImport } from './routes/archive'
 import { Route as IndexRouteImport } from './routes/index'
-import { Route as MoodTrackRouteImport } from './routes/mood.track'
+import { Route as ArchiveRouteImport } from './routes/archive'
+import { Route as BraindumpRouteImport } from './routes/braindump'
+import { Route as CalendarRouteImport } from './routes/calendar'
+import { Route as DashboardRouteImport } from './routes/dashboard'
+import { Route as FocusRouteImport } from './routes/focus'
+import { Route as GroundingRouteImport } from './routes/grounding'
+import { Route as NewRouteImport } from './routes/new'
+import { Route as WelcomeRouteImport } from './routes/welcome'
 import { Route as CalendarTimestampRouteImport } from './routes/calendar.$timestamp'
-import { Route as TasksIdEditRouteImport } from './routes/tasks.$id.edit'
-import { Route as HabitsIdStatsRouteImport } from './routes/habits.$id.stats'
+import { Route as MoodTrackRouteImport } from './routes/mood.track'
 import { Route as HabitsIdEditRouteImport } from './routes/habits.$id.edit'
+import { Route as HabitsIdStatsRouteImport } from './routes/habits.$id.stats'
+import { Route as TasksIdEditRouteImport } from './routes/tasks.$id.edit'
 
-const WelcomeRoute = WelcomeRouteImport.update({
-  id: '/welcome',
-  path: '/welcome',
-  getParentRoute: () => rootRouteImport,
-} as any)
-const NewRoute = NewRouteImport.update({
-  id: '/new',
-  path: '/new',
-  getParentRoute: () => rootRouteImport,
-} as any)
-const GroundingRoute = GroundingRouteImport.update({
-  id: '/grounding',
-  path: '/grounding',
-  getParentRoute: () => rootRouteImport,
-} as any)
-const FocusRoute = FocusRouteImport.update({
-  id: '/focus',
-  path: '/focus',
-  getParentRoute: () => rootRouteImport,
-} as any)
-const DashboardRoute = DashboardRouteImport.update({
-  id: '/dashboard',
-  path: '/dashboard',
-  getParentRoute: () => rootRouteImport,
-} as any)
-const CalendarRoute = CalendarRouteImport.update({
-  id: '/calendar',
-  path: '/calendar',
-  getParentRoute: () => rootRouteImport,
-} as any)
-const BraindumpRoute = BraindumpRouteImport.update({
-  id: '/braindump',
-  path: '/braindump',
+const IndexRoute = IndexRouteImport.update({
+  id: '/',
+  path: '/',
   getParentRoute: () => rootRouteImport,
 } as any)
 const ArchiveRoute = ArchiveRouteImport.update({
@@ -64,14 +34,39 @@ const ArchiveRoute = ArchiveRouteImport.update({
   path: '/archive',
   getParentRoute: () => rootRouteImport,
 } as any)
-const IndexRoute = IndexRouteImport.update({
-  id: '/',
-  path: '/',
+const BraindumpRoute = BraindumpRouteImport.update({
+  id: '/braindump',
+  path: '/braindump',
   getParentRoute: () => rootRouteImport,
 } as any)
-const MoodTrackRoute = MoodTrackRouteImport.update({
-  id: '/mood/track',
-  path: '/mood/track',
+const CalendarRoute = CalendarRouteImport.update({
+  id: '/calendar',
+  path: '/calendar',
+  getParentRoute: () => rootRouteImport,
+} as any)
+const DashboardRoute = DashboardRouteImport.update({
+  id: '/dashboard',
+  path: '/dashboard',
+  getParentRoute: () => rootRouteImport,
+} as any)
+const FocusRoute = FocusRouteImport.update({
+  id: '/focus',
+  path: '/focus',
+  getParentRoute: () => rootRouteImport,
+} as any)
+const GroundingRoute = GroundingRouteImport.update({
+  id: '/grounding',
+  path: '/grounding',
+  getParentRoute: () => rootRouteImport,
+} as any)
+const NewRoute = NewRouteImport.update({
+  id: '/new',
+  path: '/new',
+  getParentRoute: () => rootRouteImport,
+} as any)
+const WelcomeRoute = WelcomeRouteImport.update({
+  id: '/welcome',
+  path: '/welcome',
   getParentRoute: () => rootRouteImport,
 } as any)
 const CalendarTimestampRoute = CalendarTimestampRouteImport.update({
@@ -79,9 +74,14 @@ const CalendarTimestampRoute = CalendarTimestampRouteImport.update({
   path: '/$timestamp',
   getParentRoute: () => CalendarRoute,
 } as any)
-const TasksIdEditRoute = TasksIdEditRouteImport.update({
-  id: '/tasks/$id/edit',
-  path: '/tasks/$id/edit',
+const MoodTrackRoute = MoodTrackRouteImport.update({
+  id: '/mood/track',
+  path: '/mood/track',
+  getParentRoute: () => rootRouteImport,
+} as any)
+const HabitsIdEditRoute = HabitsIdEditRouteImport.update({
+  id: '/habits/$id/edit',
+  path: '/habits/$id/edit',
   getParentRoute: () => rootRouteImport,
 } as any)
 const HabitsIdStatsRoute = HabitsIdStatsRouteImport.update({
@@ -89,9 +89,9 @@ const HabitsIdStatsRoute = HabitsIdStatsRouteImport.update({
   path: '/habits/$id/stats',
   getParentRoute: () => rootRouteImport,
 } as any)
-const HabitsIdEditRoute = HabitsIdEditRouteImport.update({
-  id: '/habits/$id/edit',
-  path: '/habits/$id/edit',
+const TasksIdEditRoute = TasksIdEditRouteImport.update({
+  id: '/tasks/$id/edit',
+  path: '/tasks/$id/edit',
   getParentRoute: () => rootRouteImport,
 } as any)
 
@@ -213,53 +213,11 @@ export interface RootRouteChildren {
 
 declare module '@tanstack/react-router' {
   interface FileRoutesByPath {
-    '/welcome': {
-      id: '/welcome'
-      path: '/welcome'
-      fullPath: '/welcome'
-      preLoaderRoute: typeof WelcomeRouteImport
-      parentRoute: typeof rootRouteImport
-    }
-    '/new': {
-      id: '/new'
-      path: '/new'
-      fullPath: '/new'
-      preLoaderRoute: typeof NewRouteImport
-      parentRoute: typeof rootRouteImport
-    }
-    '/grounding': {
-      id: '/grounding'
-      path: '/grounding'
-      fullPath: '/grounding'
-      preLoaderRoute: typeof GroundingRouteImport
-      parentRoute: typeof rootRouteImport
-    }
-    '/focus': {
-      id: '/focus'
-      path: '/focus'
-      fullPath: '/focus'
-      preLoaderRoute: typeof FocusRouteImport
-      parentRoute: typeof rootRouteImport
-    }
-    '/dashboard': {
-      id: '/dashboard'
-      path: '/dashboard'
-      fullPath: '/dashboard'
-      preLoaderRoute: typeof DashboardRouteImport
-      parentRoute: typeof rootRouteImport
-    }
-    '/calendar': {
-      id: '/calendar'
-      path: '/calendar'
-      fullPath: '/calendar'
-      preLoaderRoute: typeof CalendarRouteImport
-      parentRoute: typeof rootRouteImport
-    }
-    '/braindump': {
-      id: '/braindump'
-      path: '/braindump'
-      fullPath: '/braindump'
-      preLoaderRoute: typeof BraindumpRouteImport
+    '/': {
+      id: '/'
+      path: '/'
+      fullPath: '/'
+      preLoaderRoute: typeof IndexRouteImport
       parentRoute: typeof rootRouteImport
     }
     '/archive': {
@@ -269,18 +227,53 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof ArchiveRouteImport
       parentRoute: typeof rootRouteImport
     }
-    '/': {
-      id: '/'
-      path: '/'
-      fullPath: '/'
-      preLoaderRoute: typeof IndexRouteImport
+    '/braindump': {
+      id: '/braindump'
+      path: '/braindump'
+      fullPath: '/braindump'
+      preLoaderRoute: typeof BraindumpRouteImport
       parentRoute: typeof rootRouteImport
     }
-    '/mood/track': {
-      id: '/mood/track'
-      path: '/mood/track'
-      fullPath: '/mood/track'
-      preLoaderRoute: typeof MoodTrackRouteImport
+    '/calendar': {
+      id: '/calendar'
+      path: '/calendar'
+      fullPath: '/calendar'
+      preLoaderRoute: typeof CalendarRouteImport
+      parentRoute: typeof rootRouteImport
+    }
+    '/dashboard': {
+      id: '/dashboard'
+      path: '/dashboard'
+      fullPath: '/dashboard'
+      preLoaderRoute: typeof DashboardRouteImport
+      parentRoute: typeof rootRouteImport
+    }
+    '/focus': {
+      id: '/focus'
+      path: '/focus'
+      fullPath: '/focus'
+      preLoaderRoute: typeof FocusRouteImport
+      parentRoute: typeof rootRouteImport
+    }
+    '/grounding': {
+      id: '/grounding'
+      path: '/grounding'
+      fullPath: '/grounding'
+      preLoaderRoute: typeof GroundingRouteImport
+      parentRoute: typeof rootRouteImport
+    }
+    '/new': {
+      id: '/new'
+      path: '/new'
+      fullPath: '/new'
+      preLoaderRoute: typeof NewRouteImport
+      parentRoute: typeof rootRouteImport
+    }
+    '/welcome': {
+      id: '/welcome'
+      path: '/welcome'
+      fullPath: '/welcome'
+      preLoaderRoute: typeof WelcomeRouteImport
       parentRoute: typeof rootRouteImport
     }
     '/calendar/$timestamp': {
@@ -290,11 +283,18 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof CalendarTimestampRouteImport
       parentRoute: typeof CalendarRoute
     }
-    '/tasks/$id/edit': {
-      id: '/tasks/$id/edit'
-      path: '/tasks/$id/edit'
-      fullPath: '/tasks/$id/edit'
-      preLoaderRoute: typeof TasksIdEditRouteImport
+    '/mood/track': {
+      id: '/mood/track'
+      path: '/mood/track'
+      fullPath: '/mood/track'
+      preLoaderRoute: typeof MoodTrackRouteImport
+      parentRoute: typeof rootRouteImport
+    }
+    '/habits/$id/edit': {
+      id: '/habits/$id/edit'
+      path: '/habits/$id/edit'
+      fullPath: '/habits/$id/edit'
+      preLoaderRoute: typeof HabitsIdEditRouteImport
       parentRoute: typeof rootRouteImport
     }
     '/habits/$id/stats': {
@@ -304,11 +304,11 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof HabitsIdStatsRouteImport
       parentRoute: typeof rootRouteImport
     }
-    '/habits/$id/edit': {
-      id: '/habits/$id/edit'
-      path: '/habits/$id/edit'
-      fullPath: '/habits/$id/edit'
-      preLoaderRoute: typeof HabitsIdEditRouteImport
+    '/tasks/$id/edit': {
+      id: '/tasks/$id/edit'
+      path: '/tasks/$id/edit'
+      fullPath: '/tasks/$id/edit'
+      preLoaderRoute: typeof TasksIdEditRouteImport
       parentRoute: typeof rootRouteImport
     }
   }
